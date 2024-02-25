@@ -26,16 +26,16 @@ public class MealPrepPlans
 
             return new(
             [
-                runningBrownRiceHelping * 2,
-                xfitBrownRiceHelping * 3,
+                ("running", runningBrownRiceHelping * 2),
+                ("crossfit", xfitBrownRiceHelping * 3),
 
-                runningFarroHelping * 2,
-                xfitFarroHelping * 3,
+                ($"running", runningFarroHelping * 2),
+                ($"crossfit", xfitFarroHelping * 3),
 
-                ConsolidateHelpings(Foods.Seitan_Yeast_1_Tbsp_Gluten_2x),
-                ConsolidateHelpings(Foods.OliveOil_1_Tbsp),
-                ConsolidateHelpings(Foods.Tofu_1_5_block),
-                ConsolidateHelpings(Foods.PumpkinSeeds_1_Cup),
+                (null, ConsolidateHelpings(Foods.Seitan_Yeast_1_Tbsp_Gluten_2x)),
+                (null, ConsolidateHelpings(Foods.OliveOil_1_Tbsp)),
+                (null, ConsolidateHelpings(Foods.Tofu_1_5_block)),
+                (null, ConsolidateHelpings(Foods.PumpkinSeeds_1_Cup)),
             ]);
         }
     }
