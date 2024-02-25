@@ -4,15 +4,24 @@ namespace SystemOfEquations;
 
 public class Meal
 {
-    public Meal(string name, Macros macros, Food pFood, Food fFood, Food cFood)
+    public Meal(string name, Macros macros, FoodGrouping foodGrouping)
     {
+        var pMacros = foodGrouping.PFood.Macros;
+        var fMacros = foodGrouping.FFood.Macros;
+        var cMacros = foodGrouping.CFood.Macros;
+
         (var pFoodServings, var fFoodServings, var cFoodServings) = Equation.Solve(
-            new(pFood.Macros.P, fFood.Macros.P, cFood.Macros.P, macros.P),
-            new(pFood.Macros.F, fFood.Macros.F, cFood.Macros.F, macros.F),
-            new(pFood.Macros.C, fFood.Macros.C, cFood.Macros.C, macros.C));
+            new(pMacros.P, fMacros.P, cMacros.P, macros.P),
+            new(pMacros.F, fMacros.F, cMacros.F, macros.F),
+            new(pMacros.C, fMacros.C, cMacros.C, macros.C));
         Name = name;
         Macros = macros;
-        Helpings = [new(pFood, pFoodServings), new(fFood, fFoodServings), new(cFood, cFoodServings)];
+        Helpings =
+        [
+            new(foodGrouping.PFood, pFoodServings),
+            new(foodGrouping.FFood, fFoodServings),
+            new(foodGrouping.CFood, cFoodServings)
+        ];
     }
 
     public override string ToString()
