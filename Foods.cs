@@ -23,8 +23,12 @@ public static class Foods
     public static Food Farro_1_Cup { get; } = new Food("farro", 1, "cup", Cals: 760, new(P: 24, F: 4, C: 152 - 20));
     public static Food Seitan_Yeast_1_Tbsp_Gluten_2x { get; } = new("Seitan, nutritional yeast, 2x gluten",
         1, "tbsp nutritional yeast",
-        Cals: Foods.NutritionalYeast_1_Tbsp.Cals + Foods.Gluten_2_Tbsp.Cals,
-        Foods.NutritionalYeast_1_Tbsp.Macros + Foods.Gluten_2_Tbsp.Macros);
+        NutritionalYeast_1_Tbsp.Cals + Gluten_2_Tbsp.Cals,
+        NutritionalYeast_1_Tbsp.Macros + Gluten_2_Tbsp.Macros);
+    public static Food Seitan_Yeast_1_Cup_Gluten_2x { get; } = new(Seitan_Yeast_1_Tbsp_Gluten_2x.Name,
+        1, "cup nutritional yeast",
+        Seitan_Yeast_1_Tbsp_Gluten_2x.Cals * 16,
+        Seitan_Yeast_1_Tbsp_Gluten_2x.Macros * 16);
     public static Food Tofu_1_5_block { get; } = new ("tofu", 0.2, "block", Cals: 130, new(P: 14, F: 7, C: 0));
 
     public static Food Whey_1_Scoop { get; } = new("whey", 1, "scoop", Cals: 130, new(P: 30, F: 0.5, C: 1 - 0));

@@ -23,8 +23,8 @@ public class MealPrepPlans
                 ("running", GetHelping(runningDay, 2, Foods.Farro_1_Cup)),
                 ("crossfit", GetHelping(xfitDay, 3, Foods.Farro_1_Cup)),
 
-                ("nonworkout", GetHelping(nonworkoutDay, 1, Foods.Seitan_Yeast_1_Tbsp_Gluten_2x)),
-                (null, ConsolidateWorkoutDayHelpings(Foods.Seitan_Yeast_1_Tbsp_Gluten_2x)),
+                ("nonworkout", GetHelping(nonworkoutDay, 1, Foods.Seitan_Yeast_1_Cup_Gluten_2x)),
+                (null, ConsolidateWorkoutDayHelpings(Foods.Seitan_Yeast_1_Cup_Gluten_2x)),
 
                 ("nonworkout", GetHelping(nonworkoutDay, 1, Foods.OliveOil_1_Tbsp)),
                 (null, ConsolidateWorkoutDayHelpings(Foods.OliveOil_1_Tbsp)),
@@ -40,7 +40,7 @@ public class MealPrepPlans
 
     private static Helping GetHelping(TrainingDay trainingDay, double multiplier, Food food) => new(
         food,
-        trainingDay.Meals.SelectMany(m => m.Helpings).Where(h => h.Food.Name == food.Name)
+        trainingDay.Meals.SelectMany(m => m.Helpings).Where(h => h.Food.Equals(food))
             .Sum(h => h.Servings) * multiplier);
 
     private static Helping ConsolidateHelpings(
@@ -50,5 +50,5 @@ public class MealPrepPlans
             trainingDays
                 .SelectMany(t => t.TrainingDay.Meals.Select(m => (Meal: m, t.Multiplier)))
                 .SelectMany(m => m.Meal.Helpings.Select(h => (Helping: h, m.Multiplier)))
-                .Where(h => h.Helping.Food.Name == food.Name).Sum(h => h.Helping.Servings * h.Multiplier));
+                .Where(h => h.Helping.Food.Equals(food)).Sum(h => h.Helping.Servings * h.Multiplier));
 }
