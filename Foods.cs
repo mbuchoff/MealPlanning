@@ -10,6 +10,7 @@ public static class Foods
     public static Food BrownRice_1_Cup { get; } = new("brown rice", 1, "cup", Cals: 688,
         new(P: 14.3, F: 5.1, C: 144.7 - 6.5));
     public static Food Cassein_1_Scoop { get; } = new("cassein", 1, "scoop", Cals: 100, new(P: 25, F: 0, C: 1 - 0));
+    public static Food ChiaSeeds_2_5_Tbsp { get; } = new("chia seeds", 2.5, "tbsp", Cals: 150, new(P: 5, F: 9, C: 13 - 10));
     public static Food Edamame_1_4_Cup { get; } = new("edamame", 0.25, "cup", Cals: 140, new(P: 13, F: 6, C: 11 - 4));
     public static Food Gluten_2_Tbsp { get; } = new("gluten", 2, "tbsp", Cals: 60, new(P: 11.5, F: 0.5, C: 2 - 0));
     public static Food NutritionalYeast_1_Tbsp { get; } = new(
