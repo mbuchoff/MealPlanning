@@ -2,13 +2,13 @@
 
 namespace SystemOfEquations;
 
-public class Meal
+internal class Meal
 {
     public Meal(string name, Macros macros, FoodGrouping foodGrouping)
     {
-        var pMacros = foodGrouping.PFood.Macros;
-        var fMacros = foodGrouping.FFood.Macros;
-        var cMacros = foodGrouping.CFood.Macros;
+        var pMacros = foodGrouping.PFood.NutritionalInformation.Macros;
+        var fMacros = foodGrouping.FFood.NutritionalInformation.Macros;
+        var cMacros = foodGrouping.CFood.NutritionalInformation.Macros;
 
         (var pFoodServings, var fFoodServings, var cFoodServings) = Equation.Solve(
             new(pMacros.P, fMacros.P, cMacros.P, macros.P),

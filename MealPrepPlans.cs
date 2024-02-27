@@ -1,6 +1,6 @@
 ﻿namespace SystemOfEquations;
 
-public class MealPrepPlans
+internal class MealPrepPlans
 {
     public static MealPrepPlan Phase1MealPrepPlan
     {

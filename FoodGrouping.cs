@@ -1,3 +1,3 @@
 ﻿namespace SystemOfEquations;
 
-public record FoodGrouping(Food PFood, Food FFood, Food CFood);
+internal record FoodGrouping(Food PFood, Food FFood, Food CFood);

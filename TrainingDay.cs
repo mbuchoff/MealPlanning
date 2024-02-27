@@ -2,7 +2,7 @@
 
 namespace SystemOfEquations;
 
-public record TrainingDay(string Name, IEnumerable<Meal> Meals)
+internal record TrainingDay(string Name, IEnumerable<Meal> Meals)
 {
     public override string ToString()
     {
