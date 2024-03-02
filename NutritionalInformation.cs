@@ -1,9 +1,22 @@
 ﻿namespace SystemOfEquations;
 
-internal record NutritionalInformation(double Cals, Macros Macros)
+internal record NutritionalInformation(double Servings, ServingUnit ServingUnit, double Cals, Macros Macros)
 {
-    public static NutritionalInformation operator +(NutritionalInformation n1, NutritionalInformation n2) =>
-        new(n1.Cals + n2.Cals, n1.Macros + n2.Macros);
-    public static NutritionalInformation operator *(NutritionalInformation n, double d) =>
-        new(n.Cals * d, n.Macros * d);
+    public NutritionalInformation Combine(NutritionalInformation that, double ratio)
+    {
+        if (this.ServingUnit != that.ServingUnit)
+        {
+            throw new Exception($"{nameof(ServingUnit)}s are different");
+        }
+
+        var thisMultiplier = 1.0 / this.Servings;
+        var thatMultiplier = ratio / that.Servings;
+
+
+        return new(
+            Servings: 1,
+            this.ServingUnit,
+            (this.Cals * thisMultiplier) + (that.Cals * thatMultiplier),
+            (this.Macros * thisMultiplier) + (that.Macros * thatMultiplier));
+    }
 }
