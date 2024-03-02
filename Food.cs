@@ -1,10 +1,7 @@
 ﻿namespace SystemOfEquations;
 
-internal record Food(
-    string Name,
-    double Servings,
-    ServingUnit ServingUnit,
-    NutritionalInformation NutritionalInformation)
+internal record Food(string Name, NutritionalInformation NutritionalInformation)
 {
-    public string ToString(double quantity) => $"{ServingUnit.ToString(quantity * Servings)} {Name}";
+    public string ToString(double quantity) =>
+        $"{NutritionalInformation.ServingUnit.ToString(quantity * NutritionalInformation.Servings)} {Name}";
 }
