@@ -3,11 +3,11 @@
 internal static class FoodGroupings
 {
     public static FoodGrouping Oatmeal { get; } =
-        new(Foods.Edamame_1_4_Cup, Foods.AlmondButter_1_Tbsp, Foods.Oatmeal_1_2_Cup);
+        new(Foods.Edamame_1_Scoop, Foods.AlmondButter_1_Tbsp, Foods.Oatmeal_1_Scoop);
     public static FoodGrouping ProteinShake { get; } =
-        new(Foods.Whey_1_Scoop, Foods.AlmondButter_1_Tbsp, Foods.BlueBerries_1_Cup);
+        new(Foods.Whey_1_Scoop, Foods.ChiaSeeds_2_5_Tbsp, Foods.BlueBerries_1_Cup);
     public static FoodGrouping Seitan { get; } =
-        new(Foods.Seitan_Yeast_1_Cup_Gluten_2x, Foods.OliveOil_1_Tbsp, Foods.BrownRice_1_Cup);
+        new(Foods.Seitan_Walmart_Yeast_1_Gram_Gluten_4x, Foods.OliveOil_1_Tbsp, Foods.BrownRice_45_Grams);
     public static FoodGrouping Tofu { get; } =
-        new(Foods.Tofu_1_5_block, Foods.PumpkinSeeds_1_Cup, Foods.Farro_1_Cup);
+        new(Foods.Tofu_1_5_block, Foods.PumpkinSeeds_30_Grams, Foods.Farro_52_Gram);
 }

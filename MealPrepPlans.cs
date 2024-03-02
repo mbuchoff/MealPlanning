@@ -15,16 +15,16 @@ internal class MealPrepPlans
 
             return new(
             [
-                ("nonworkout", GetHelping(nonworkoutDay, 1, Foods.BrownRice_1_Cup)),
-                ("running", GetHelping(runningDay, 2, Foods.BrownRice_1_Cup)),
-                ("crossfit", GetHelping(xfitDay, 3, Foods.BrownRice_1_Cup)),
+                ("nonworkout", GetHelping(nonworkoutDay, 1, Foods.BrownRice_45_Grams)),
+                ("running", GetHelping(runningDay, 2, Foods.BrownRice_45_Grams)),
+                ("crossfit", GetHelping(xfitDay, 3, Foods.BrownRice_45_Grams)),
 
-                ("nonworkout", GetHelping(nonworkoutDay, 1, Foods.Farro_1_Cup)),
-                ("running", GetHelping(runningDay, 2, Foods.Farro_1_Cup)),
-                ("crossfit", GetHelping(xfitDay, 3, Foods.Farro_1_Cup)),
+                ("nonworkout", GetHelping(nonworkoutDay, 1, Foods.Farro_52_Gram)),
+                ("running", GetHelping(runningDay, 2, Foods.Farro_52_Gram)),
+                ("crossfit", GetHelping(xfitDay, 3, Foods.Farro_52_Gram)),
 
-                ("nonworkout", GetHelping(nonworkoutDay, 1, Foods.Seitan_Yeast_1_Cup_Gluten_2x)),
-                (null, ConsolidateWorkoutDayHelpings(Foods.Seitan_Yeast_1_Cup_Gluten_2x)),
+                ("nonworkout", GetHelping(nonworkoutDay, 1, Foods.Seitan_Walmart_Yeast_1_Gram_Gluten_4x)),
+                (null, ConsolidateWorkoutDayHelpings(Foods.Seitan_Walmart_Yeast_1_Gram_Gluten_4x)),
 
                 ("nonworkout", GetHelping(nonworkoutDay, 1, Foods.OliveOil_1_Tbsp)),
                 (null, ConsolidateWorkoutDayHelpings(Foods.OliveOil_1_Tbsp)),
@@ -32,8 +32,8 @@ internal class MealPrepPlans
                 ("nonworkout", GetHelping(nonworkoutDay, 1, Foods.Tofu_1_5_block)),
                 (null, ConsolidateWorkoutDayHelpings(Foods.Tofu_1_5_block)),
 
-                ("nonworkout", GetHelping(nonworkoutDay, 1, Foods.PumpkinSeeds_1_Cup)),
-                (null, ConsolidateWorkoutDayHelpings(Foods.PumpkinSeeds_1_Cup)),
+                ("nonworkout", GetHelping(nonworkoutDay, 1, Foods.PumpkinSeeds_30_Grams)),
+                (null, ConsolidateWorkoutDayHelpings(Foods.PumpkinSeeds_30_Grams)),
             ]);
         }
     }
