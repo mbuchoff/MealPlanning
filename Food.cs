@@ -6,6 +6,5 @@ internal record Food(
     ServingUnit ServingUnit,
     NutritionalInformation NutritionalInformation)
 {
-    public string ToString(double quantity) =>
-        $"{(quantity * Servings).ToString($"{ServingUnit.ToString(Servings)} {Name}")}";
+    public string ToString(double quantity) => $"{ServingUnit.ToString(quantity * Servings)} {Name}";
 }
