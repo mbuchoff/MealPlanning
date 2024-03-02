@@ -1,4 +1,6 @@
-﻿namespace SystemOfEquations;
+﻿using SystemOfEquations.Constants;
+
+namespace SystemOfEquations;
 
 internal class MealPrepPlans
 {

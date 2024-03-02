@@ -1,4 +1,4 @@
-﻿using SystemOfEquations;
+﻿using SystemOfEquations.Constants;
 
 var phase = Phases.MuscleGain1;
 

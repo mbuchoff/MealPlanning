@@ -1,4 +1,4 @@
-﻿namespace SystemOfEquations;
+﻿namespace SystemOfEquations.Constants;
 
 internal static class TrainingDays
 {
