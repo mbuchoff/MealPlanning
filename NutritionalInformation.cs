@@ -12,7 +12,6 @@ internal record NutritionalInformation(double Servings, ServingUnit ServingUnit,
         var thisMultiplier = 1.0 / this.Servings;
         var thatMultiplier = ratio / that.Servings;
 
-
         return new(
             Servings: 1,
             this.ServingUnit,
