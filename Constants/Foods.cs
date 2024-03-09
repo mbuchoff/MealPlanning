@@ -13,14 +13,13 @@ internal static class Foods
     public static Food BlueBerries_1_Cup { get; } = new(
         "frozen blueberries",
         new(1, ServingUnits.Cup, Cals: 80, new(P: 0, F: 0, C: 19 - 6)));
-    public static Food BrownRice_1_4_Cup { get; } = new(
-        "brown rice",
-        new(0.25, ServingUnits.Cup, Cals: 170, new(P: 4, F: 1.5, C: 35 - 2)));
     public static Food BrownRice_45_Grams { get; } = new(
-        BrownRice_1_4_Cup.Name,
-        new(45, ServingUnits.Gram,
-            BrownRice_1_4_Cup.NutritionalInformation.Cals,
-            BrownRice_1_4_Cup.NutritionalInformation.Macros));
+        "brown rice",
+        new(
+            // 0.25, ServingUnits.Cup
+            45, ServingUnits.Gram,
+            Cals: 170,
+            new(P: 4, F: 1.5, C: 35 - 2)));
     public static Food Cassein_1_Scoop { get; } = new(
         "cassein",
         new(1, ServingUnits.Scoop, Cals: 100, new(P: 25, F: 0, C: 1 - 0)));
@@ -30,15 +29,20 @@ internal static class Foods
     public static Food Edamame_1_4_Cup { get; } = new(
         "edamame",
         new(0.25, ServingUnits.Cup, Cals: 140, new(P: 13, F: 6, C: 11 - 4)));
-    public static Food Gluten_1_4_Cup { get; } = new(
-        "gluten",
-        new(0.25, ServingUnits.Cup, Cals: 120, new(P: 23, F: 1, C: 4 - 0)));
-    public static Food NutritionalYeast_WalMart_2_Tbsp { get; } = new(
-        "nutritional yeast from WalMart",
-        new(2, ServingUnits.Tablespoon, Cals: 30, new(P: 4, F: 0, C: 3 - 2)));
-    public static Food NutritionalYeast_Sprouts_2_Tbsp { get; } = new(
-        "nutritional yeast from Sprouts",
-        new(2, ServingUnits.Tablespoon, Cals: 60, new(P: 5, F: 0.5, C: 5 - 3)));
+    public static Food NutritionalYeast_WalMart_8_Grams { get; } = new(
+        "nutritional yeast from WalMart", new(
+            // 2, ServingUnits.Tablespoon,
+            8, ServingUnits.Gram,
+            Cals: 30,
+            new(P: 4, F: 0, C: 3 - 2)));
+
+    public static Food NutritionalYeast_Sprouts_16_Grams { get; } = new(
+    "nutritional yeast from Sprouts", new(
+        // 2, ServingUnits.Tablespoon,
+        16, ServingUnits.Gram,
+        Cals: 60,
+        new(P: 5, F: 0.5, C: 5 - 3)));
+
     public static Food Oatmeal_1_2_Cup { get; } = new("oatmeal",
         new(0.5, ServingUnits.Cup, Cals: 140, new(P: 5, F: 2.5, C: 27 - 4)));
     public static Food OliveOil_1_Tbsp { get; } = new(
@@ -51,14 +55,19 @@ internal static class Foods
         new(30, ServingUnits.Gram, Cals: 170, new(P: 9, F: 15, C: 3 - 2)));
 
     // https://www.walmart.com/ip/Bob-s-Red-Mill-Organic-Farro-24-oz-Pkg/762388784?from=/search
-    public static Food Farro_1_4_Cup { get; } = new Food(
-        "farro",
-        new(0.25, ServingUnits.Cup, Cals: 190, new(P: 6, F: 1, C: 38 - 5)));
     public static Food Farro_52_Gram { get; } = new Food(
-        Farro_1_4_Cup.Name, new(
+        "farro", new(
+            // 0.25, ServingUnits.Cup
             52, ServingUnits.Gram,
-            Farro_1_4_Cup.NutritionalInformation.Cals,
-            Farro_1_4_Cup.NutritionalInformation.Macros));
+            Cals: 190,
+            new(P: 6, F: 1, C: 38 - 5)));
+
+    public static Food Gluten_30_Grams { get; } = new(
+    "gluten", new(
+        // 0.25, ServingUnits.Cup,
+        30, ServingUnits.Gram,
+        Cals: 120,
+        new(P: 23, F: 1, C: 4 - 0)));
 
     public static Food Tofu_1_5_block { get; } = new(
         "tofu",
@@ -68,7 +77,6 @@ internal static class Foods
         "whey",
         new(1, ServingUnits.Scoop, Cals: 130, new(P: 30, F: 0.5, C: 1 - 0)));
 
-
     // Converted
     private static readonly double CUPS_PER_SCOOP = 0.380408;
     public static Food Edamame_1_Scoop { get; } = new(
@@ -76,22 +84,7 @@ internal static class Foods
             1, ServingUnits.Scoop,
             Edamame_1_4_Cup.NutritionalInformation.Cals * 4 * CUPS_PER_SCOOP,
             Edamame_1_4_Cup.NutritionalInformation.Macros * 4 * CUPS_PER_SCOOP));
-    public static Food Gluten_30_Grams { get; } = new(
-        "gluten", new(
-            30, ServingUnits.Gram,
-            Gluten_1_4_Cup.NutritionalInformation.Cals,
-            Gluten_1_4_Cup.NutritionalInformation.Macros));
 
-    public static Food NutritionalYeast_Sprouts_16_Grams { get; } = new(
-        NutritionalYeast_Sprouts_2_Tbsp.Name, new(
-            16, ServingUnits.Gram,
-            NutritionalYeast_Sprouts_2_Tbsp.NutritionalInformation.Cals,
-            NutritionalYeast_Sprouts_2_Tbsp.NutritionalInformation.Macros));
-    public static Food NutritionalYeast_WalMart_8_Grams { get; } = new(
-        NutritionalYeast_WalMart_2_Tbsp.Name, new(
-            8, ServingUnits.Gram,
-            NutritionalYeast_WalMart_2_Tbsp.NutritionalInformation.Cals,
-            NutritionalYeast_WalMart_2_Tbsp.NutritionalInformation.Macros));
     public static Food Seitan_Walmart_Yeast_1_Gram_Gluten_4x { get; } = new(
         "Seitan Walmart Nutritional Yeast, 4x gluten",
         NutritionalYeast_WalMart_8_Grams.NutritionalInformation.Combine(Gluten_30_Grams.NutritionalInformation, 4));
