@@ -52,5 +52,6 @@ internal class MealPrepPlans
             trainingDays
                 .SelectMany(t => t.TrainingDay.Meals.Select(m => (Meal: m, t.Multiplier)))
                 .SelectMany(m => m.Meal.Helpings.Select(h => (Helping: h, m.Multiplier)))
-                .Where(h => h.Helping.Food.Equals(food)).Sum(h => h.Helping.Servings * h.Multiplier));
+                .Where(h => h.Helping.Food.Equals(food))
+                .Sum(h => h.Helping.Servings * h.Multiplier));
 }

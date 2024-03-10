@@ -4,12 +4,10 @@ public record Equation(double X, double Y, double Z, double C)
 {
     public static (double X, double Y, double Z) Solve(Equation eq1, Equation eq2, Equation eq3)
     {
-        static double Determinant(double[,] mat)
-        {
-            return mat[0, 0] * (mat[1, 1] * mat[2, 2] - mat[1, 2] * mat[2, 1]) -
-                   mat[0, 1] * (mat[1, 0] * mat[2, 2] - mat[1, 2] * mat[2, 0]) +
-                   mat[0, 2] * (mat[1, 0] * mat[2, 1] - mat[1, 1] * mat[2, 0]);
-        }
+        static double Determinant(double[,] mat) =>
+            mat[0, 0] * (mat[1, 1] * mat[2, 2] - mat[1, 2] * mat[2, 1]) -
+            mat[0, 1] * (mat[1, 0] * mat[2, 2] - mat[1, 2] * mat[2, 0]) +
+            mat[0, 2] * (mat[1, 0] * mat[2, 1] - mat[1, 1] * mat[2, 0]);
 
         // Coefficients of the equations
         double[,] A = {
@@ -19,7 +17,7 @@ public record Equation(double X, double Y, double Z, double C)
         };
 
         // Constants of the equations
-        double[] B = { eq1.C, eq2.C, eq3.C };
+        double[] B = [eq1.C, eq2.C, eq3.C];
 
         // Calculate the determinant of A
         double detA = Determinant(A);
