@@ -8,9 +8,9 @@ internal class MealPrepPlans
     {
         get
         {
-            var nonworkoutDay = TrainingDays.Phase1TrainingDays.Single(td => td.Name == "Non-weight training day");
-            var runningDay = TrainingDays.Phase1TrainingDays.Single(td => td.Name == "Running day");
-            var xfitDay = TrainingDays.Phase1TrainingDays.Single(td => td.Name == "Crossfit day");
+            var nonworkoutDay = TrainingDays.MuscleGain1TrainingDays.Single(td => td.Name == "Non-weight training day");
+            var runningDay = TrainingDays.MuscleGain1TrainingDays.Single(td => td.Name == "Running day");
+            var xfitDay = TrainingDays.MuscleGain1TrainingDays.Single(td => td.Name == "Crossfit day");
 
             Helping ConsolidateWorkoutDayHelpings(Food food) =>
                 MealPrepPlans.ConsolidateHelpings([(runningDay, 2), (xfitDay, 3)], food);
