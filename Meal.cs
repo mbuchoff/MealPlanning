@@ -20,7 +20,7 @@ internal class Meal
         [
             new(foodGrouping.PFood, pFoodServings),
             new(foodGrouping.FFood, fFoodServings),
-            new(foodGrouping.CFood, cFoodServings)
+            new(foodGrouping.CFood, cFoodServings),
         ];
     }
 
