@@ -40,6 +40,18 @@ internal class MealPrepPlans
         }
     }
 
+    public static MealPrepPlan Phase2MealPrepPlan
+    {
+        get
+        {
+            return new(
+                TrainingDays.MuscleGain2TrainingDays.SelectMany(trainingDay =>
+                trainingDay.Meals.SelectMany(meal =>
+                meal.Helpings.Select(helping =>
+                (Description: (string?)trainingDay.Name, Helping: helping)))));
+        }
+    }
+
     private static Helping GetHelping(TrainingDay trainingDay, double multiplier, Food food) => new(
         food,
         trainingDay.Meals.SelectMany(m => m.Helpings).Where(h => h.Food.Equals(food))

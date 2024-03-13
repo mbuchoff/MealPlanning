@@ -72,7 +72,7 @@ internal static class TrainingDays
                     new Macros(P: 30, F: 20, C: 80) - Foods.AlmondMilk_2_Cup.NutritionalInformation.Macros,
                     FoodGroupings.ProteinShake),
                 new("40 minutes after workout", new(P: 30, F: 10, C: 120), FoodGroupings.Seitan),
-                new("2-4 hours after last meal", new(P: 30, F: 20, C: 100), FoodGroupings.Tofu),
+                new("2-4 hours after last meal", new(P: 30, F: 20, C: 100), FoodGroupings.Seitan),
                 new("3-5 hours after last meal", new(P: 30, F: 20, C: 50), FoodGroupings.Tofu),
                 new("Bedtime", new(P: 30, F: 25, C: 35), FoodGroupings.Oatmeal),
             ])
