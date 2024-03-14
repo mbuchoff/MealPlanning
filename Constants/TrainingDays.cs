@@ -4,7 +4,7 @@ internal static class TrainingDays
 {
     public static IEnumerable<TrainingDay> MuscleGain1TrainingDays { get; } = [
         new(
-            "Non-weight training day",
+            TrainingDay.TrainingTypeEnum.NonWeightTrainingDay,
             [
                 new("Waking", new(P: 40, F: 10, C: 25), FoodGroupings.Oatmeal),
                 new("3-5 hours after last meal", new(P: 40, F: 20, C: 25), FoodGroupings.Seitan),
@@ -17,7 +17,7 @@ internal static class TrainingDays
                         Foods.Oatmeal_1_2_Cup))  // Will come up slightly negative, subtract from first meal
             ]),
         new(
-            "Running day",
+            TrainingDay.TrainingTypeEnum.RunningDay,
             [
                 new("1-3 hours before workout",
                     new Macros(P: 30, F: 20, C: 40) - Foods.AlmondMilk_2_Cup.NutritionalInformation.Macros,
@@ -28,7 +28,7 @@ internal static class TrainingDays
                 new("Bedtime", new(P: 30, F: 25, C: 25), FoodGroupings.Oatmeal),
             ]),
         new(
-            "Crossfit day",
+            TrainingDay.TrainingTypeEnum.CrossfitDay,
             [
                 new("1-3 hours before workout",
                     new Macros(P: 30, F: 20, C: 50) - Foods.AlmondMilk_2_Cup.NutritionalInformation.Macros,
@@ -42,7 +42,7 @@ internal static class TrainingDays
 
     public static IEnumerable<TrainingDay> MuscleGain2TrainingDays { get; } = [
         new(
-            "Non-weight training day",
+            TrainingDay.TrainingTypeEnum.NonWeightTrainingDay,
             [
                 new("Waking", new(P: 40, F: 10, C: 60), FoodGroupings.Oatmeal),
                 new("3-5 hours after last meal", new(P: 40, F: 20, C: 60), FoodGroupings.Seitan),
@@ -55,7 +55,7 @@ internal static class TrainingDays
                         Foods.Oatmeal_1_2_Cup))  // Will come up slightly negative, subtract from first meal
             ]),
         new(
-            "Running day",
+            TrainingDay.TrainingTypeEnum.RunningDay,
             [
                 new("1-3 hours before workout",
                     new Macros(P: 30, F: 20, C: 50) - Foods.AlmondMilk_2_Cup.NutritionalInformation.Macros,
@@ -66,7 +66,7 @@ internal static class TrainingDays
                 new("Bedtime", new(P: 30, F: 25, C: 35), FoodGroupings.Oatmeal),
             ]),
         new(
-            "Crossfit day",
+            TrainingDay.TrainingTypeEnum.CrossfitDay,
             [
                 new("1-3 hours before workout",
                     new Macros(P: 30, F: 20, C: 80) - Foods.AlmondMilk_2_Cup.NutritionalInformation.Macros,
