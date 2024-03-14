@@ -43,17 +43,29 @@ internal class MealPrepPlans
         }
     }
 
-    public static MealPrepPlan Phase2MealPrepPlan
-    {
-        get
+    public static MealPrepPlan Phase2MealPrepPlan => new MealPrepPlan(
+        new[]
         {
-            return new(
-                TrainingDays.MuscleGain2TrainingDays.SelectMany(trainingDay =>
-                trainingDay.Meals.SelectMany(meal =>
-                meal.Helpings.Select(helping =>
-                (Description: (string?)trainingDay.GetTrainingTypeAsString(), Helping: helping)))));
-        }
-    }
+            new { Multiplier = 3, TrainingType = TrainingDay.TrainingTypeEnum.CrossfitDay },
+            new { Multiplier = 2, TrainingType = TrainingDay.TrainingTypeEnum.RunningDay },
+        }.Select(x => new
+        {
+            Day = TrainingDays.MuscleGain2TrainingDays.Single(td => td.TrainingType == x.TrainingType),
+            x.Multiplier,
+        }).SelectMany(x =>
+        new[]
+        {
+            Foods.Seitan_Walmart_Yeast_1_Gram_Gluten_4x,
+            Foods.BrownRice_45_Grams,
+            Foods.OliveOil_1_Tbsp,
+            Foods.Tofu_1_5_block,
+            Foods.Farro_52_Gram,
+            Foods.PumpkinSeeds_30_Grams,
+        }.Select(food => (x.Day, x.Multiplier, Food: food))).Select(x => new
+        {
+            Day = x.Day.GetTrainingTypeAsString(),
+            Helping = ConsolidateHelpings([(x.Day, x.Multiplier)], x.Food),
+        }).Select(x => ((string?) x.Day, x.Helping)));
 
     private static Helping GetHelping(TrainingDay trainingDay, double multiplier, Food food) => new(
         food,
