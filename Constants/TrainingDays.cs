@@ -52,7 +52,7 @@ internal static class TrainingDays
                     new Macros(P: 40, F: 25, C: 0) - Foods.AlmondButter_1_Tbsp.NutritionalInformation.Macros,
                     new(Foods.Cassein_1_Scoop,
                         Foods.AlmondButter_1_Tbsp,
-                        Foods.Oatmeal_1_2_Cup))  // Will come up slightly negative, subtract from first meal
+                        Foods.Oatmeal_1_Scoop))  // Will come up slightly negative, subtract from first meal
             ]),
         new(
             TrainingDay.TrainingTypeEnum.RunningDay,
