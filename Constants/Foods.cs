@@ -36,6 +36,10 @@ internal static class Foods
     public static Food OliveOil_1_Tbsp { get; } = new("olive oil", new(
         1, ServingUnits.Tablespoon, Cals: 120, P: 0, F: 14, CTotal: 0, CFiber: 0));
 
+    // https://www.walmart.com/ip/Florida-s-Natural-Orange-Juice-With-Pulp-89-oz/101698030
+    public static Food OrangeJuice_1_Cup { get; } = new("orange juice", new(
+        1, ServingUnits.Cup, Cals: 110, P: 2, F: 0, CTotal: 27, CFiber: 0));
+
     // https://shop.sprouts.com/product/55477/organic-raw-pumpkin-seeds
     public static Food PumpkinSeeds_30_Grams { get; } = new Food("pumpkin seeds", new(
         30, ServingUnits.Gram, Cals: 170, P: 9, F: 15, CTotal: 3, CFiber: 2));
