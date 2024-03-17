@@ -1,4 +1,4 @@
-﻿using static SystemOfEquations.TrainingDay;
+﻿using SystemOfEquations.Constants;
 
 namespace SystemOfEquations;
 
@@ -9,9 +9,9 @@ internal record TrainingWeek
         IEnumerable<Meal> runningMeals,
         IEnumerable<Meal> xfitMeals)
     {
-        NonworkoutDay = new(TrainingTypeEnum.NonWeightTrainingDay, nonworkoutMeals);
-        RunningDay = new(TrainingTypeEnum.RunningDay, runningMeals);
-        XFitDay = new(TrainingTypeEnum.CrossfitDay, xfitMeals);
+        NonworkoutDay = new(TrainingDayTypes.NonweightTrainingDay, nonworkoutMeals);
+        RunningDay = new(TrainingDayTypes.RunningDay, runningMeals);
+        XFitDay = new(TrainingDayTypes.XfitDay, xfitMeals);
     }
 
     public TrainingDay NonworkoutDay { get; }
