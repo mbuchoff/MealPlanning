@@ -8,12 +8,9 @@ internal class MealPrepPlans
     {
         get
         {
-            var nonworkoutDay = TrainingDays.MuscleGain1TrainingDays.Single(td =>
-                td.TrainingType == TrainingDay.TrainingTypeEnum.NonWeightTrainingDay);
-            var runningDay = TrainingDays.MuscleGain1TrainingDays.Single(td =>
-                td.TrainingType == TrainingDay.TrainingTypeEnum.RunningDay);
-            var xfitDay = TrainingDays.MuscleGain1TrainingDays.Single(td =>
-                td.TrainingType == TrainingDay.TrainingTypeEnum.CrossfitDay);
+            var nonworkoutDay = TrainingWeeks.MuscleGain1TrainingWeek.NonworkoutDay;
+            var runningDay = TrainingWeeks.MuscleGain1TrainingWeek.RunningDay;
+            var xfitDay = TrainingWeeks.MuscleGain1TrainingWeek.XFitDay;
 
             Helping ConsolidateWorkoutDayHelpings(Food food) =>
                 MealPrepPlans.ConsolidateHelpings([(runningDay, 2), (xfitDay, 3)], food);
@@ -50,7 +47,7 @@ internal class MealPrepPlans
             new { Multiplier = 2, TrainingType = TrainingDay.TrainingTypeEnum.RunningDay },
         }.Select(x => new
         {
-            Day = TrainingDays.MuscleGain2TrainingDays.Single(td => td.TrainingType == x.TrainingType),
+            Day = TrainingWeeks.MuscleGain2TrainingWeek.TrainingDays.Single(td => td.TrainingType == x.TrainingType),
             x.Multiplier,
         }).SelectMany(x =>
         new[]
