@@ -34,8 +34,8 @@ internal class MealPrepPlans
                 ("nonworkout", GetHelping(nonworkoutDay, 1, Foods.OliveOil_1_Tbsp)),
                 (null, ConsolidateWorkoutDayHelpings(Foods.OliveOil_1_Tbsp)),
 
-                ("nonworkout", GetHelping(nonworkoutDay, 1, Foods.Tofu_1_5_block)),
-                (null, ConsolidateWorkoutDayHelpings(Foods.Tofu_1_5_block)),
+                ("nonworkout", GetHelping(nonworkoutDay, 1, Foods.Tofu_1_5_Block)),
+                (null, ConsolidateWorkoutDayHelpings(Foods.Tofu_1_5_Block)),
 
                 ("nonworkout", GetHelping(nonworkoutDay, 1, Foods.PumpkinSeeds_30_Grams)),
                 (null, ConsolidateWorkoutDayHelpings(Foods.PumpkinSeeds_30_Grams)),
@@ -43,7 +43,7 @@ internal class MealPrepPlans
         }
     }
 
-    public static MealPrepPlan Phase2MealPrepPlan => new MealPrepPlan(
+    public static MealPrepPlan Phase2MealPrepPlan => new(
         new[]
         {
             new { Multiplier = 3, TrainingType = TrainingDay.TrainingTypeEnum.CrossfitDay },
@@ -58,7 +58,7 @@ internal class MealPrepPlans
             Foods.Seitan_Walmart_Yeast_1_Gram_Gluten_4x,
             Foods.BrownRice_45_Grams,
             Foods.OliveOil_1_Tbsp,
-            Foods.Tofu_1_5_block,
+            Foods.Tofu_1_5_Block,
             Foods.Farro_52_Gram,
             Foods.PumpkinSeeds_30_Grams,
         }.Select(food => (x.Day, x.Multiplier, Food: food))).Select(x => new

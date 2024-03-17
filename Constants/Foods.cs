@@ -57,7 +57,11 @@ internal static class Foods
         Cals: 120,
         P: 23, F: 1, CTotal: 4, CFiber: 0));
 
-    public static Food Tofu_1_5_block { get; } = new("tofu", new(
+    // https://shop.sprouts.com/product/57875/pea-isolate-80percent-protein-powder
+    public static Food PeaProtein_1_3_Cup { get; } = new("pea protein", new(
+        1.0 / 3, ServingUnits.Cup, Cals: 110, P: 24, F: 1.5, CTotal: 1, CFiber: 0));
+
+    public static Food Tofu_1_5_Block { get; } = new("tofu", new(
         0.2, ServingUnits.BlockTofu, Cals: 130, P: 14, F: 7, CTotal: 2, CFiber: 2));
 
     public static Food Whey_1_Scoop { get; } = new("whey", new(
