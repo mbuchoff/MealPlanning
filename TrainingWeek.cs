@@ -9,9 +9,9 @@ internal record TrainingWeek
         IEnumerable<Meal> runningMeals,
         IEnumerable<Meal> xfitMeals)
     {
-        this.NonworkoutDay = new(TrainingTypeEnum.NonWeightTrainingDay, nonworkoutMeals);
-        this.RunningDay = new(TrainingTypeEnum.RunningDay, runningMeals);
-        this.XFitDay = new(TrainingTypeEnum.CrossfitDay, xfitMeals);
+        NonworkoutDay = new(TrainingTypeEnum.NonWeightTrainingDay, nonworkoutMeals);
+        RunningDay = new(TrainingTypeEnum.RunningDay, runningMeals);
+        XFitDay = new(TrainingTypeEnum.CrossfitDay, xfitMeals);
     }
 
     public TrainingDay NonworkoutDay { get; }
