@@ -69,6 +69,9 @@ internal static class Foods
 
     // Converted
     private static readonly double CUPS_PER_SCOOP = 0.380408;
+
+    public static Food Blueberries_1_Scoop { get; } = BlueBerries_1_Cup.Convert(1, ServingUnits.Scoop, CUPS_PER_SCOOP);
+
     public static Food Edamame_1_Scoop { get; } = Edamame_1_4_Cup.Convert(1, ServingUnits.Scoop, 4 * CUPS_PER_SCOOP);
 
     public static Food Seitan_Walmart_Yeast_1_Gram_Gluten_4x { get; } = new(
