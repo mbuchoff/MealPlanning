@@ -3,7 +3,7 @@
 internal static class FoodGroupings
 {
     public static FoodGrouping Oatmeal { get; } =
-        new(Foods.Edamame_1_Scoop, Foods.AlmondButter_1_Tbsp, Foods.Oatmeal_1_Scoop);
+        new(Foods.Edamame_1_Scoop, Foods.AlmondButter_1_Tbsp, Foods.Oatmeal_Walmart_1_Scoop);
     public static FoodGrouping ProteinShake { get; } =
         new(Foods.Cassein_1_Scoop, Foods.ChiaSeeds_2_5_Tbsp, Foods.Blueberries_1_Scoop);
     public static FoodGrouping Seitan { get; } =
