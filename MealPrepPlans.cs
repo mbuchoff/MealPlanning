@@ -43,23 +43,23 @@ internal class MealPrepPlans
     public static MealPrepPlan Phase2MealPrepPlan => new(
         new[]
         {
-            new { Multiplier = 3, TrainingType = TrainingDayTypes.XfitDay },
+            Foods.Farro_52_Gram,
+            Foods.BrownRice_45_Grams,
+            Foods.PumpkinSeeds_30_Grams,
+            Foods.Seitan_Walmart_Yeast_1_Gram_Gluten_4x,
+            Foods.OliveOil_1_Tbsp,
+            Foods.Tofu_1_5_Block,
+        }.SelectMany(food => new[]
+        {
+            new { Multiplier = 1, TrainingType = TrainingDayTypes.NonweightTrainingDay },
             new { Multiplier = 2, TrainingType = TrainingDayTypes.RunningDay },
+            new { Multiplier = 3, TrainingType = TrainingDayTypes.XfitDay },
         }.Select(x => new
         {
             Day = TrainingWeeks.MuscleGain2TrainingWeek.TrainingDays.Single(td =>
                 td.TrainingDayType == x.TrainingType),
             x.Multiplier,
-        }).SelectMany(x =>
-        new[]
-        {
-            Foods.Seitan_Walmart_Yeast_1_Gram_Gluten_4x,
-            Foods.BrownRice_45_Grams,
-            Foods.OliveOil_1_Tbsp,
-            Foods.Tofu_1_5_Block,
-            Foods.Farro_52_Gram,
-            Foods.PumpkinSeeds_30_Grams,
-        }.Select(food => (x.Day, x.Multiplier, Food: food))).Select(x => new
+        }).Select(x => (x.Day, x.Multiplier, Food: food))).Select(x => new
         {
             TrainingDayType = x.Day.TrainingDayType.ToString(),
             Helping = ConsolidateHelpings([(x.Day, x.Multiplier)], x.Food),
