@@ -84,5 +84,6 @@ internal static class Foods
         NutritionalYeast_WalMart_8_Grams.NutritionalInformation.Combine(Gluten_30_Grams.NutritionalInformation, 4));
 
     public static Food Oatmeal_Walmart_1_Scoop { get; } = Oatmeal_Walmart_1_2_Cup.Convert(1, ServingUnits.Scoop, 2 * CUPS_PER_SCOOP);
+    public static Food PeaProtein_1_Scoop { get; } = PeaProtein_1_3_Cup.Convert(1, ServingUnits.Scoop, 3 * CUPS_PER_SCOOP);
 }
 

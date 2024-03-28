@@ -11,7 +11,7 @@ internal static class TrainingWeeks
             new("3-5 hours after last meal", new(P: 40, F: 20, C: 25), FoodGroupings.Tofu),
             new("Bedtime",
                 new Macros(P: 40, F: 25, C: 0) - Foods.AlmondButter_1_Tbsp.NutritionalInformation.Macros,
-                new(Foods.Cassein_1_Scoop,
+                new(Foods.PeaProtein_1_Scoop,
                     Foods.AlmondButter_1_Tbsp,
                     Foods.Oatmeal_Walmart_1_2_Cup))  // Will come up slightly negative, subtract from first meal
         ],
@@ -45,7 +45,7 @@ internal static class TrainingWeeks
             new("3-5 hours after last meal", new(P: 40, F: 20, C: 60), FoodGroupings.Tofu),
             new("Bedtime",
                 new Macros(P: 40, F: 25, C: 0) - Foods.AlmondMilk_2_Cup.NutritionalInformation.Macros,
-                new(Foods.Cassein_1_Scoop,
+                new(Foods.PeaProtein_1_Scoop,
                     Foods.AlmondButter_1_Tbsp,
                     Foods.Oatmeal_Walmart_1_Scoop))  // Will come up slightly negative, subtract from first meal
         ],
