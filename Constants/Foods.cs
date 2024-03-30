@@ -19,6 +19,13 @@ internal static class Foods
         2.5, ServingUnits.Tablespoon, Cals: 150, P: 5, F: 9, CTotal: 13, CFiber: 10));
     public static Food Edamame_1_4_Cup { get; } = new("edamame", new(
         0.25, ServingUnits.Cup, Cals: 140, P: 13, F: 6, CTotal: 11, CFiber: 4));
+    public static Food Edamame_35_Grams { get; } = new(Edamame_1_4_Cup.Name, new(
+        35, ServingUnits.Gram,
+        Edamame_1_4_Cup.NutritionalInformation.Cals,
+        Edamame_1_4_Cup.NutritionalInformation.P,
+        Edamame_1_4_Cup.NutritionalInformation.F,
+        Edamame_1_4_Cup.NutritionalInformation.CTotal,
+        Edamame_1_4_Cup.NutritionalInformation.CFiber));
     public static Food NutritionalYeast_WalMart_8_Grams { get; } = new("nutritional yeast from WalMart", new(
         // 2, ServingUnits.Tablespoon,
         8, ServingUnits.Gram,
@@ -65,6 +72,14 @@ internal static class Foods
     // https://shop.sprouts.com/product/57875/pea-isolate-80percent-protein-powder
     public static Food PeaProtein_1_3_Cup { get; } = new("pea protein", new(
         1.0 / 3, ServingUnits.Cup, Cals: 110, P: 24, F: 1.5, CTotal: 1, CFiber: 0));
+
+    // https://shop.sprouts.com/product/7654/organic-dark-red-kidney-beans
+    public static Food RedKidneyBeans_1_4_Cup { get; } = new("red kidney beans", new(
+        1.0 / 4, ServingUnits.Cup, Cals: 150, P: 10, F: 0, CTotal: 28, CFiber: 7));
+
+    // https://shop.sprouts.com/product/7706/organic-split-red-lentils
+    public static Food RedLentils_1_4_Cup { get; } = new("red lentils", new(
+        1.0 / 4, ServingUnits.Cup, Cals: 170, P: 11, F: 1, CTotal: 30, CFiber: 5));
 
     public static Food Tofu_1_5_Block { get; } = new("tofu", new(
         0.2, ServingUnits.BlockTofu, Cals: 130, P: 14, F: 7, CTotal: 2, CFiber: 2));

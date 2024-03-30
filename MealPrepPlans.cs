@@ -40,30 +40,37 @@ internal class MealPrepPlans
         }
     }
 
-    public static MealPrepPlan Phase2MealPrepPlan => new(
+    public static MealPrepPlan Phase2MealPrepPlan => CreateMealPrepPlan(TrainingWeeks.MuscleGain2TrainingWeek);
+
+    public static MealPrepPlan Phase3MealPrepPlan => CreateMealPrepPlan(TrainingWeeks.MuscleGain3TrainingWeek);
+
+    private static MealPrepPlan CreateMealPrepPlan(TrainingWeek trainingWeek) => new(
         new[]
         {
+            Foods.RedKidneyBeans_1_4_Cup,
             Foods.Farro_52_Gram,
             Foods.BrownRice_45_Grams,
             Foods.PumpkinSeeds_30_Grams,
+            Foods.Edamame_35_Grams,
             Foods.Seitan_Walmart_Yeast_1_Gram_Gluten_4x,
             Foods.OliveOil_1_Tbsp,
             Foods.Tofu_1_5_Block,
         }.SelectMany(food => new[]
         {
-            new { Multiplier = 1, TrainingType = TrainingDayTypes.NonweightTrainingDay },
-            new { Multiplier = 2, TrainingType = TrainingDayTypes.RunningDay },
             new { Multiplier = 3, TrainingType = TrainingDayTypes.XfitDay },
+            new { Multiplier = 2, TrainingType = TrainingDayTypes.RunningDay },
+            new { Multiplier = 1, TrainingType = TrainingDayTypes.NonweightTrainingDay },
         }.Select(x => new
         {
-            Day = TrainingWeeks.MuscleGain2TrainingWeek.TrainingDays.Single(td =>
+            Day = trainingWeek.TrainingDays.Single(td =>
                 td.TrainingDayType == x.TrainingType),
             x.Multiplier,
         }).Select(x => (x.Day, x.Multiplier, Food: food))).Select(x => new
         {
             TrainingDayType = x.Day.TrainingDayType.ToString(),
             Helping = ConsolidateHelpings([(x.Day, x.Multiplier)], x.Food),
-        }).Select(x => ((string?) x.TrainingDayType, x.Helping)));
+        }).Where(x => x.Helping.Servings != 0)
+        .Select(x => ((string?)x.TrainingDayType, x.Helping)));
 
     private static Helping GetHelping(TrainingDay trainingDay, double multiplier, Food food) => new(
         food,

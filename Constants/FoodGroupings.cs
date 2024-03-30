@@ -10,4 +10,7 @@ internal static class FoodGroupings
         new(Foods.Seitan_Walmart_Yeast_1_Gram_Gluten_4x, Foods.OliveOil_1_Tbsp, Foods.BrownRice_45_Grams);
     public static FoodGrouping Tofu { get; } =
         new(Foods.Tofu_1_5_Block, Foods.PumpkinSeeds_30_Grams, Foods.Farro_52_Gram);
+
+    public static FoodGrouping FarroAndEdamame { get; } =
+        new(Foods.Edamame_35_Grams, Foods.PumpkinSeeds_30_Grams, Foods.Farro_52_Gram);
 }
