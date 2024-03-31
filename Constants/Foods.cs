@@ -81,6 +81,10 @@ internal static class Foods
     public static Food RedLentils_1_4_Cup { get; } = new("red lentils", new(
         1.0 / 4, ServingUnits.Cup, Cals: 170, P: 11, F: 1, CTotal: 30, CFiber: 5));
 
+    // https://shop.sprouts.com/product/22870/10-bean-soup-mix
+    public static Food Sprouts_10_Bean_Soup_Mix_35_Grams { get; } = new("Sprouts 10-bean soup mix", new(
+        35, ServingUnits.Gram, Cals: 120, P: 8, F: 0, CTotal: 22, CFiber: 5));
+
     public static Food Tofu_1_5_Block { get; } = new("tofu", new(
         0.2, ServingUnits.BlockTofu, Cals: 130, P: 14, F: 7, CTotal: 2, CFiber: 2));
 
