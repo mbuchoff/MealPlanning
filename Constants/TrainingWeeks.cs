@@ -5,7 +5,7 @@ internal static class TrainingWeeks
     public static TrainingWeek MuscleGain1TrainingWeek { get; } = new(
         nonworkoutMeals:
         [
-            new("Waking", new(P: 40, F: 10, C: 25), FoodGroupings.Oatmeal),
+            new("Waking", new(P: 40, F: 10, C: 25), FoodGroupings.OatmealAndEdamame),
             new("3-5 hours after last meal", new(P: 40, F: 20, C: 25), FoodGroupings.Seitan),
             new("3-5 hours after last meal", new(P: 40, F: 20, C: 25), FoodGroupings.Tofu),
             new("3-5 hours after last meal", new(P: 40, F: 20, C: 25), FoodGroupings.Tofu),
@@ -23,7 +23,7 @@ internal static class TrainingWeeks
             new("40 minutes after workout", new(P: 30, F: 10, C: 80), FoodGroupings.Seitan),
             new("2-4 hours after last meal", new(P: 30, F: 20, C: 50), FoodGroupings.Tofu),
             new("3-5 hours after last meal", new(P: 30, F: 20, C: 40), FoodGroupings.Tofu),
-            new("Bedtime", new(P: 30, F: 25, C: 25), FoodGroupings.Oatmeal),
+            new("Bedtime", new(P: 30, F: 25, C: 25), FoodGroupings.OatmealAndEdamame),
         ],
         xfitMeals:
         [
@@ -33,13 +33,13 @@ internal static class TrainingWeeks
             new("40 minutes after workout", new(P: 30, F: 10, C: 100), FoodGroupings.Seitan),
             new("2-4 hours after last meal", new(P: 30, F: 20, C: 65), FoodGroupings.Tofu),
             new("3-5 hours after last meal", new(P: 30, F: 20, C: 50), FoodGroupings.Tofu),
-            new("Bedtime", new(P: 30, F: 25, C: 35), FoodGroupings.Oatmeal),
+            new("Bedtime", new(P: 30, F: 25, C: 35), FoodGroupings.OatmealAndEdamame),
         ]);
 
     public static TrainingWeek MuscleGain2TrainingWeek { get; } = new(
         nonworkoutMeals:
         [
-            new("Waking", new(P: 40, F: 10, C: 60), FoodGroupings.Oatmeal),
+            new("Waking", new(P: 40, F: 10, C: 60), FoodGroupings.OatmealAndEdamame),
             new("3-5 hours after last meal", new(P: 40, F: 20, C: 60), FoodGroupings.Seitan),
             new("3-5 hours after last meal", new(P: 40, F: 20, C: 60), FoodGroupings.Tofu),
             new("3-5 hours after last meal", new(P: 40, F: 20, C: 60), FoodGroupings.Tofu),
@@ -57,7 +57,7 @@ internal static class TrainingWeeks
             new("40 minutes after workout", new(P: 30, F: 10, C: 100), FoodGroupings.Seitan),
             new("2-4 hours after last meal", new(P: 30, F: 20, C: 65), FoodGroupings.Tofu),
             new("3-5 hours after last meal", new(P: 30, F: 20, C: 50), FoodGroupings.Tofu),
-            new("Bedtime", new(P: 30, F: 25, C: 35), FoodGroupings.Oatmeal),
+            new("Bedtime", new(P: 30, F: 25, C: 35), FoodGroupings.OatmealAndEdamame),
         ],
         xfitMeals:
         [
@@ -67,13 +67,13 @@ internal static class TrainingWeeks
             new("40 minutes after workout", new(P: 30, F: 10, C: 120), FoodGroupings.Seitan),
             new("2-4 hours after last meal", new(P: 30, F: 20, C: 100), FoodGroupings.Seitan),
             new("3-5 hours after last meal", new(P: 30, F: 20, C: 50), FoodGroupings.Tofu),
-            new("Bedtime", new(P: 30, F: 25, C: 35), FoodGroupings.Oatmeal),
+            new("Bedtime", new(P: 30, F: 25, C: 35), FoodGroupings.OatmealAndEdamame),
         ]);
 
     public static TrainingWeek MuscleGain3TrainingWeek { get; } = new(
         nonworkoutMeals:
         [
-            new("Waking", new Macros(P: PROTEIN_PER_MEAL_ON_NONWORKOUT_DAY, F: 10, C: 60), FoodGroupings.Oatmeal),
+            new("Waking", new Macros(P: PROTEIN_PER_MEAL_ON_NONWORKOUT_DAY, F: 10, C: 60), FoodGroupings.OatmealAndEdamame),
             new("3-5 hours after last meal",
                 new Macros(P: PROTEIN_PER_MEAL_ON_NONWORKOUT_DAY, F: 20, C: 60),
                 FoodGroupings.Seitan),
@@ -92,8 +92,7 @@ internal static class TrainingWeeks
         runningMeals:
         [
             new("1-3 hours before workout",
-                new Macros(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 20, C: 80) - (Foods.OrangeJuice_1_Cup.NutritionalInformation.Macros * 2),
-                FoodGroupings.ProteinShake),
+                new Macros(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 20, C: 80), FoodGroupings.OatmealWithProteinPowder),
             new("40 minutes after workout",
                 new(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 10, C: 120),
                 FoodGroupings.Seitan),
@@ -103,13 +102,12 @@ internal static class TrainingWeeks
             new("3-5 hours after last meal",
                 new(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 20, C: 50),
                 FoodGroupings.FarroAndEdamame),
-            new("Bedtime", new(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 25, C: 35), FoodGroupings.Oatmeal),
+            new("Bedtime", new(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 25, C: 35), FoodGroupings.OatmealAndEdamame),
         ],
         xfitMeals:
         [
             new("1-3 hours before workout",
-                new Macros(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 20, C: 80) - (Foods.OrangeJuice_1_Cup.NutritionalInformation.Macros * 2),
-                FoodGroupings.ProteinShake),
+                new Macros(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 20, C: 80), FoodGroupings.OatmealWithProteinPowder),
             new("40 minutes after workout",
                 new(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 10, C: 120), FoodGroupings.Seitan),
             new("2-4 hours after last meal",
@@ -118,7 +116,7 @@ internal static class TrainingWeeks
             new("3-5 hours after last meal",
                 new(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 20, C: 100),
                 FoodGroupings.FarroAndEdamame),
-            new("Bedtime", new(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 25, C: 65), FoodGroupings.Oatmeal),
+            new("Bedtime", new(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 25, C: 65), FoodGroupings.OatmealAndEdamame),
         ]);
 
     private const double TARGET_WEIGHT = 165;
