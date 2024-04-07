@@ -80,10 +80,10 @@ internal static class TrainingWeeks
                 FoodGroupings.Seitan),
             new("3-5 hours after last meal",
                 new Macros(P: PROTEIN_PER_MEAL_ON_NONWORKOUT_DAY, F: 20, C: 60),
-                FoodGroupings.WheatBerriesAndEdamame),
+                FoodGroupings.RiceAndEdamame),
             new("3-5 hours after last meal",
                 new Macros(P: PROTEIN_PER_MEAL_ON_NONWORKOUT_DAY, F: 20, C: 60),
-                FoodGroupings.WheatBerriesAndEdamame),
+                FoodGroupings.RiceAndEdamame),
             new("Bedtime",
                 new Macros(P: PROTEIN_PER_MEAL_ON_NONWORKOUT_DAY, F: 25, C: 0) -
                 Foods.AlmondMilk_2_Cup.NutritionalInformation.Macros,
@@ -101,10 +101,10 @@ internal static class TrainingWeeks
                 FoodGroupings.Seitan),
             new("2-4 hours after last meal",
                 new(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 20, C: 100),
-                FoodGroupings.WheatBerriesAndEdamame),
+                FoodGroupings.RiceAndEdamame),
             new("3-5 hours after last meal",
                 new(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 20, C: 50),
-                FoodGroupings.WheatBerriesAndEdamame),
+                FoodGroupings.RiceAndEdamame),
             new("Bedtime", new(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 25, C: 35), FoodGroupings.OatmealAndEdamame),
         ],
         xfitMeals:
@@ -116,10 +116,10 @@ internal static class TrainingWeeks
                 new(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 10, C: 120), FoodGroupings.Seitan),
             new("2-4 hours after last meal",
                 new(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 20, C: 100),
-                FoodGroupings.WheatBerriesAndEdamame),
+                FoodGroupings.RiceAndEdamame),
             new("3-5 hours after last meal",
                 new(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 20, C: 100),
-                FoodGroupings.WheatBerriesAndEdamame),
+                FoodGroupings.RiceAndEdamame),
             new("Bedtime", new(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 25, C: 65), FoodGroupings.OatmealAndEdamame),
         ]);
 
