@@ -14,4 +14,6 @@ internal static class FoodGroupings
         new(Foods.Tofu_1_5_Block, Foods.PumpkinSeeds_30_Grams, Foods.Farro_52_Gram);
     public static FoodGrouping FarroAndEdamame { get; } =
         new(Foods.Edamame_35_Grams, Foods.PumpkinSeeds_30_Grams, Foods.Farro_52_Gram);
+    public static FoodGrouping WheatBerriesAndEdamame { get; } =
+        new(Foods.Edamame_35_Grams, Foods.PumpkinSeeds_30_Grams, Foods.WheatBerries_45_Grams);
 }

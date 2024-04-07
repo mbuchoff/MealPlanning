@@ -88,6 +88,10 @@ internal static class Foods
     public static Food Tofu_1_5_Block { get; } = new("tofu", new(
         0.2, ServingUnits.BlockTofu, Cals: 130, P: 14, F: 7, CTotal: 2, CFiber: 2));
 
+    // https://shop.sprouts.com/product/22564/hard-spring-wheat-berries
+    public static Food WheatBerries_45_Grams { get; } = new("Wheat Berries", new(
+        45, ServingUnits.Gram, Cals: 150, P: 7, F: 1, CTotal: 31, CFiber: 5));
+
     public static Food Whey_1_Scoop { get; } = new("whey", new(
         1, ServingUnits.Scoop, Cals: 130, P: 30, F: 0.5, CTotal: 1, CFiber: 0));
 

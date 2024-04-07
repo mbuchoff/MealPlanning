@@ -55,6 +55,7 @@ internal class MealPrepPlans
             Foods.Seitan_Walmart_Yeast_1_Gram_Gluten_4x,
             Foods.OliveOil_1_Tbsp,
             Foods.Tofu_1_5_Block,
+            Foods.WheatBerries_45_Grams,
         }.SelectMany(food => new[]
         {
             new { Multiplier = 3, TrainingType = TrainingDayTypes.XfitDay },
