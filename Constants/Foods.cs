@@ -85,11 +85,15 @@ internal static class Foods
     public static Food Sprouts_10_Bean_Soup_Mix_35_Grams { get; } = new("Sprouts 10-bean soup mix", new(
         35, ServingUnits.Gram, Cals: 120, P: 8, F: 0, CTotal: 22, CFiber: 5));
 
+    // https://shop.sprouts.com/product/55813/organic-raw-hulled-sunflower-seeds
+    public static Food SunflowerSeeds_30_Grams { get; } = new("Sunflower seeds", new(
+        30, ServingUnits.Gram, Cals: 180, P: 6, F: 15, CTotal: 6, CFiber: 3));
+
     public static Food Tofu_1_5_Block { get; } = new("tofu", new(
         0.2, ServingUnits.BlockTofu, Cals: 130, P: 14, F: 7, CTotal: 2, CFiber: 2));
 
     // https://shop.sprouts.com/product/22564/hard-spring-wheat-berries
-    public static Food WheatBerries_45_Grams { get; } = new("Wheat Berries", new(
+    public static Food WheatBerries_45_Grams { get; } = new("wheat berries", new(
         45, ServingUnits.Gram, Cals: 150, P: 7, F: 1, CTotal: 31, CFiber: 5));
 
     public static Food Whey_1_Scoop { get; } = new("whey", new(

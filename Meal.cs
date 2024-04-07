@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using SystemOfEquations.Extensions;
 
 namespace SystemOfEquations;
 
@@ -10,18 +11,19 @@ internal class Meal
         var fMacros = foodGrouping.FFood.NutritionalInformation.Macros;
         var cMacros = foodGrouping.CFood.NutritionalInformation.Macros;
 
+        var remainingMacros = macros - foodGrouping.StaticHelpings.Sum(h => h.Macros);
         (var pFoodServings, var fFoodServings, var cFoodServings) = Equation.Solve(
-            new(pMacros.P, fMacros.P, cMacros.P, macros.P),
-            new(pMacros.F, fMacros.F, cMacros.F, macros.F),
-            new(pMacros.C, fMacros.C, cMacros.C, macros.C));
+            new(pMacros.P, fMacros.P, cMacros.P, remainingMacros.P),
+            new(pMacros.F, fMacros.F, cMacros.F, remainingMacros.F),
+            new(pMacros.C, fMacros.C, cMacros.C, remainingMacros.C));
         Name = name;
         Macros = macros;
-        Helpings =
+        Helpings = foodGrouping.StaticHelpings.Append(
         [
-            new(foodGrouping.PFood, pFoodServings),
-            new(foodGrouping.FFood, fFoodServings),
-            new(foodGrouping.CFood, cFoodServings),
-        ];
+            new Helping(foodGrouping.PFood, pFoodServings),
+            new Helping(foodGrouping.FFood, fFoodServings),
+            new Helping(foodGrouping.CFood, cFoodServings),
+        ]);
     }
 
     public override string ToString()
