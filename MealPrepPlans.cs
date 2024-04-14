@@ -44,7 +44,7 @@ internal class MealPrepPlans
 
     public static MealPrepPlan Phase3MealPrepPlan => CreateMealPrepPlan(TrainingWeeks.MuscleGain3TrainingWeek);
 
-    private static MealPrepPlan CreateMealPrepPlan(TrainingWeek trainingWeek) => new(
+    public static MealPrepPlan CreateMealPrepPlan(TrainingWeek trainingWeek) => new(
         new[]
         {
             Foods.RedKidneyBeans_1_4_Cup,

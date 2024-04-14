@@ -123,6 +123,12 @@ internal static class TrainingWeeks
             new("Bedtime", new(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 25, C: 65), FoodGroupings.OatmealAndEdamame),
         ]);
 
+    public static TrainingWeek MuscleGain3PlusPercentTrainingWeek(double percent) =>
+        MuscleGain3TrainingWeek.CloneWithTweakedMacros(
+            pMultiplier: 1,
+            fMultiplier: percent / 100,
+            cMultiplier: percent / 100);
+
     private const double TARGET_WEIGHT = 165;
     private const int MEALS_PER_DAY = 5;
 

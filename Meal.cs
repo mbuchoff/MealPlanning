@@ -7,6 +7,8 @@ internal class Meal
 {
     public Meal(string name, Macros macros, FoodGrouping foodGrouping)
     {
+        FoodGrouping = foodGrouping;
+
         var pMacros = foodGrouping.PFood.NutritionalInformation.Macros;
         var fMacros = foodGrouping.FFood.NutritionalInformation.Macros;
         var cMacros = foodGrouping.CFood.NutritionalInformation.Macros;
@@ -40,6 +42,10 @@ internal class Meal
     }
 
     public string Name { get; }
+    public FoodGrouping FoodGrouping { get; }
     public Macros Macros { get; }
     public IEnumerable<Helping> Helpings { get; }
+
+    public Meal CloneWithTweakedMacros(double pPercent, double fPercent, double cPercent) =>
+        new(Name, Macros.CloneWithTweakedMacros(pPercent, fPercent, cPercent), FoodGrouping);
 }
