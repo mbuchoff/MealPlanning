@@ -31,7 +31,7 @@ internal class Meal
     public override string ToString()
     {
         var sb = new StringBuilder();
-        sb.AppendLine(Name);
+        sb.AppendLine($"{Name} - {FoodGrouping.Name}");
 
         foreach (var helping in Helpings)
         {
