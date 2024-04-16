@@ -42,7 +42,7 @@ internal static class Foods
         0.5, ServingUnits.Cup, Cals: 140, P: 5, F: 2.5, CTotal: 27, CFiber: 4));
 
     // https://shop.sprouts.com/product/7931/rolled-oats
-    public static Food OatMeal_Sprouts_1_2_Cup { get; } = new("oatmeal from Sprouts", new(
+    public static Food Oatmeal_Sprouts_1_2_Cup { get; } = new("oatmeal from Sprouts", new(
         0.5, ServingUnits.Cup, Cals: 170, P: 6, F: 3, CTotal: 30, CFiber: 5));
 
     public static Food OliveOil_1_Tbsp { get; } = new("olive oil", new(
@@ -110,6 +110,7 @@ internal static class Foods
         "Seitan Walmart Nutritional Yeast, 4x gluten",
         NutritionalYeast_WalMart_8_Grams.NutritionalInformation.Combine(Gluten_30_Grams.NutritionalInformation, 4));
 
+    public static Food Oatmeal_Sprouts_1_Scoop { get; } = Oatmeal_Sprouts_1_2_Cup.Convert(1, ServingUnits.Scoop, 2 * CUPS_PER_SCOOP);
     public static Food Oatmeal_Walmart_1_Scoop { get; } = Oatmeal_Walmart_1_2_Cup.Convert(1, ServingUnits.Scoop, 2 * CUPS_PER_SCOOP);
     public static Food PeaProtein_1_Scoop { get; } = PeaProtein_1_3_Cup.Convert(1, ServingUnits.Scoop, 3 * CUPS_PER_SCOOP);
 }

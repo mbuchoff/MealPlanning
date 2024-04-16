@@ -3,13 +3,13 @@
 internal static class FoodGroupings
 {
     public static FoodGrouping OatmealAndEdamame { get; } =
-        new(Foods.Edamame_1_Scoop, Foods.AlmondButter_1_Tbsp, Foods.OatMeal_Sprouts_1_2_Cup);
+        new(Foods.Edamame_1_Scoop, Foods.AlmondButter_1_Tbsp, Foods.Oatmeal_Sprouts_1_Scoop);
     public static FoodGrouping BlueberryOatmealAndEdamame { get; } =
         new([new(Foods.Blueberries_1_Scoop, Servings: 3)],
         OatmealAndEdamame.PFood, OatmealAndEdamame.FFood, OatmealAndEdamame.CFood);
 
     public static FoodGrouping OatmealWithProteinPowder { get; } =
-        new(Foods.OatMeal_Sprouts_1_2_Cup, Foods.ChiaSeeds_2_5_Tbsp, Foods.PeaProtein_1_Scoop);
+        new(Foods.Oatmeal_Sprouts_1_Scoop, Foods.ChiaSeeds_2_5_Tbsp, Foods.PeaProtein_1_Scoop);
 
     public static FoodGrouping BlueBerryOatmealWithProteinPowder { get; } =
         new([new(Foods.Blueberries_1_Scoop, Servings: 3)],
@@ -24,7 +24,7 @@ internal static class FoodGroupings
         new(Foods.Tofu_1_5_Block, Foods.PumpkinSeeds_30_Grams, Foods.Farro_52_Gram);
     public static FoodGrouping RiceAndEdamame { get; } =
         new(Foods.Edamame_35_Grams, Foods.PumpkinSeeds_30_Grams, Foods.BrownRice_45_Grams);
-    public static FoodGrouping WheatBerriesRiceAndPumpkinSeeds { get; } =
-    new(Foods.WheatBerries_45_Grams, Foods.PumpkinSeeds_30_Grams, Foods.BrownRice_45_Grams);
+    public static FoodGrouping WheatBerriesRice { get; } =
+    new(Foods.WheatBerries_45_Grams, Foods.OliveOil_1_Tbsp, Foods.BrownRice_45_Grams);
 
 }
