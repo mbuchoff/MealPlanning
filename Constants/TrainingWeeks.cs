@@ -80,7 +80,7 @@ internal static class TrainingWeeks
                 FoodGroupings.Seitan),
             new("3-5 hours after last meal",
                 new Macros(P: PROTEIN_PER_MEAL_ON_NONWORKOUT_DAY, F: 20, C: 60),
-                FoodGroupings.RiceAndEdamame),
+                FoodGroupings.Seitan),
             new("3-5 hours after last meal",
                 new Macros(P: PROTEIN_PER_MEAL_ON_NONWORKOUT_DAY, F: 20, C: 60),
                 FoodGroupings.RiceAndEdamame),
@@ -89,7 +89,7 @@ internal static class TrainingWeeks
                 Foods.AlmondMilk_2_Cup.NutritionalInformation.Macros,
                 new(Foods.PeaProtein_1_Scoop,
                     Foods.AlmondButter_1_Tbsp,
-                    Foods.Oatmeal_Walmart_1_Scoop)),  // Will come up slightly negative, subtract from first meal
+                    Foods.OatMeal_Sprouts_1_2_Cup)),  // Will come up slightly negative, subtract from first meal
         ],
         runningMeals:
         [
@@ -98,10 +98,10 @@ internal static class TrainingWeeks
                 FoodGroupings.BlueBerryOatmealWithProteinPowder),
             new("40 minutes after workout",
                 new(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 10, C: 120),
-                FoodGroupings.Seitan),
+                FoodGroupings.WheatBerriesRiceAndPumpkinSeeds),
             new("2-4 hours after last meal",
                 new(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 20, C: 100),
-                FoodGroupings.RiceAndEdamame),
+                FoodGroupings.WheatBerriesRiceAndPumpkinSeeds),
             new("3-5 hours after last meal",
                 new(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 20, C: 50),
                 FoodGroupings.RiceAndEdamame),
@@ -113,10 +113,10 @@ internal static class TrainingWeeks
                 new Macros(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 20, C: 80),
                 FoodGroupings.BlueBerryOatmealWithProteinPowder),
             new("40 minutes after workout",
-                new(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 10, C: 120), FoodGroupings.Seitan),
+                new(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 10, C: 120), FoodGroupings.WheatBerriesRiceAndPumpkinSeeds),
             new("2-4 hours after last meal",
                 new(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 20, C: 100),
-                FoodGroupings.RiceAndEdamame),
+                FoodGroupings.WheatBerriesRiceAndPumpkinSeeds),
             new("3-5 hours after last meal",
                 new(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 20, C: 100),
                 FoodGroupings.RiceAndEdamame),
