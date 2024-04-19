@@ -4,59 +4,12 @@ namespace SystemOfEquations;
 
 internal class MealPrepPlans
 {
-    public static MealPrepPlan Phase1MealPrepPlan
-    {
-        get
-        {
-            var nonworkoutDay = TrainingWeeks.MuscleGain1TrainingWeek.NonworkoutDay;
-            var runningDay = TrainingWeeks.MuscleGain1TrainingWeek.RunningDay;
-            var xfitDay = TrainingWeeks.MuscleGain1TrainingWeek.XFitDay;
-
-            Helping ConsolidateWorkoutDayHelpings(Food food) =>
-                MealPrepPlans.ConsolidateHelpings([(runningDay, 2), (xfitDay, 3)], food);
-
-            return new(
-            [
-                ("nonworkout", GetHelping(nonworkoutDay, 1, Foods.BrownRice_45_Grams)),
-                ("running", GetHelping(runningDay, 2, Foods.BrownRice_45_Grams)),
-                ("crossfit", GetHelping(xfitDay, 3, Foods.BrownRice_45_Grams)),
-
-                ("nonworkout", GetHelping(nonworkoutDay, 1, Foods.Farro_52_Gram)),
-                ("running", GetHelping(runningDay, 2, Foods.Farro_52_Gram)),
-                ("crossfit", GetHelping(xfitDay, 3, Foods.Farro_52_Gram)),
-
-                ("nonworkout", GetHelping(nonworkoutDay, 1, Foods.Seitan_Walmart_Yeast_1_Gram_Gluten_4x)),
-                (null, ConsolidateWorkoutDayHelpings(Foods.Seitan_Walmart_Yeast_1_Gram_Gluten_4x)),
-
-                ("nonworkout", GetHelping(nonworkoutDay, 1, Foods.OliveOil_1_Tbsp)),
-                (null, ConsolidateWorkoutDayHelpings(Foods.OliveOil_1_Tbsp)),
-
-                ("nonworkout", GetHelping(nonworkoutDay, 1, Foods.Tofu_1_5_Block)),
-                (null, ConsolidateWorkoutDayHelpings(Foods.Tofu_1_5_Block)),
-
-                ("nonworkout", GetHelping(nonworkoutDay, 1, Foods.PumpkinSeeds_30_Grams)),
-                (null, ConsolidateWorkoutDayHelpings(Foods.PumpkinSeeds_30_Grams)),
-            ]);
-        }
-    }
-
     public static MealPrepPlan Phase2MealPrepPlan => CreateMealPrepPlan(TrainingWeeks.MuscleGain2TrainingWeek);
 
     public static MealPrepPlan Phase3MealPrepPlan => CreateMealPrepPlan(TrainingWeeks.MuscleGain3TrainingWeek);
 
     public static MealPrepPlan CreateMealPrepPlan(TrainingWeek trainingWeek) => new(
         new[]
-        {
-            Foods.RedKidneyBeans_1_4_Cup,
-            Foods.Farro_52_Gram,
-            Foods.BrownRice_45_Grams,
-            Foods.PumpkinSeeds_30_Grams,
-            Foods.Edamame_35_Grams,
-            Foods.Seitan_Walmart_Yeast_1_Gram_Gluten_4x,
-            Foods.OliveOil_1_Tbsp,
-            Foods.Tofu_1_5_Block,
-            Foods.WheatBerries_45_Grams,
-        }.SelectMany(food => new[]
         {
             new { Multiplier = 3, TrainingType = TrainingDayTypes.XfitDay },
             new { Multiplier = 2, TrainingType = TrainingDayTypes.RunningDay },
@@ -66,25 +19,25 @@ internal class MealPrepPlans
             Day = trainingWeek.TrainingDays.Single(td =>
                 td.TrainingDayType == x.TrainingType),
             x.Multiplier,
-        }).Select(x => (x.Day, x.Multiplier, Food: food))).Select(x => new
-        {
-            TrainingDayType = x.Day.TrainingDayType.ToString(),
-            Helping = ConsolidateHelpings([(x.Day, x.Multiplier)], x.Food),
-        }).Where(x => x.Helping.Servings != 0)
-        .Select(x => ((string?)x.TrainingDayType, x.Helping)));
+            x.TrainingType,
+        }).SelectMany(x => x.Day.Meals.DistinctBy(m => m.FoodGrouping)
+            .Select(m => new
+            {
+                x.Multiplier,
+                Meal = m,
+                x.TrainingType,
+            }))
+        .OrderBy(x => x.Meal.FoodGrouping.Name)
+        .SelectMany(x => x.Meal.Helpings
+            .Where(h => !_foodsExcludedFromMealPrepPlan.Contains(h.Food))
+            .Select(h => ($"{x.TrainingType} - {x.Meal.FoodGrouping}", h * x.Multiplier))));
 
-    private static Helping GetHelping(TrainingDay trainingDay, double multiplier, Food food) => new(
-        food,
-        trainingDay.Meals.SelectMany(m => m.Helpings).Where(h => h.Food.Equals(food))
-            .Sum(h => h.Servings) * multiplier);
-
-    private static Helping ConsolidateHelpings(
-        IEnumerable<(TrainingDay TrainingDay, double Multiplier)> trainingDays,
-        Food food) => new(
-            food,
-            trainingDays
-                .SelectMany(t => t.TrainingDay.Meals.Select(m => (Meal: m, t.Multiplier)))
-                .SelectMany(m => m.Meal.Helpings.Select(h => (Helping: h, m.Multiplier)))
-                .Where(h => h.Helping.Food.Equals(food))
-                .Sum(h => h.Helping.Servings * h.Multiplier));
+    private readonly static IEnumerable<Food> _foodsExcludedFromMealPrepPlan = [
+        Foods.AlmondButter_1_Tbsp,
+        Foods.Blueberries_1_Scoop,
+        Foods.ChiaSeeds_2_5_Tbsp,
+        Foods.Edamame_1_Scoop,
+        Foods.Oatmeal_Sprouts_1_Scoop,
+        Foods.PeaProtein_1_Scoop,
+    ];
 }

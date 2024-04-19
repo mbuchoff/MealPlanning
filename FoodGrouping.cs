@@ -21,4 +21,6 @@ internal record FoodGrouping
     public Food PFood { get; }
     public Food FFood { get; }
     public Food CFood { get; }
+
+    public override string ToString() => Name;
 }
