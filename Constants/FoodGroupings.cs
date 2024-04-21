@@ -10,7 +10,7 @@ internal static class FoodGroupings
 
     public static FoodGrouping OatmealWithProteinPowder { get; } = new(
         "oatmeal with protein powder",
-        Foods.Oatmeal_Sprouts_1_Scoop, Foods.ChiaSeeds_2_5_Tbsp, Foods.PeaProtein_1_Scoop);
+        Foods.Oatmeal_Sprouts_1_Scoop, Foods.ChiaSeeds_2_5_Tbsp, Foods.PeaProtein_1_Tbsp);
 
     public static FoodGrouping BlueBerryOatmealWithProteinPowder { get; } =
         new("blueberry oatmeal with protein powder", [new(Foods.Blueberries_1_Scoop, Servings: 3)],
