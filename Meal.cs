@@ -49,3 +49,19 @@ internal class Meal
     public Meal CloneWithTweakedMacros(double pPercent, double fPercent, double cPercent) =>
         new(Name, Macros.CloneWithTweakedMacros(pPercent, fPercent, cPercent), FoodGrouping);
 }
+
+internal static class MealExtensions
+{
+    public static IEnumerable<Meal> SumWithSameFoodGrouping(this IEnumerable<Meal> meals)
+    {
+        var mealGroups = meals.GroupBy(m => m.FoodGrouping);
+        var groupedHelpings = mealGroups
+            .Select(mealGroup => mealGroup.SelectMany(m => m.Helpings)
+            .CombineLikeHelpings());
+        var summedMeals = mealGroups.Select(mealGroup => new Meal(mealGroup.Key.Name,
+            mealGroup.Sum(m => m.Macros),
+            mealGroup.Key));
+        return summedMeals;
+    }
+
+}

@@ -8,11 +8,7 @@ internal class MealPrepPlans
 
     public static MealPrepPlan Phase3MealPrepPlan => CreateMealPrepPlan(TrainingWeeks.MuscleGain3TrainingWeek);
 
-    public static MealPrepPlan CreateMealPrepPlan(TrainingWeek trainingWeek)
-    {
-        SumOfIndividualMeals(trainingWeek.XFitDay);
-
-        return new(
+    public static MealPrepPlan CreateMealPrepPlan(TrainingWeek trainingWeek) => new(
         new[]
         {
             new { Multiplier = 3, TrainingType = TrainingDayTypes.XfitDay },
@@ -20,11 +16,11 @@ internal class MealPrepPlans
             new { Multiplier = 1, TrainingType = TrainingDayTypes.NonweightTrainingDay },
         }.Select(x => new
         {
-            Day = trainingWeek.TrainingDays.Single(td =>
-                td.TrainingDayType == x.TrainingType),
+            trainingWeek.TrainingDays.Single(td =>
+                td.TrainingDayType == x.TrainingType).Meals,
             x.Multiplier,
             x.TrainingType,
-        }).SelectMany(x => SumOfIndividualMeals(x.Day)
+        }).SelectMany(x => x.Meals.SumWithSameFoodGrouping()
             .Select(m => new
             {
                 x.Multiplier,
@@ -34,28 +30,7 @@ internal class MealPrepPlans
         .OrderBy(x => x.Meal.FoodGrouping.Name)
         .SelectMany(x => x.Meal.Helpings
             .Where(h => !_foodsExcludedFromMealPrepPlan.Contains(h.Food))
-            .Select(h => ($"{x.TrainingType} - {x.Meal.FoodGrouping}", h * x.Multiplier))));
-    }
-
-    private static IEnumerable<Meal> SumOfIndividualMeals(TrainingDay trainingDay)
-    {
-        var mealGroups = trainingDay.Meals.GroupBy(m => m.FoodGrouping);
-        var groupedHelpings = mealGroups.Select(mealGroup => CombineLikeHelpings(mealGroup.SelectMany(m => m.Helpings)));
-        var meals = mealGroups.Select(mealGroup => new Meal(mealGroup.Key.Name,
-            mealGroup.Sum(m => m.Macros),
-            mealGroup.Key));
-        return meals;
-    }
-
-    private static IEnumerable<Helping> CombineLikeHelpings(IEnumerable<Helping> helpings)
-    {
-        var foodGroupings = helpings.GroupBy(h => h.Food);
-        var combinedHelpings =
-            foodGroupings.Select(foodGrouping => new Helping(
-                Food: foodGrouping.Key,
-                Servings: foodGrouping.Select(h => h.Servings).Sum()));
-        return combinedHelpings;
-    }
+            .Select(h => (Description: $"{x.TrainingType} - {x.Meal.FoodGrouping}", Helping: h * x.Multiplier))));
 
     private readonly static IEnumerable<Food> _foodsExcludedFromMealPrepPlan = [
         Foods.AlmondButter_1_Tbsp,

@@ -26,6 +26,8 @@ internal static class FoodGroupings
     public static FoodGrouping RiceAndEdamame { get; } =
         new("rice and edamame", Foods.Edamame_35_Grams, Foods.PumpkinSeeds_30_Grams, Foods.BrownRice_45_Grams);
     public static FoodGrouping WheatBerriesRice { get; } =
-    new("wheat berries and rice", Foods.WheatBerries_45_Grams, Foods.OliveOil_1_Tbsp, Foods.BrownRice_45_Grams);
+    new("wheat berries and rice",
+        [new(Foods.Farro_52_Gram, Servings: 2)],
+        Foods.WheatBerries_45_Grams, Foods.OliveOil_1_Tbsp, Foods.BrownRice_45_Grams);
 
 }
