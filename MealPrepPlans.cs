@@ -9,28 +9,24 @@ internal class MealPrepPlans
     public static MealPrepPlan Phase3MealPrepPlan => CreateMealPrepPlan(TrainingWeeks.MuscleGain3TrainingWeek);
 
     public static MealPrepPlan CreateMealPrepPlan(TrainingWeek trainingWeek) => new(
-        new[]
+        new[] { TrainingDayTypes.XfitDay, TrainingDayTypes.RunningDay, TrainingDayTypes.NonweightTrainingDay }
+        .Select(trainingType => new
         {
-            new { Multiplier = 3, TrainingType = TrainingDayTypes.XfitDay },
-            new { Multiplier = 2, TrainingType = TrainingDayTypes.RunningDay },
-            new { Multiplier = 1, TrainingType = TrainingDayTypes.NonweightTrainingDay },
-        }.Select(x => new
-        {
+            trainingType.MealPrepsPerWeek,
             trainingWeek.TrainingDays.Single(td =>
-                td.TrainingDayType == x.TrainingType).Meals,
-            x.Multiplier,
-            x.TrainingType,
+                td.TrainingDayType == trainingType).Meals,
+            TrainingType = trainingType,
         }).SelectMany(x => x.Meals.SumWithSameFoodGrouping()
             .Select(m => new
             {
-                x.Multiplier,
+                x.MealPrepsPerWeek,
                 Meal = m,
                 x.TrainingType,
             }))
         .OrderBy(x => x.Meal.FoodGrouping.Name)
         .SelectMany(x => x.Meal.Helpings
             .Where(h => !_foodsExcludedFromMealPrepPlan.Contains(h.Food))
-            .Select(h => (Description: $"{x.TrainingType} - {x.Meal.FoodGrouping}", Helping: h * x.Multiplier))));
+            .Select(h => (Description: $"{x.TrainingType} - {x.Meal.FoodGrouping}", Helping: h * x.MealPrepsPerWeek))));
 
     private readonly static IEnumerable<Food> _foodsExcludedFromMealPrepPlan = [
         Foods.AlmondButter_1_Tbsp,
