@@ -31,6 +31,6 @@ internal static class FoodGroupings
 
     public static FoodGrouping WheatBerriesRice { get; } = new(
         "wheat berries and rice",
-        [new(Foods.Farro_52_Gram, Servings: 2)],
+        [new(Foods.Farro_52_Gram, Servings: 0.648)],
         Foods.WheatBerries_45_Grams, Foods.OliveOil_1_Tbsp, Foods.BrownRice_45_Grams);
 }
