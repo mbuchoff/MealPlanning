@@ -16,7 +16,9 @@ internal class MealPrepPlans
             trainingWeek.TrainingDays.Single(td =>
                 td.TrainingDayType == trainingType).Meals,
             TrainingType = trainingType,
-        }).SelectMany(x => x.Meals.SumWithSameFoodGrouping()
+        }).SelectMany(x => x.Meals
+            .Where(m => m.FoodGrouping.PreparationMethod == FoodGrouping.PreparationMethodEnum.PrepareInAdvance)
+            .SumWithSameFoodGrouping()
             .Select(m => new
             {
                 x.MealPrepsPerWeek,

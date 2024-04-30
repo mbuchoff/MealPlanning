@@ -33,9 +33,12 @@ internal class Meal
         var sb = new StringBuilder();
         sb.AppendLine($"{Name} - {FoodGrouping.Name}");
 
-        foreach (var helping in Helpings)
+        if (FoodGrouping.PreparationMethod == FoodGrouping.PreparationMethodEnum.PrepareAsNeeded)
         {
-            sb.AppendLine(helping.ToString());
+            foreach (var helping in Helpings)
+            {
+                sb.AppendLine(helping.ToString());
+            }
         }
 
         return sb.ToString();
@@ -63,5 +66,4 @@ internal static class MealExtensions
             mealGroup.Key));
         return summedMeals;
     }
-
 }
