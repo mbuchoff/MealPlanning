@@ -73,16 +73,16 @@ internal static class TrainingWeeks
     public static TrainingWeek MuscleGain3TrainingWeek { get; } = new(
         nonworkoutMeals:
         [
-            new("Waking", new Macros(P: PROTEIN_PER_MEAL_ON_NONWORKOUT_DAY, F: 10, C: 60),
+            new("Waking", new(P: PROTEIN_PER_MEAL_ON_NONWORKOUT_DAY, F: 10, C: 60),
                 FoodGroupings.BlueberryOatmealAndEdamame),
             new("3-5 hours after last meal",
-                new Macros(P: PROTEIN_PER_MEAL_ON_NONWORKOUT_DAY, F: 20, C: 60),
+                new(P: PROTEIN_PER_MEAL_ON_NONWORKOUT_DAY, F: 20, C: 60),
                 FoodGroupings.Seitan),
             new("3-5 hours after last meal",
-                new Macros(P: PROTEIN_PER_MEAL_ON_NONWORKOUT_DAY, F: 20, C: 60),
+                new(P: PROTEIN_PER_MEAL_ON_NONWORKOUT_DAY, F: 20, C: 60),
                 FoodGroupings.Seitan),
             new("3-5 hours after last meal",
-                new Macros(P: PROTEIN_PER_MEAL_ON_NONWORKOUT_DAY, F: 20, C: 60),
+                new(P: PROTEIN_PER_MEAL_ON_NONWORKOUT_DAY, F: 20, C: 60),
                 FoodGroupings.RiceAndEdamame),
             new("Bedtime",
                 new Macros(P: PROTEIN_PER_MEAL_ON_NONWORKOUT_DAY, F: 25, C: 0) -
@@ -94,8 +94,11 @@ internal static class TrainingWeeks
         runningMeals:
         [
             new("1-3 hours before workout",
-                new Macros(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 20, C: 80),
+                new(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 20, C: 80),
                 FoodGroupings.BlueBerryOatmealWithProteinPowder),
+            new("1/2 shake during working, 1/2 right after",
+                new(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 0, C: 55),
+                FoodGroupings.WorkoutShake),
             new("40 minutes after workout",
                 new(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 10, C: 120),
                 FoodGroupings.WheatBerriesRice),
@@ -110,8 +113,11 @@ internal static class TrainingWeeks
         xfitMeals:
         [
             new("1-3 hours before workout",
-                new Macros(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 20, C: 80),
+                new(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 20, C: 80),
                 FoodGroupings.BlueBerryOatmealWithProteinPowder),
+            new("1/2 shake during working, 1/2 right after",
+                new(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 0, C: 55),
+                FoodGroupings.WorkoutShake),
             new("40 minutes after workout",
                 new(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 10, C: 120), FoodGroupings.WheatBerriesRice),
             new("2-4 hours after last meal",
