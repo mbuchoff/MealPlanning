@@ -89,9 +89,9 @@ internal static class TrainingWeeks
                 new(P: PROTEIN_PER_MEAL_ON_NONWORKOUT_DAY, F: 20, C: 60),
                 FoodGroupings.RiceAndEdamame),
             new("Bedtime",
-                new Macros(P: PROTEIN_PER_MEAL_ON_NONWORKOUT_DAY, F: 25, C: 0) -
-                Foods.AlmondMilk_2_Cup.NutritionalInformation.Macros,
+                new Macros(P: PROTEIN_PER_MEAL_ON_NONWORKOUT_DAY, F: 25, C: 0),
                 new("subtract oatmeal from first meal and almond butter from this meal",
+                    [new(Foods.AlmondMilk_2_Cup, 1)],
                     Foods.PeaProtein_1_Scoop,
                     Foods.AlmondButter_1_Tbsp,
                     Foods.Oatmeal_Sprouts_1_Scoop,  // Will come up slightly negative, subtract from first meal

@@ -35,7 +35,7 @@ internal class Meal
 
         if (FoodGrouping.PreparationMethod == FoodGrouping.PreparationMethodEnum.PrepareAsNeeded)
         {
-            foreach (var helping in Helpings)
+            foreach (var helping in Helpings.Where(h => !h.Food.Hidden))
             {
                 sb.AppendLine(helping.ToString());
             }
