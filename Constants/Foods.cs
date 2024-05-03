@@ -10,9 +10,8 @@ internal static class Foods
         1, ServingUnits.Cup, Cals: 80, P: 0, F: 0, CTotal: 19, CFiber: 6));
     public static Food BrownRice_45_Grams { get; } = new("brown rice", new(
         // 0.25, ServingUnits.Cup
-        45, ServingUnits.Gram,
-        Cals: 170,
-        P: 4, F: 1.5, CTotal: 35, CFiber: 2));
+        45, ServingUnits.Gram, Cals: 170, P: 4, F: 1.5, CTotal: 35, CFiber: 2),
+        CupsWaterPerServing: 0.770171149143);
     public static Food Cassein_1_Scoop { get; } = new("cassein", new(
         1, ServingUnits.Scoop, Cals: 100, P: 25, F: 0, CTotal: 1, CFiber: 0));
     public static Food ChiaSeeds_2_5_Tbsp { get; } = new("chia seeds", new(
@@ -61,7 +60,8 @@ internal static class Foods
         // 0.25, ServingUnits.Cup
         52, ServingUnits.Gram,
         Cals: 190,
-        P: 6, F: 1, CTotal: 38, CFiber: 5));
+        P: 6, F: 1, CTotal: 38, CFiber: 5),
+        CupsWaterPerServing: 1.333333333332);
 
     public static Food FatToCarbConversion { get; } = new Food("fat to carb conversion", new(
         1, ServingUnits.Gram, Cals: 9, P: 0, F: 1, CTotal: -9.0 / 4.0, CFiber: 0), Hidden: true);
@@ -97,7 +97,7 @@ internal static class Foods
 
     // https://shop.sprouts.com/product/22564/hard-spring-wheat-berries
     public static Food WheatBerries_45_Grams { get; } = new("wheat berries", new(
-        45, ServingUnits.Gram, Cals: 150, P: 7, F: 1, CTotal: 31, CFiber: 5));
+        45, ServingUnits.Gram, Cals: 150, P: 7, F: 1, CTotal: 31, CFiber: 5), CupsWaterPerServing: 0.669144981411);
 
     public static Food Whey_1_Scoop { get; } = new("whey", new(
         1, ServingUnits.Scoop, Cals: 130, P: 30, F: 0.5, CTotal: 1, CFiber: 0));
