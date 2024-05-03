@@ -112,7 +112,8 @@ internal static class Foods
 
     public static Food Seitan_Walmart_Yeast_1_Gram_Gluten_4x { get; } = new(
         "Seitan Walmart Nutritional Yeast, 4x gluten",
-        NutritionalYeast_WalMart_8_Grams.NutritionalInformation.Combine(Gluten_30_Grams.NutritionalInformation, 4));
+        NutritionalYeast_WalMart_8_Grams.NutritionalInformation.Combine(Gluten_30_Grams.NutritionalInformation, 4),
+        CupsWaterPerServing: 0.0366666666666667);
 
     public static Food Oatmeal_Sprouts_1_Scoop { get; } = Oatmeal_Sprouts_1_2_Cup.Convert(1, ServingUnits.Scoop, 2 * CUPS_PER_SCOOP);
     public static Food Oatmeal_Walmart_1_Scoop { get; } = Oatmeal_Walmart_1_2_Cup.Convert(1, ServingUnits.Scoop, 2 * CUPS_PER_SCOOP);
