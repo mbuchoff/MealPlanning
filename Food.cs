@@ -3,20 +3,22 @@
 internal record Food(
     string Name,
     NutritionalInformation NutritionalInformation,
-    double? CupsWaterPerServing = null,
+    Food.AmountWater? Water = null,
     bool Hidden = false)
 {
+    public record AmountWater(double Base, double PerServing);
+
     public string ToString(double quantity) =>
         $"{NutritionalInformation.ServingUnit.ToString(quantity * NutritionalInformation.Servings)} {Name}" +
-        $"{(CupsWaterPerServing == null ? "" : $", {CupsWaterPerServing.Value * quantity:f1} cups water")}";
+        $"{(Water == null ? "" : $", {(Water.Base + Water.PerServing * quantity):f1} cups water")}";
 
     public Food Convert(
         double servings,
         ServingUnit servingUnit,
         double multiplier,
-        double? cupsWaterPerServing = null) => new(
+        AmountWater? water = null) => new(
             Name,
             NutritionalInformation.Convert(servings, servingUnit, multiplier),
-            cupsWaterPerServing,
+            water,
             Hidden);
 }
