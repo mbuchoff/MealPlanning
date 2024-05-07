@@ -6,6 +6,11 @@ internal static class Foods
         1, ServingUnits.Tablespoon, Cals: 130, P: 4.5, F: 11.5, CTotal: 4.5, CFiber: 2.5));
     public static Food AlmondMilk_2_Cup { get; } = new("almond milk", new(
         2, ServingUnits.Cup, Cals: 59, P: 2, F: 5.1, CTotal: 2, CFiber: 2));
+
+    // https://shop.sprouts.com/product/7647/black-beans
+    public static Food BlackBeans_Sprouts_45g = new("black beans", new(
+        45, ServingUnits.Gram, Cals: 150, P: 10, F: 0.5, CTotal: 28, CFiber: 7));
+
     public static Food BlueBerries_1_Cup { get; } = new("frozen blueberries", new(
         1, ServingUnits.Cup, Cals: 80, P: 0, F: 0, CTotal: 19, CFiber: 6));
     public static Food BrownRice_45_Grams { get; } = new("brown rice", new(
