@@ -103,7 +103,7 @@ internal static class Foods
     // https://shop.sprouts.com/product/22564/hard-spring-wheat-berries
     public static Food WheatBerries_45_Grams { get; } = new("wheat berries", new(
         45, ServingUnits.Gram, Cals: 150, P: 7, F: 1, CTotal: 31, CFiber: 5),
-        Water: new(Base: 1, PerServing: 0.669144981411));
+        Water: new(Base: 2, PerServing: 0.669144981411));
 
     public static Food Whey_1_Scoop { get; } = new("whey", new(
         1, ServingUnits.Scoop, Cals: 130, P: 30, F: 0.5, CTotal: 1, CFiber: 0));
