@@ -32,7 +32,7 @@ internal class MealPrepPlans
 
     private readonly static IEnumerable<Food> _foodsExcludedFromMealPrepPlan = [
         Foods.AlmondButter_1_Tbsp,
-        Foods.Blueberries_1_Scoop,
+        Foods.BlueBerries_1_Scoop,
         Foods.ChiaSeeds_2_5_Tbsp,
         Foods.Edamame_1_Scoop,
         Foods.Oatmeal_Sprouts_1_Scoop,

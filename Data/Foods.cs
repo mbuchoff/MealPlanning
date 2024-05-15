@@ -8,11 +8,13 @@ internal static class Foods
         2, ServingUnits.Cup, Cals: 59, P: 2, F: 5.1, CTotal: 2, CFiber: 2));
 
     // https://shop.sprouts.com/product/7647/black-beans
-    public static Food BlackBeans_Sprouts_45g = new("black beans", new(
+    public static Food BlackBeans_Sprouts_45g { get; } = new("black beans", new(
         45, ServingUnits.Gram, Cals: 150, P: 10, F: 0.5, CTotal: 28, CFiber: 7));
 
     public static Food BlueBerries_1_Cup { get; } = new("frozen blueberries", new(
-        1, ServingUnits.Cup, Cals: 80, P: 0, F: 0, CTotal: 19, CFiber: 6));
+        // 140, ServingUnits.Grams
+        1, ServingUnits.Cup, Cals: 70, P: 0, F: 1, CTotal: 17, CFiber: 4));
+
     public static Food BrownRice_45_Grams { get; } = new("brown rice", new(
         // 0.25, ServingUnits.Cup
         45, ServingUnits.Gram, Cals: 170, P: 4, F: 1.5, CTotal: 35, CFiber: 2),
@@ -105,6 +107,10 @@ internal static class Foods
         45, ServingUnits.Gram, Cals: 150, P: 7, F: 1, CTotal: 31, CFiber: 5),
         Water: new(Base: 2, PerServing: 0.669144981411));
 
+    public static Food WildBlueBerries_1_Cup { get; } = new("frozen wild blueberries", new(
+        1, ServingUnits.Cup, Cals: 80, P: 0, F: 0, CTotal: 19, CFiber: 6));
+
+
     public static Food Whey_1_Scoop { get; } = new("whey", new(
         1, ServingUnits.Scoop, Cals: 130, P: 30, F: 0.5, CTotal: 1, CFiber: 0));
 
@@ -112,7 +118,7 @@ internal static class Foods
     private static readonly double CUPS_PER_SCOOP = 0.380408;
     public static readonly double TBSP_PER_CUP = 16;
 
-    public static Food Blueberries_1_Scoop { get; } = BlueBerries_1_Cup.Convert(1, ServingUnits.Scoop, CUPS_PER_SCOOP);
+    public static Food BlueBerries_1_Scoop { get; } = BlueBerries_1_Cup.Convert(1, ServingUnits.Scoop, CUPS_PER_SCOOP);
 
     public static Food Edamame_1_Scoop { get; } = Edamame_1_4_Cup.Convert(1, ServingUnits.Scoop, 4 * CUPS_PER_SCOOP);
 
@@ -125,5 +131,8 @@ internal static class Foods
     public static Food Oatmeal_Walmart_1_Scoop { get; } = Oatmeal_Walmart_1_2_Cup.Convert(1, ServingUnits.Scoop, 2 * CUPS_PER_SCOOP);
     public static Food PeaProtein_1_Scoop { get; } = PeaProtein_1_3_Cup.Convert(1, ServingUnits.Scoop, 3 * CUPS_PER_SCOOP);
     public static Food PeaProtein_1_Tbsp { get; } = PeaProtein_1_3_Cup.Convert(1, ServingUnits.Tablespoon, 3 / TBSP_PER_CUP);
+
+    public static Food WildBlueberries_1_Scoop { get; } =
+        WildBlueBerries_1_Cup.Convert(1, ServingUnits.Scoop, CUPS_PER_SCOOP);
 }
 

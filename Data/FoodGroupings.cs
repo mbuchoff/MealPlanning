@@ -11,7 +11,7 @@ internal static class FoodGroupings
 
     public static FoodGrouping BlueberryOatmealAndEdamame { get; } = new(
         "blueberry oatmeal and edamame",
-        [new(Foods.Blueberries_1_Scoop, Servings: 3)],
+        [new(Foods.BlueBerries_1_Scoop, Servings: 3)],
         OatmealAndEdamame.PFood, OatmealAndEdamame.FFood, OatmealAndEdamame.CFood,
         FoodGrouping.PreparationMethodEnum.PrepareAsNeeded);
 
@@ -24,7 +24,7 @@ internal static class FoodGroupings
 
     public static FoodGrouping BlueBerryOatmealWithProteinPowder { get; } = new(
         "blueberry oatmeal with protein powder",
-        [new(Foods.Blueberries_1_Scoop, Servings: 3)],
+        [new(Foods.BlueBerries_1_Scoop, Servings: 3)],
         OatmealWithProteinPowder.PFood,
         OatmealWithProteinPowder.FFood,
         OatmealWithProteinPowder.CFood,
@@ -35,7 +35,7 @@ internal static class FoodGroupings
         [new(Foods.AlmondMilk_2_Cup, Servings: 1)],
         Foods.PeaProtein_1_Scoop,
         Foods.ChiaSeeds_2_5_Tbsp,
-        Foods.Blueberries_1_Scoop,
+        Foods.BlueBerries_1_Scoop,
         FoodGrouping.PreparationMethodEnum.PrepareAsNeeded);
 
     public static FoodGrouping RiceAndBeans { get; } = new(
