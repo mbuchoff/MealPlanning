@@ -132,12 +132,7 @@ internal static class TrainingWeeks
             new("3-5 hours after last meal",
                 new(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 20, C: 100),
                 FoodGroupings.RiceAndEdamame),
-            new("Bedtime", new(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 25, C: 65),
-                new("Oatmeal with protein powder",
-                    Foods.PeaProtein_1_Tbsp,
-                    Foods.AlmondButter_1_Tbsp,
-                    Foods.Oatmeal_Sprouts_1_Scoop,
-                    FoodGrouping.PreparationMethodEnum.PrepareAsNeeded)),
+            new("Bedtime", new(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 25, C: 65), FoodGroupings.OatmealAndEdamame),
         ]);
 
     public static TrainingWeek MuscleGain3PlusPercentTrainingWeek(double percent) =>
