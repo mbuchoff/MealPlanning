@@ -41,7 +41,7 @@ internal static class FoodGroupings
     public static FoodGrouping RiceAndBeans { get; } = new(
         "rice and beans",
         Foods.BlackBeans_Sprouts_45g,
-        Foods.OliveOil_1_Tbsp,
+        Foods.PumpkinSeeds_30_Grams,
         Foods.BrownRice_45_Grams,
         FoodGrouping.PreparationMethodEnum.PrepareInAdvance);
 
@@ -66,10 +66,17 @@ internal static class FoodGroupings
         Foods.Farro_52_Gram,
         FoodGrouping.PreparationMethodEnum.PrepareInAdvance);
 
-    public static FoodGrouping WheatBerriesRice { get; } = new(
+    public static FoodGrouping WheatBerriesAndRice { get; } = new(
         "wheat berries and rice",
         Foods.WheatBerries_45_Grams,
         Foods.OliveOil_1_Tbsp,
+        Foods.BrownRice_45_Grams,
+        FoodGrouping.PreparationMethodEnum.PrepareInAdvance);
+
+    public static FoodGrouping RiceAndEdamame { get; } = new(
+        "rice and edamame",
+        Foods.Edamame_35_Grams,
+        Foods.PumpkinSeeds_30_Grams,
         Foods.BrownRice_45_Grams,
         FoodGrouping.PreparationMethodEnum.PrepareInAdvance);
 

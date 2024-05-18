@@ -28,7 +28,7 @@ internal class MealPrepPlans
         .OrderBy(x => x.Meal.FoodGrouping.Name)
         .SelectMany(x => x.Meal.Helpings
             .Where(h => !_foodsExcludedFromMealPrepPlan.Contains(h.Food))
-            .Select(h => (Description: $"{x.TrainingType} - {x.Meal.FoodGrouping}", Helping: h * x.MealPrepsPerWeek))));
+            .Select(h => (Description: $"{x.TrainingType}: {x.Meal.FoodGrouping}", Helping: h * x.MealPrepsPerWeek))));
 
     private readonly static IEnumerable<Food> _foodsExcludedFromMealPrepPlan = [
         Foods.AlmondButter_1_Tbsp,

@@ -20,7 +20,7 @@ internal record TrainingDay
     {
         var sb = new StringBuilder();
         var nutrients = TotalNutrients;
-        sb.AppendLine($"{TrainingDayType} - {nutrients.Cals:F0} calories, {nutrients.Macros}, {nutrients.Fiber}g fiber");
+        sb.AppendLine($"{TrainingDayType}: {nutrients.Cals:F0} calories, {nutrients.Macros}, {nutrients.Fiber}g fiber");
         foreach (var meal in Meals)
         {
             sb.AppendLine(meal.ToString());

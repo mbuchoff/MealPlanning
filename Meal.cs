@@ -31,7 +31,7 @@ internal class Meal
     public override string ToString()
     {
         var sb = new StringBuilder();
-        sb.AppendLine($"{Name} - {FoodGrouping.Name}");
+        sb.AppendLine($"{Name}: {FoodGrouping.Name}");
 
         if (FoodGrouping.PreparationMethod == FoodGrouping.PreparationMethodEnum.PrepareAsNeeded)
         {

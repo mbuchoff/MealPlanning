@@ -6,7 +6,7 @@ internal record MealPrepPlan(IEnumerable<(string Description, Helping Helping)> 
     {
         var helpingsStr = string.Join("\n", Helpings.Select(h => h.Description == null ?
             h.Helping.ToString() :
-            $"{h.Description} - {h.Helping}"));
+            $"{h.Description}: {h.Helping}"));
         var totalStr = string.Join("\n", Total);
         return $"{helpingsStr}\n\nTotals:\n{totalStr}";
     }
