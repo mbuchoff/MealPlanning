@@ -45,11 +45,11 @@ internal static class FoodGroupings
         Foods.BrownRice_45_Grams,
         FoodGrouping.PreparationMethodEnum.PrepareInAdvance);
 
-    public static FoodGrouping RiceAndEdamame { get; } = new(
-        "rice and edamame",
+    public static FoodGrouping WheatBerriesAndEdamame { get; } = new(
+        "wheat berries and edamame",
         Foods.Edamame_35_Grams,
         Foods.PumpkinSeeds_30_Grams,
-        Foods.BrownRice_45_Grams,
+        Foods.WheatBerries_45_Grams,
         FoodGrouping.PreparationMethodEnum.PrepareInAdvance);
 
     public static FoodGrouping Seitan { get; } = new(

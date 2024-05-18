@@ -87,7 +87,7 @@ internal static class TrainingWeeks
                 FoodGroupings.Seitan),
             new("3-5 hours after last meal",
                 new(P: PROTEIN_PER_MEAL_ON_NONWORKOUT_DAY, F: 20, C: 60),
-                FoodGroupings.RiceAndEdamame),
+                FoodGroupings.WheatBerriesAndEdamame),
             new("Bedtime",
                 new Macros(P: PROTEIN_PER_MEAL_ON_NONWORKOUT_DAY, F: 25, C: 0),
                 new("subtract oatmeal from first meal and almond butter from this meal",
@@ -113,7 +113,7 @@ internal static class TrainingWeeks
                 FoodGroupings.RiceAndBeans),
             new("3-5 hours after last meal",
                 new(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 20, C: 50),
-                FoodGroupings.RiceAndEdamame),
+                FoodGroupings.WheatBerriesAndEdamame),
             new("Bedtime", new(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 25, C: 35), FoodGroupings.OatmealAndEdamame),
         ],
         xfitMeals:
@@ -131,7 +131,7 @@ internal static class TrainingWeeks
                 FoodGroupings.RiceAndBeans),
             new("3-5 hours after last meal",
                 new(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 20, C: 100),
-                FoodGroupings.RiceAndEdamame),
+                FoodGroupings.WheatBerriesAndEdamame),
             new("Bedtime", new(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 25, C: 65), FoodGroupings.OatmealAndEdamame),
         ]);
 
