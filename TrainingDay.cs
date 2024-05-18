@@ -12,14 +12,15 @@ internal record TrainingDay
         var helpings = Meals.SelectMany(m => m.Helpings).ToList();
         TotalNutrients = (
             Cals: helpings.Sum(h => h.Servings * h.Food.NutritionalInformation.Cals),
-            Macros: helpings.Sum(h => h.Servings * h.Food.NutritionalInformation.Macros));
+            Macros: helpings.Sum(h => h.Servings * h.Food.NutritionalInformation.Macros),
+            Fiber: helpings.Sum(h => h.Servings * h.Food.NutritionalInformation.CFiber));
     }
 
     public override string ToString()
     {
         var sb = new StringBuilder();
         var nutrients = TotalNutrients;
-        sb.AppendLine($"{TrainingDayType} - {nutrients.Cals:F0} calories, {nutrients.Macros}");
+        sb.AppendLine($"{TrainingDayType} - {nutrients.Cals:F0} calories, {nutrients.Macros}, {nutrients.Fiber}g fiber");
         foreach (var meal in Meals)
         {
             sb.AppendLine(meal.ToString());
@@ -30,5 +31,5 @@ internal record TrainingDay
 
     public IEnumerable<Meal> Meals { get; }
     public TrainingDayType TrainingDayType { get; }
-    public (double Cals, Macros Macros) TotalNutrients { get; }
+    public (double Cals, Macros Macros, double Fiber) TotalNutrients { get; }
 }
