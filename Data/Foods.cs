@@ -18,7 +18,7 @@ internal static class Foods
     public static Food BrownRice_45_Grams { get; } = new("brown rice", new(
         // 0.25, ServingUnits.Cup
         45, ServingUnits.Gram, Cals: 170, P: 4, F: 1.5, CTotal: 35, CFiber: 2),
-        Water: new(Base: 0, PerServing: 0.6));
+        Water: new(Base: 1, PerServing: 0.5));
     public static Food Cassein_1_Scoop { get; } = new("cassein", new(
         1, ServingUnits.Scoop, Cals: 100, P: 25, F: 0, CTotal: 1, CFiber: 0));
     public static Food ChiaSeeds_2_5_Tbsp { get; } = new("chia seeds", new(
