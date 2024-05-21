@@ -69,7 +69,7 @@ internal static class FoodGroupings
     public static FoodGrouping WheatBerriesAndRice { get; } = new(
         "wheat berries and rice",
         Foods.WheatBerries_45_Grams,
-        Foods.OliveOil_1_Tbsp,
+        Foods.PumpkinSeeds_30_Grams,
         Foods.BrownRice_45_Grams,
         FoodGrouping.PreparationMethodEnum.PrepareInAdvance);
 
