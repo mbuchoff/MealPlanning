@@ -2,32 +2,19 @@
 
 internal static class FoodGroupings
 {
-    public static FoodGrouping OatmealAndEdamame { get; } = new(
-        "oatmeal and edamame",
-        Foods.Edamame_1_Scoop,
+    public static FoodGrouping OatmealWithAlmondButter { get; } = new(
+        "oatmeal with almond butter",
+        Foods.Oatmeal_Sprouts_1_Scoop,
         Foods.AlmondButter_1_Tbsp,
-        Foods.Oatmeal_Sprouts_1_Scoop,
-        FoodGrouping.PreparationMethodEnum.PrepareAsNeeded);
-
-    public static FoodGrouping BlueberryOatmealAndEdamame { get; } = new(
-        "blueberry oatmeal and edamame",
-        [new(Foods.BlueBerries_1_Scoop, Servings: 3)],
-        OatmealAndEdamame.PFood, OatmealAndEdamame.FFood, OatmealAndEdamame.CFood,
-        FoodGrouping.PreparationMethodEnum.PrepareAsNeeded);
-
-    public static FoodGrouping OatmealWithProteinPowder { get; } = new(
-        "oatmeal with protein powder",
-        Foods.Oatmeal_Sprouts_1_Scoop,
-        Foods.ChiaSeeds_2_5_Tbsp,
         Foods.PeaProtein_1_Tbsp,
         FoodGrouping.PreparationMethodEnum.PrepareAsNeeded);
 
-    public static FoodGrouping BlueBerryOatmealWithProteinPowder { get; } = new(
+    public static FoodGrouping BlueBerryOatmeal { get; } = new(
         "blueberry oatmeal with protein powder",
         [new(Foods.BlueBerries_1_Scoop, Servings: 3)],
-        OatmealWithProteinPowder.PFood,
-        OatmealWithProteinPowder.FFood,
-        OatmealWithProteinPowder.CFood,
+        OatmealWithAlmondButter.PFood,
+        OatmealWithAlmondButter.FFood,
+        OatmealWithAlmondButter.CFood,
         FoodGrouping.PreparationMethodEnum.PrepareAsNeeded);
 
     public static FoodGrouping ProteinShake { get; } = new(
@@ -45,16 +32,9 @@ internal static class FoodGroupings
         Foods.BrownRice_45_Grams,
         FoodGrouping.PreparationMethodEnum.PrepareInAdvance);
 
-    public static FoodGrouping WheatBerriesAndEdamame { get; } = new(
-        "wheat berries and edamame",
-        Foods.Edamame_35_Grams,
-        Foods.PumpkinSeeds_30_Grams,
-        Foods.WheatBerries_45_Grams,
-        FoodGrouping.PreparationMethodEnum.PrepareInAdvance);
-
     public static FoodGrouping Seitan { get; } = new(
         "seitan",
-        Foods.Seitan_Walmart_Yeast_1_Gram_Gluten_4x,
+        Foods.Seitan_Sprouts_Yeast_1_Gram_Gluten_4x,
         Foods.OliveOil_1_Tbsp,
         Foods.WheatBerries_45_Grams,
         FoodGrouping.PreparationMethodEnum.PrepareInAdvance);
@@ -69,14 +49,7 @@ internal static class FoodGroupings
     public static FoodGrouping WheatBerriesAndRice { get; } = new(
         "wheat berries and rice",
         Foods.WheatBerries_45_Grams,
-        Foods.PumpkinSeeds_30_Grams,
-        Foods.BrownRice_45_Grams,
-        FoodGrouping.PreparationMethodEnum.PrepareInAdvance);
-
-    public static FoodGrouping RiceAndEdamame { get; } = new(
-        "rice and edamame",
-        Foods.Edamame_35_Grams,
-        Foods.PumpkinSeeds_30_Grams,
+        Foods.OliveOil_1_Tbsp,
         Foods.BrownRice_45_Grams,
         FoodGrouping.PreparationMethodEnum.PrepareInAdvance);
 

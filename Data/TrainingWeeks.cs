@@ -5,7 +5,7 @@ internal static class TrainingWeeks
     public static TrainingWeek MuscleGain1TrainingWeek { get; } = new(
         nonworkoutMeals:
         [
-            new("Waking", new(P: 40, F: 10, C: 25), FoodGroupings.OatmealAndEdamame),
+            new("Waking", new(P: 40, F: 10, C: 25), FoodGroupings.BlueBerryOatmeal),
             new("3-5 hours after last meal", new(P: 40, F: 20, C: 25), FoodGroupings.Seitan),
             new("3-5 hours after last meal", new(P: 40, F: 20, C: 25), FoodGroupings.Tofu),
             new("3-5 hours after last meal", new(P: 40, F: 20, C: 25), FoodGroupings.Tofu),
@@ -25,7 +25,7 @@ internal static class TrainingWeeks
             new("40 minutes after workout", new(P: 30, F: 10, C: 80), FoodGroupings.Seitan),
             new("2-4 hours after last meal", new(P: 30, F: 20, C: 50), FoodGroupings.Tofu),
             new("3-5 hours after last meal", new(P: 30, F: 20, C: 40), FoodGroupings.Tofu),
-            new("Bedtime", new(P: 30, F: 25, C: 25), FoodGroupings.OatmealAndEdamame),
+            new("Bedtime", new(P: 30, F: 25, C: 25), FoodGroupings.OatmealWithAlmondButter),
         ],
         xfitMeals:
         [
@@ -35,13 +35,13 @@ internal static class TrainingWeeks
             new("40 minutes after workout", new(P: 30, F: 10, C: 100), FoodGroupings.Seitan),
             new("2-4 hours after last meal", new(P: 30, F: 20, C: 65), FoodGroupings.Tofu),
             new("3-5 hours after last meal", new(P: 30, F: 20, C: 50), FoodGroupings.Tofu),
-            new("Bedtime", new(P: 30, F: 25, C: 35), FoodGroupings.OatmealAndEdamame),
+            new("Bedtime", new(P: 30, F: 25, C: 35), FoodGroupings.OatmealWithAlmondButter),
         ]);
 
     public static TrainingWeek MuscleGain2TrainingWeek { get; } = new(
         nonworkoutMeals:
         [
-            new("Waking", new(P: 40, F: 10, C: 60), FoodGroupings.OatmealAndEdamame),
+            new("Waking", new(P: 40, F: 10, C: 60), FoodGroupings.BlueBerryOatmeal),
             new("3-5 hours after last meal", new(P: 40, F: 20, C: 60), FoodGroupings.Seitan),
             new("3-5 hours after last meal", new(P: 40, F: 20, C: 60), FoodGroupings.Tofu),
             new("3-5 hours after last meal", new(P: 40, F: 20, C: 60), FoodGroupings.Tofu),
@@ -61,7 +61,7 @@ internal static class TrainingWeeks
             new("40 minutes after workout", new(P: 30, F: 10, C: 100), FoodGroupings.Seitan),
             new("2-4 hours after last meal", new(P: 30, F: 20, C: 65), FoodGroupings.Tofu),
             new("3-5 hours after last meal", new(P: 30, F: 20, C: 50), FoodGroupings.Tofu),
-            new("Bedtime", new(P: 30, F: 25, C: 35), FoodGroupings.OatmealAndEdamame),
+            new("Bedtime", new(P: 30, F: 25, C: 35), FoodGroupings.OatmealWithAlmondButter),
         ],
         xfitMeals:
         [
@@ -71,69 +71,77 @@ internal static class TrainingWeeks
             new("40 minutes after workout", new(P: 30, F: 10, C: 120), FoodGroupings.Seitan),
             new("2-4 hours after last meal", new(P: 30, F: 20, C: 100), FoodGroupings.Seitan),
             new("3-5 hours after last meal", new(P: 30, F: 20, C: 50), FoodGroupings.Tofu),
-            new("Bedtime", new(P: 30, F: 25, C: 35), FoodGroupings.OatmealAndEdamame),
+            new("Bedtime", new(P: 30, F: 25, C: 35), FoodGroupings.OatmealWithAlmondButter),
         ]);
 
     public static TrainingWeek MuscleGain3TrainingWeek { get; } = new(
         nonworkoutMeals:
         [
             new("Waking", new(P: PROTEIN_PER_MEAL_ON_NONWORKOUT_DAY, F: 10, C: 60),
-                FoodGroupings.BlueberryOatmealAndEdamame),
+                new("Shake",
+                    Foods.PeaProtein_1_Scoop,
+                    Foods.AlmondButter_1_Tbsp,
+                    Foods.OrangeJuice_1_Cup,
+                    FoodGrouping.PreparationMethodEnum.PrepareAsNeeded)),
             new("3-5 hours after last meal",
                 new(P: PROTEIN_PER_MEAL_ON_NONWORKOUT_DAY, F: 20, C: 60),
-                FoodGroupings.Seitan),
+                FoodGroupings.RiceAndBeans),
             new("3-5 hours after last meal",
                 new(P: PROTEIN_PER_MEAL_ON_NONWORKOUT_DAY, F: 20, C: 60),
-                FoodGroupings.Seitan),
+                FoodGroupings.RiceAndBeans),
             new("3-5 hours after last meal",
                 new(P: PROTEIN_PER_MEAL_ON_NONWORKOUT_DAY, F: 20, C: 60),
-                FoodGroupings.WheatBerriesAndEdamame),
+                FoodGroupings.RiceAndBeans),
             new("Bedtime",
                 new Macros(P: PROTEIN_PER_MEAL_ON_NONWORKOUT_DAY, F: 25, C: 0),
-                new("subtract oatmeal from first meal and almond butter from this meal",
+                new("Shake",
                     [new(Foods.AlmondMilk_2_Cup, 1)],
                     Foods.PeaProtein_1_Scoop,
                     Foods.AlmondButter_1_Tbsp,
-                    Foods.Oatmeal_Sprouts_1_Scoop,  // Will come up slightly negative, subtract from first meal
+                    Foods.FatToCarbConversion,
                     FoodGrouping.PreparationMethodEnum.PrepareAsNeeded)),
         ],
         runningMeals:
         [
             new("1-3 hours before workout",
                 new(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 20, C: 80),
-                FoodGroupings.BlueBerryOatmealWithProteinPowder),
+                FoodGroupings.BlueBerryOatmeal),
             new("1/2 shake during working, 1/2 right after",
                 new(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 0, C: 55),
                 FoodGroupings.WorkoutShake),
             new("40 minutes after workout",
                 new(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 10, C: 120),
-                FoodGroupings.RiceAndBeans),
+                FoodGroupings.WheatBerriesAndRice),
             new("2-4 hours after last meal",
                 new(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 20, C: 100),
-                FoodGroupings.RiceAndBeans),
+                FoodGroupings.WheatBerriesAndRice),
             new("3-5 hours after last meal",
                 new(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 20, C: 50),
-                FoodGroupings.WheatBerriesAndEdamame),
-            new("Bedtime", new(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 25, C: 35), FoodGroupings.OatmealAndEdamame),
+                FoodGroupings.RiceAndBeans),
+            new("Bedtime",
+                new(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 25, C: 35),
+                FoodGroupings.OatmealWithAlmondButter),
         ],
         xfitMeals:
         [
             new("1-3 hours before workout",
                 new(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 20, C: 80),
-                FoodGroupings.BlueBerryOatmealWithProteinPowder),
+                FoodGroupings.BlueBerryOatmeal),
             new("1/2 shake during working, 1/2 right after",
                 new(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 0, C: 55),
                 FoodGroupings.WorkoutShake),
             new("40 minutes after workout",
                 new(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 10, C: 120),
-                FoodGroupings.RiceAndBeans),
+                FoodGroupings.WheatBerriesAndRice),
             new("2-4 hours after last meal",
                 new(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 20, C: 100),
-                FoodGroupings.RiceAndBeans),
+                FoodGroupings.WheatBerriesAndRice),
             new("3-5 hours after last meal",
                 new(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 20, C: 100),
-                FoodGroupings.WheatBerriesAndRice),
-            new("Bedtime", new(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 25, C: 65), FoodGroupings.OatmealAndEdamame),
+                FoodGroupings.RiceAndBeans),
+            new("Bedtime",
+                new(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 25, C: 65),
+                FoodGroupings.OatmealWithAlmondButter),
         ]);
 
     public static TrainingWeek MuscleGain3PlusPercentTrainingWeek(double percent) =>

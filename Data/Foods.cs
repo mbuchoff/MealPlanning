@@ -19,24 +19,9 @@ internal static class Foods
         // 0.25, ServingUnits.Cup
         45, ServingUnits.Gram, Cals: 170, P: 4, F: 1.5, CTotal: 35, CFiber: 2),
         Water: new(Base: 1, PerServing: 0.5));
-    public static Food Cassein_1_Scoop { get; } = new("cassein", new(
-        1, ServingUnits.Scoop, Cals: 100, P: 25, F: 0, CTotal: 1, CFiber: 0));
+
     public static Food ChiaSeeds_2_5_Tbsp { get; } = new("chia seeds", new(
         2.5, ServingUnits.Tablespoon, Cals: 150, P: 5, F: 9, CTotal: 13, CFiber: 10));
-    public static Food Edamame_1_4_Cup { get; } = new("edamame", new(
-        0.25, ServingUnits.Cup, Cals: 140, P: 13, F: 6, CTotal: 11, CFiber: 4));
-    public static Food Edamame_35_Grams { get; } = new(Edamame_1_4_Cup.Name, new(
-        35, ServingUnits.Gram,
-        Edamame_1_4_Cup.NutritionalInformation.Cals,
-        Edamame_1_4_Cup.NutritionalInformation.P,
-        Edamame_1_4_Cup.NutritionalInformation.F,
-        Edamame_1_4_Cup.NutritionalInformation.CTotal,
-        Edamame_1_4_Cup.NutritionalInformation.CFiber));
-    public static Food NutritionalYeast_WalMart_8_Grams { get; } = new("nutritional yeast from WalMart", new(
-        // 2, ServingUnits.Tablespoon,
-        8, ServingUnits.Gram,
-        Cals: 30,
-        P: 4, F: 0, CTotal: 3, CFiber: 2));
 
     public static Food NutritionalYeast_Sprouts_16_Grams { get; } = new("nutritional yeast from Sprouts", new(
         // 2, ServingUnits.Tablespoon,
@@ -79,6 +64,8 @@ internal static class Foods
         Cals: 120,
         P: 23, F: 1, CTotal: 4, CFiber: 0));
 
+    public static Food Gluten_4_Tbsp { get; } = Gluten_30_Grams.Convert(4, ServingUnits.Tablespoon, multiplier: 1);
+
     // https://shop.sprouts.com/product/57875/pea-isolate-80percent-protein-powder
     public static Food PeaProtein_1_3_Cup { get; } = new("pea protein", new(
         1.0 / 3, ServingUnits.Cup, Cals: 110, P: 24, F: 1.5, CTotal: 1, CFiber: 0));
@@ -107,32 +94,19 @@ internal static class Foods
         45, ServingUnits.Gram, Cals: 150, P: 7, F: 1, CTotal: 31, CFiber: 5),
         Water: new(Base: 2, PerServing: 0.669144981411));
 
-    public static Food WildBlueBerries_1_Cup { get; } = new("frozen wild blueberries", new(
-        1, ServingUnits.Cup, Cals: 80, P: 0, F: 0, CTotal: 19, CFiber: 6));
-
-
-    public static Food Whey_1_Scoop { get; } = new("whey", new(
-        1, ServingUnits.Scoop, Cals: 130, P: 30, F: 0.5, CTotal: 1, CFiber: 0));
-
     // Converted
     private static readonly double CUPS_PER_SCOOP = 0.380408;
     public static readonly double TBSP_PER_CUP = 16;
 
     public static Food BlueBerries_1_Scoop { get; } = BlueBerries_1_Cup.Convert(1, ServingUnits.Scoop, CUPS_PER_SCOOP);
 
-    public static Food Edamame_1_Scoop { get; } = Edamame_1_4_Cup.Convert(1, ServingUnits.Scoop, 4 * CUPS_PER_SCOOP);
-
-    public static Food Seitan_Walmart_Yeast_1_Gram_Gluten_4x { get; } = new(
+    public static Food Seitan_Sprouts_Yeast_1_Gram_Gluten_4x { get; } = new(
         "Seitan Walmart Nutritional Yeast, 4x gluten",
-        NutritionalYeast_WalMart_8_Grams.NutritionalInformation.Combine(Gluten_30_Grams.NutritionalInformation, 4),
+        NutritionalYeast_Sprouts_16_Grams.NutritionalInformation.Combine(Gluten_30_Grams.NutritionalInformation, 4),
         Water: new(Base: 0, PerServing: 0.0366666666666667));
 
     public static Food Oatmeal_Sprouts_1_Scoop { get; } = Oatmeal_Sprouts_1_2_Cup.Convert(1, ServingUnits.Scoop, 2 * CUPS_PER_SCOOP);
     public static Food Oatmeal_Walmart_1_Scoop { get; } = Oatmeal_Walmart_1_2_Cup.Convert(1, ServingUnits.Scoop, 2 * CUPS_PER_SCOOP);
     public static Food PeaProtein_1_Scoop { get; } = PeaProtein_1_3_Cup.Convert(1, ServingUnits.Scoop, 3 * CUPS_PER_SCOOP);
     public static Food PeaProtein_1_Tbsp { get; } = PeaProtein_1_3_Cup.Convert(1, ServingUnits.Tablespoon, 3 / TBSP_PER_CUP);
-
-    public static Food WildBlueberries_1_Scoop { get; } =
-        WildBlueBerries_1_Cup.Convert(1, ServingUnits.Scoop, CUPS_PER_SCOOP);
 }
-

@@ -34,7 +34,6 @@ internal class MealPrepPlans
         Foods.AlmondButter_1_Tbsp,
         Foods.BlueBerries_1_Scoop,
         Foods.ChiaSeeds_2_5_Tbsp,
-        Foods.Edamame_1_Scoop,
         Foods.Oatmeal_Sprouts_1_Scoop,
         Foods.PeaProtein_1_Scoop,
     ];
