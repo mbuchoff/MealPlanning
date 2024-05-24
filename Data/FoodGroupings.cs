@@ -12,9 +12,9 @@ internal static class FoodGroupings
     public static FoodGrouping BlueBerryOatmeal { get; } = new(
         "blueberry oatmeal with protein powder",
         [new(Foods.BlueBerries_1_Scoop, Servings: 3)],
-        OatmealWithAlmondButter.PFood,
-        OatmealWithAlmondButter.FFood,
-        OatmealWithAlmondButter.CFood,
+        Foods.PeaProtein_1_Tbsp,
+        Foods.ChiaSeeds_2_5_Tbsp,
+        Foods.Oatmeal_Sprouts_1_Scoop,
         FoodGrouping.PreparationMethodEnum.PrepareAsNeeded);
 
     public static FoodGrouping ProteinShake { get; } = new(
@@ -30,6 +30,13 @@ internal static class FoodGroupings
         Foods.BlackBeans_Sprouts_45g,
         Foods.PumpkinSeeds_30_Grams,
         Foods.BrownRice_45_Grams,
+        FoodGrouping.PreparationMethodEnum.PrepareInAdvance);
+
+    public static FoodGrouping WheatBerriesAndBeans { get; } = new(
+        "wheat berries and beans",
+        Foods.BlackBeans_Sprouts_45g,
+        Foods.PumpkinSeeds_30_Grams,
+        Foods.WheatBerries_45_Grams,
         FoodGrouping.PreparationMethodEnum.PrepareInAdvance);
 
     public static FoodGrouping Seitan { get; } = new(
