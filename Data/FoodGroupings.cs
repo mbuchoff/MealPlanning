@@ -39,6 +39,13 @@ internal static class FoodGroupings
         Foods.WheatBerries_45_Grams,
         FoodGrouping.PreparationMethodEnum.PrepareInAdvance);
 
+    public static FoodGrouping PearledBarleyAndBeans { get; } = new(
+        "pearled barley and beans",
+        Foods.BlackBeans_Sprouts_45g,
+        Foods.PumpkinSeeds_30_Grams,
+        Foods.PearledBarley_45_Grams,
+        FoodGrouping.PreparationMethodEnum.PrepareInAdvance);
+
     public static FoodGrouping Seitan { get; } = new(
         "seitan",
         Foods.Seitan_Sprouts_Yeast_1_Gram_Gluten_4x,
@@ -56,6 +63,13 @@ internal static class FoodGroupings
     public static FoodGrouping WheatBerriesAndRice { get; } = new(
         "wheat berries and rice",
         Foods.WheatBerries_45_Grams,
+        Foods.OliveOil_1_Tbsp,
+        Foods.BrownRice_45_Grams,
+        FoodGrouping.PreparationMethodEnum.PrepareInAdvance);
+
+    public static FoodGrouping PearledBarleyAndRice { get; } = new(
+        "pearled barley and rice",
+        Foods.PearledBarley_45_Grams,
         Foods.OliveOil_1_Tbsp,
         Foods.BrownRice_45_Grams,
         FoodGrouping.PreparationMethodEnum.PrepareInAdvance);

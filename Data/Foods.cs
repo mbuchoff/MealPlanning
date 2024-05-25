@@ -70,6 +70,11 @@ internal static class Foods
     public static Food PeaProtein_1_3_Cup { get; } = new("pea protein", new(
         1.0 / 3, ServingUnits.Cup, Cals: 110, P: 24, F: 1.5, CTotal: 1, CFiber: 0));
 
+    // https://shop.sprouts.com/product/7827/pearled-barley
+    public static Food PearledBarley_45_Grams { get; } = new("pearled barley", new(
+        // 0.25 cups
+        45, ServingUnits.Gram, Cals: 160, P: 4, F: 0.5, CTotal: 35, CFiber: 7));
+
     // https://shop.sprouts.com/product/7654/organic-dark-red-kidney-beans
     public static Food RedKidneyBeans_1_4_Cup { get; } = new("red kidney beans", new(
         1.0 / 4, ServingUnits.Cup, Cals: 150, P: 10, F: 0, CTotal: 28, CFiber: 7));
