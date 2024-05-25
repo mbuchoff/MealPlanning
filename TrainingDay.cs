@@ -9,6 +9,13 @@ internal record TrainingDay
         TrainingDayType = trainingDayType;
         Meals = meals;
 
+        var invalidMeal = Meals.FirstOrDefault(m => m.ErrorState != null);
+
+        if (invalidMeal != null)
+        {
+            throw new Exception($"{TrainingDayType} > {invalidMeal.Name} > {invalidMeal.ErrorState}");
+        }
+
         var helpings = Meals.SelectMany(m => m.Helpings).ToList();
         TotalNutrients = (
             Cals: helpings.Sum(h => h.Servings * h.Food.NutritionalInformation.Cals),

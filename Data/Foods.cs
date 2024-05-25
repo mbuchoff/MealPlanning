@@ -56,7 +56,7 @@ internal static class Foods
         Water: new(Base: 0, PerServing: 1.333333333332));
 
     public static Food FatToCarbConversion { get; } = new Food("fat to carb conversion", new(
-        1, ServingUnits.Gram, Cals: 9, P: 0, F: 1, CTotal: -9.0 / 4.0, CFiber: 0), Hidden: true);
+        1, ServingUnits.Gram, Cals: 9, P: 0, F: 1, CTotal: -9.0 / 4.0, CFiber: 0), IsConversion: true);
 
     public static Food Gluten_30_Grams { get; } = new("gluten", new(
         // 0.25, ServingUnits.Cup,

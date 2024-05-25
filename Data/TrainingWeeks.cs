@@ -11,10 +11,10 @@ internal static class TrainingWeeks
             new("3-5 hours after last meal", new(P: 40, F: 20, C: 25), FoodGroupings.Tofu),
             new("Bedtime",
                 new Macros(P: 40, F: 25, C: 0) - Foods.AlmondButter_1_Tbsp.NutritionalInformation.Macros,
-                new("subtract oatmeal from first meal and almond butter from this meal",
+                new("Bedtime",
                     Foods.PeaProtein_1_Scoop,
                     Foods.AlmondButter_1_Tbsp,
-                    Foods.Oatmeal_Walmart_1_2_Cup,
+                    Foods.FatToCarbConversion,
                     FoodGrouping.PreparationMethodEnum.PrepareAsNeeded))
         ],
         runningMeals:
@@ -47,10 +47,10 @@ internal static class TrainingWeeks
             new("3-5 hours after last meal", new(P: 40, F: 20, C: 60), FoodGroupings.Tofu),
             new("Bedtime",
                 new Macros(P: 40, F: 25, C: 0) - Foods.AlmondMilk_2_Cup.NutritionalInformation.Macros,
-                new("subtract oatmeal from first meal and almond butter from this meal",
+                new("Bedtime",
                     Foods.PeaProtein_1_Scoop,
                     Foods.AlmondButter_1_Tbsp,
-                    Foods.Oatmeal_Walmart_1_Scoop,
+                    Foods.FatToCarbConversion,
                     FoodGrouping.PreparationMethodEnum.PrepareAsNeeded))
         ],
         runningMeals:
@@ -68,8 +68,8 @@ internal static class TrainingWeeks
             new("1-3 hours before workout",
                 new Macros(P: 30, F: 20, C: 80) - (Foods.OrangeJuice_1_Cup.NutritionalInformation.Macros * 2),
                 FoodGroupings.ProteinShake),
-            new("40 minutes after workout", new(P: 30, F: 10, C: 120), FoodGroupings.Seitan),
-            new("2-4 hours after last meal", new(P: 30, F: 20, C: 100), FoodGroupings.Seitan),
+            new("40 minutes after workout", new(P: 30, F: 10, C: 120), FoodGroupings.PearledBarleyAndBeans),
+            new("2-4 hours after last meal", new(P: 30, F: 20, C: 100), FoodGroupings.PearledBarleyAndBeans),
             new("3-5 hours after last meal", new(P: 30, F: 20, C: 50), FoodGroupings.Tofu),
             new("Bedtime", new(P: 30, F: 25, C: 35), FoodGroupings.OatmealWithAlmondButter),
         ]);

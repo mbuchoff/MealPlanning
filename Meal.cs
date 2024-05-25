@@ -26,6 +26,14 @@ internal class Meal
             new Helping(foodGrouping.FFood, fFoodServings),
             new Helping(foodGrouping.CFood, cFoodServings),
         ]);
+
+        foreach (var helping in Helpings)
+        {
+            if (helping.Servings < 0 && !helping.Food.IsConversion)
+            {
+                ErrorState = $"{helping.Servings:F2} servings in {helping.Food.Name}.";
+            }
+        }
     }
 
     public override string ToString()
@@ -35,7 +43,7 @@ internal class Meal
 
         if (FoodGrouping.PreparationMethod == FoodGrouping.PreparationMethodEnum.PrepareAsNeeded)
         {
-            foreach (var helping in Helpings.Where(h => !h.Food.Hidden))
+            foreach (var helping in Helpings.Where(h => !h.Food.IsConversion))
             {
                 sb.AppendLine(helping.ToString());
             }
@@ -45,6 +53,7 @@ internal class Meal
     }
 
     public string Name { get; }
+    public string? ErrorState { get; }
     public FoodGrouping FoodGrouping { get; }
     public Macros Macros { get; }
     public IEnumerable<Helping> Helpings { get; }

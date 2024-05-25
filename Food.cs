@@ -4,7 +4,7 @@ internal record Food(
     string Name,
     NutritionalInformation NutritionalInformation,
     Food.AmountWater? Water = null,
-    bool Hidden = false)
+    bool IsConversion = false)
 {
     public record AmountWater(double Base, double PerServing);
 
@@ -20,5 +20,5 @@ internal record Food(
             Name,
             NutritionalInformation.Convert(servings, servingUnit, multiplier),
             water,
-            Hidden);
+            IsConversion);
 }
