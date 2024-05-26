@@ -64,7 +64,16 @@ internal static class Foods
         Cals: 120,
         P: 23, F: 1, CTotal: 4, CFiber: 0));
 
-    public static Food Gluten_4_Tbsp { get; } = Gluten_30_Grams.Convert(4, ServingUnits.Tablespoon, multiplier: 1);
+    public static Food Gluten_4_Tbsp { get; } = new(
+        Gluten_30_Grams.Name,
+        new NutritionalInformation(4, ServingUnits.Tablespoon,
+            Gluten_30_Grams.NutritionalInformation.Cals,
+            Gluten_30_Grams.NutritionalInformation.P,
+            Gluten_30_Grams.NutritionalInformation.F,
+            Gluten_30_Grams.NutritionalInformation.CTotal,
+            Gluten_30_Grams.NutritionalInformation.CFiber),
+        Gluten_30_Grams.Water,
+        Gluten_30_Grams.IsConversion);
 
     // https://shop.sprouts.com/product/57875/pea-isolate-80percent-protein-powder
     public static Food PeaProtein_1_3_Cup { get; } = new("pea protein", new(
@@ -105,21 +114,16 @@ internal static class Foods
     public static Food WheatBran_1_2_Cup { get; } = new("Wheat Bran", new(
         0.5, ServingUnits.Cup, Cals: 63, P: 4.5, F: 1.3, CTotal: 18.5, CFiber: 12.5));
 
-    // Converted
-    private static readonly double CUPS_PER_SCOOP = 0.380408;
-    public static readonly double TBSP_PER_CUP = 16;
-    public static readonly double GRAMS_PER_OUNCE = 28.3495;
-
-    public static Food BlueBerries_1_Scoop { get; } = BlueBerries_1_Cup.Convert(1, ServingUnits.Scoop, CUPS_PER_SCOOP);
+    public static Food BlueBerries_1_Scoop { get; } = BlueBerries_1_Cup.Convert(ServingUnits.Scoop);
 
     public static Food Seitan_Sprouts_Yeast_1_Gram_Gluten_4x { get; } = new(
         "Seitan Walmart Nutritional Yeast, 4x gluten",
         NutritionalYeast_Sprouts_16_Grams.NutritionalInformation.Combine(Gluten_30_Grams.NutritionalInformation, 4),
         Water: new(Base: 0, PerServing: 0.0366666666666667));
 
-    public static Food Oatmeal_Sprouts_1_Scoop { get; } = Oatmeal_Sprouts_1_2_Cup.Convert(1, ServingUnits.Scoop, 2 * CUPS_PER_SCOOP);
-    public static Food Oatmeal_Walmart_1_Scoop { get; } = Oatmeal_Walmart_1_2_Cup.Convert(1, ServingUnits.Scoop, 2 * CUPS_PER_SCOOP);
-    public static Food PeaProtein_1_Scoop { get; } = PeaProtein_1_3_Cup.Convert(1, ServingUnits.Scoop, 3 * CUPS_PER_SCOOP);
-    public static Food WheatBran_1_Scoop { get; } = WheatBran_1_2_Cup.Convert(1, ServingUnits.Scoop, 2 * CUPS_PER_SCOOP);
-    public static Food PeaProtein_1_Tbsp { get; } = PeaProtein_1_3_Cup.Convert(1, ServingUnits.Tablespoon, 3 / TBSP_PER_CUP);
+    public static Food Oatmeal_Sprouts_1_Scoop { get; } = Oatmeal_Sprouts_1_2_Cup.Convert(ServingUnits.Scoop);
+    public static Food Oatmeal_Walmart_1_Scoop { get; } = Oatmeal_Walmart_1_2_Cup.Convert(ServingUnits.Scoop);
+    public static Food PeaProtein_1_Scoop { get; } = PeaProtein_1_3_Cup.Convert(ServingUnits.Scoop);
+    public static Food WheatBran_1_Scoop { get; } = WheatBran_1_2_Cup.Convert(ServingUnits.Scoop);
+    public static Food PeaProtein_1_Tbsp { get; } = PeaProtein_1_3_Cup.Convert(ServingUnits.Tablespoon);
 }

@@ -12,13 +12,6 @@ internal record Food(
         $"{NutritionalInformation.ServingUnit.ToString(quantity * NutritionalInformation.Servings)} {Name}" +
         $"{(Water == null ? "" : $", {(Water.Base + Water.PerServing * quantity):f1} cups water")}";
 
-    public Food Convert(
-        double servings,
-        ServingUnit servingUnit,
-        double multiplier,
-        AmountWater? water = null) => new(
-            Name,
-            NutritionalInformation.Convert(servings, servingUnit, multiplier),
-            water,
-            IsConversion);
+    public Food Convert(ServingUnit servingUnit, AmountWater? water = null) =>
+        new(Name, NutritionalInformation.Convert(servingUnit), water, IsConversion);
 }
