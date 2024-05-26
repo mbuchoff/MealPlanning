@@ -2,7 +2,8 @@
 
 internal static class TrainingWeeks
 {
-    public static TrainingWeek MuscleGain1TrainingWeek { get; } = new(
+    public static TrainingWeek MuscleGain1TrainingWeek => new(
+        "Muscle Gain 1",
         nonworkoutMeals:
         [
             new("Waking", new(P: 40, F: 10, C: 25), FoodGroupings.BlueBerryOatmeal),
@@ -38,7 +39,8 @@ internal static class TrainingWeeks
             new("Bedtime", new(P: 30, F: 25, C: 35), FoodGroupings.OatmealWithAlmondButter),
         ]);
 
-    public static TrainingWeek MuscleGain2TrainingWeek { get; } = new(
+    public static TrainingWeek MuscleGain2TrainingWeek => new(
+        "Muscle Gain 2",
         nonworkoutMeals:
         [
             new("Waking", new(P: 40, F: 10, C: 60), FoodGroupings.BlueBerryOatmeal),
@@ -74,12 +76,14 @@ internal static class TrainingWeeks
             new("Bedtime", new(P: 30, F: 25, C: 35), FoodGroupings.OatmealWithAlmondButter),
         ]);
 
-    public static TrainingWeek MuscleGain3TrainingWeek { get; } = new(
+    public static TrainingWeek MuscleGain3TrainingWeek => new(
+        "Muscle Gain 3",
         nonworkoutMeals:
         [
             new("Waking",
                 new(P: PROTEIN_PER_MEAL_ON_NONWORKOUT_DAY, F: 10, C: 60),
-                new("Oatmeal shake",
+                new("Blueberry oatmeal shake",
+                    [new(Foods.BlueBerries_1_Scoop, 3)],
                     Foods.PeaProtein_1_Scoop,
                     Foods.AlmondMilk_2_Cup,
                     Foods.Oatmeal_Sprouts_1_Scoop,
@@ -133,10 +137,12 @@ internal static class TrainingWeeks
                 FoodGroupings.WorkoutShake),
             new("40 minutes after workout",
                 new(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 10, C: 120),
-                FoodGroupings.RiceAndBeans),
+                //FoodGroupings.RiceAndBeans),
+                FoodGroupings.WheatBerriesAndRice),
             new("2-4 hours after last meal",
                 new(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 20, C: 100),
-                FoodGroupings.RiceAndBeans),
+                //FoodGroupings.RiceAndBeans),
+                FoodGroupings.WheatBerriesAndRice),
             new("3-5 hours after last meal",
                 new(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 20, C: 100),
                 FoodGroupings.PearledBarleyAndBeans),

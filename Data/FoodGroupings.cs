@@ -6,13 +6,13 @@ internal static class FoodGroupings
         "oatmeal with almond butter",
         Foods.Oatmeal_Sprouts_1_Scoop,
         Foods.AlmondButter_1_Tbsp,
-        Foods.PeaProtein_1_Tbsp,
+        Foods.WheatBran_1_Scoop,
         FoodGrouping.PreparationMethodEnum.PrepareAsNeeded);
 
     public static FoodGrouping BlueBerryOatmeal { get; } = new(
-        "blueberry oatmeal with protein powder",
+        "blueberry oatmeal",
         [new(Foods.BlueBerries_1_Scoop, Servings: 3)],
-        Foods.PeaProtein_1_Tbsp,
+        Foods.WheatBran_1_Scoop,
         Foods.ChiaSeeds_2_5_Tbsp,
         Foods.Oatmeal_Sprouts_1_Scoop,
         FoodGrouping.PreparationMethodEnum.PrepareAsNeeded);
@@ -63,7 +63,7 @@ internal static class FoodGroupings
     public static FoodGrouping WheatBerriesAndRice { get; } = new(
         "wheat berries and rice",
         Foods.WheatBerries_45_Grams,
-        Foods.OliveOil_1_Tbsp,
+        Foods.PumpkinSeeds_30_Grams,
         Foods.BrownRice_45_Grams,
         FoodGrouping.PreparationMethodEnum.PrepareInAdvance);
 

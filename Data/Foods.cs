@@ -73,7 +73,8 @@ internal static class Foods
     // https://shop.sprouts.com/product/7827/pearled-barley
     public static Food PearledBarley_45_Grams { get; } = new("pearled barley", new(
         // 0.25 cups
-        45, ServingUnits.Gram, Cals: 160, P: 4, F: 0.5, CTotal: 35, CFiber: 7));
+        45, ServingUnits.Gram, Cals: 160, P: 4, F: 0.5, CTotal: 35, CFiber: 7),
+        Water: new(Base: 1.5, PerServing: 0.6));
 
     // https://shop.sprouts.com/product/7654/organic-dark-red-kidney-beans
     public static Food RedKidneyBeans_1_4_Cup { get; } = new("red kidney beans", new(
@@ -99,9 +100,15 @@ internal static class Foods
         45, ServingUnits.Gram, Cals: 150, P: 7, F: 1, CTotal: 31, CFiber: 5),
         Water: new(Base: 2, PerServing: 0.669144981411));
 
+    // https://shop.sprouts.com/product/7847/wheat-bran
+    // https://www.healthline.com/nutrition/wheat-bran#nutrition
+    public static Food WheatBran_1_2_Cup { get; } = new("Wheat Bran", new(
+        0.5, ServingUnits.Cup, Cals: 63, P: 4.5, F: 1.3, CTotal: 18.5, CFiber: 12.5));
+
     // Converted
     private static readonly double CUPS_PER_SCOOP = 0.380408;
     public static readonly double TBSP_PER_CUP = 16;
+    public static readonly double GRAMS_PER_OUNCE = 28.3495;
 
     public static Food BlueBerries_1_Scoop { get; } = BlueBerries_1_Cup.Convert(1, ServingUnits.Scoop, CUPS_PER_SCOOP);
 
@@ -113,5 +120,6 @@ internal static class Foods
     public static Food Oatmeal_Sprouts_1_Scoop { get; } = Oatmeal_Sprouts_1_2_Cup.Convert(1, ServingUnits.Scoop, 2 * CUPS_PER_SCOOP);
     public static Food Oatmeal_Walmart_1_Scoop { get; } = Oatmeal_Walmart_1_2_Cup.Convert(1, ServingUnits.Scoop, 2 * CUPS_PER_SCOOP);
     public static Food PeaProtein_1_Scoop { get; } = PeaProtein_1_3_Cup.Convert(1, ServingUnits.Scoop, 3 * CUPS_PER_SCOOP);
+    public static Food WheatBran_1_Scoop { get; } = WheatBran_1_2_Cup.Convert(1, ServingUnits.Scoop, 2 * CUPS_PER_SCOOP);
     public static Food PeaProtein_1_Tbsp { get; } = PeaProtein_1_3_Cup.Convert(1, ServingUnits.Tablespoon, 3 / TBSP_PER_CUP);
 }
