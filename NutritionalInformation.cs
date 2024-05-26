@@ -28,23 +28,4 @@ internal record NutritionalInformation(
     }
 
     public Macros Macros => new(P, F, CTotal - CFiber);
-
-    public NutritionalInformation Convert(ServingUnit newServingUnit)
-    {
-        if (ServingUnit.UnitConversion.CentralUnit != newServingUnit.UnitConversion.CentralUnit)
-        {
-            throw new Exception($"{ServingUnit} has a different central unit than {newServingUnit}.");
-        }
-
-        var multiplier =  newServingUnit.UnitConversion.NumCentralUnitsInThisUnit /
-            (Servings * ServingUnit.UnitConversion.NumCentralUnitsInThisUnit);
-
-        return new(
-            1, newServingUnit,
-            Cals * multiplier,
-            P * multiplier,
-            F * multiplier,
-            CTotal * multiplier,
-            CFiber * multiplier);
-    }
 }
