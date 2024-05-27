@@ -7,6 +7,11 @@ Console.WriteLine(phase);
 Console.WriteLine(phase.MealPrepPlan);
 
 Console.WriteLine();
-Console.Write("Syncing with Todoist...");
-await TodoistService.SyncAsync(phase);
-Console.WriteLine(" Done");
+Console.WriteLine("Sync with Todoist? Type 'yes' to confirm.");
+if (Console.ReadLine()?.Trim().Equals("yes", StringComparison.CurrentCultureIgnoreCase) == true)
+{
+    Console.WriteLine();
+    Console.Write("Syncing with Todoist...");
+    await TodoistService.SyncAsync(phase);
+    Console.WriteLine(" Done");
+}
