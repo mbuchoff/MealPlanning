@@ -7,24 +7,15 @@ internal class Todoist
 {
     public async Task PushAsync(Phase phase)
     {
-        Console.Write("Getting projects...");
         var project = await GetOrCreateProjectAsync("Automation");
-        Console.WriteLine(" Done");
 
         var deleteTask = new Task(async () =>
         {
-            Console.WriteLine("Getting preexiting tasks from project...");
             var todoistTasks = await GetTasksFromProjectAsync(project.Id);
-            Console.WriteLine("Done getting preexiting tasks from project");
 
             await Task.WhenAll(todoistTasks
                 .Where(todoistTask => todoistTask.Parent_Id == null)
-                .Select(async todoistTask =>
-                {
-                    Console.WriteLine($"Deleting {todoistTask.Content}...");
-                    await DeleteTaskAsync(todoistTask.Id);
-                    Console.WriteLine($"Done deleting {todoistTask.Content}");
-                }).ToList());
+                .Select(todoistTask => DeleteTaskAsync(todoistTask.Id)).ToList());
         });
         deleteTask.Start();
 
@@ -49,17 +40,11 @@ internal class Todoist
                     { TrainingDayTypes.NonweightTrainingDay, "every sat,sun" },
                 }.GetValueOrDefault(x.TrainingDayType);
 
-                Console.WriteLine($"Adding {content}...");
-                var parentTodoistTask = await AddTaskAsync(content, dueString, parentId: null, project.Id);
-                Console.WriteLine($"Done adding {content}");
+                var parentTodoistTask = await AddTaskAsync(
+                    $"{content} (added {DateTime.Now})", dueString, parentId: null, project.Id);
 
-                await Task.WhenAll(x.Meal.Helpings.Where(h => !h.Food.IsConversion).Select(async h =>
-                {
-                    Console.WriteLine($"Adding {h} to {content}...");
-                    await AddTaskAsync(
-                        h.ToString(), dueString: null, parentTodoistTask.Id, projectId: null);
-                    Console.WriteLine($"Done adding {h} to {content}");
-                }));
+                await Task.WhenAll(x.Meal.Helpings.Where(h => !h.Food.IsConversion).Select(h => AddTaskAsync(
+                        h.ToString(), dueString: null, parentTodoistTask.Id, projectId: null)));
             }
         }).ToList();
 
