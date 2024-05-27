@@ -1,4 +1,4 @@
-﻿namespace SystemOfEquations.Constants;
+﻿namespace SystemOfEquations.Data;
 
 internal static class Foods
 {
@@ -111,7 +111,7 @@ internal static class Foods
 
     // https://shop.sprouts.com/product/7847/wheat-bran
     // https://www.healthline.com/nutrition/wheat-bran#nutrition
-    public static Food WheatBran_1_2_Cup { get; } = new("Wheat Bran", new(
+    public static Food WheatBran_1_2_Cup { get; } = new("wheat bran", new(
         0.5, ServingUnits.Cup, Cals: 63, P: 4.5, F: 1.3, CTotal: 18.5, CFiber: 12.5));
 
     public static Food BlueBerries_1_Scoop { get; } = BlueBerries_1_Cup.Convert(ServingUnits.Scoop);

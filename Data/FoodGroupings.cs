@@ -1,4 +1,4 @@
-﻿namespace SystemOfEquations.Constants;
+﻿namespace SystemOfEquations.Data;
 
 internal static class FoodGroupings
 {
@@ -6,13 +6,13 @@ internal static class FoodGroupings
         "oatmeal with almond butter",
         Foods.Oatmeal_Sprouts_1_Scoop,
         Foods.AlmondButter_1_Tbsp,
-        Foods.WheatBran_1_Scoop,
+        Foods.PeaProtein_1_Scoop,
         FoodGrouping.PreparationMethodEnum.PrepareAsNeeded);
 
     public static FoodGrouping BlueBerryOatmeal { get; } = new(
         "blueberry oatmeal",
         [new(Foods.BlueBerries_1_Scoop, Servings: 3)],
-        Foods.WheatBran_1_Scoop,
+        Foods.PeaProtein_1_Scoop,
         Foods.ChiaSeeds_2_5_Tbsp,
         Foods.Oatmeal_Sprouts_1_Scoop,
         FoodGrouping.PreparationMethodEnum.PrepareAsNeeded);

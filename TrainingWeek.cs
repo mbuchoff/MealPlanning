@@ -1,4 +1,4 @@
-﻿using SystemOfEquations.Constants;
+﻿using SystemOfEquations.Data;
 
 namespace SystemOfEquations;
 

@@ -1,4 +1,4 @@
-﻿namespace SystemOfEquations.Constants;
+﻿namespace SystemOfEquations.Data;
 
 public static class TrainingDayTypes
 {
