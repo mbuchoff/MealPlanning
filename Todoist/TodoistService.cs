@@ -8,8 +8,10 @@ internal class TodoistService
     {
         var project = await GetOrCreateProjectAsync("Automation");
 
+        var todoistTasks = await GetTasksFromProjectAsync(project.Id);
+
         await Task.WhenAll(
-            DeleteAllTasksFromProjectAsync(project.Id),
+            DeleteTasksFromProjectAsync(todoistTasks.Where(t => t.Parent_Id == null).Select(t => t.Id).ToList()),
             AddPhaseAsync(phase, project.Id));
     }
 
@@ -47,14 +49,8 @@ internal class TodoistService
         return project ?? throw new NullReferenceException(nameof(project));
     }
 
-    private static async Task DeleteAllTasksFromProjectAsync(string id)
-    {
-        var todoistTasks = await GetTasksFromProjectAsync(id);
-
-        await Task.WhenAll(todoistTasks
-            .Where(todoistTask => todoistTask.Parent_Id == null)
-            .Select(todoistTask => DeleteTaskAsync(todoistTask.Id)).ToList());
-    }
+    private static Task DeleteTasksFromProjectAsync(IList<string> ids) =>
+        Task.WhenAll(ids.Select(id => DeleteTaskAsync(id)).ToList());
 
     private static string GetDueString(TrainingDayType trainingDayType) => $"every {string.Join(",",
         trainingDayType.DaysTraining.Select(d => TodoistDayDict.GetValueOrDefault(d)))}";
