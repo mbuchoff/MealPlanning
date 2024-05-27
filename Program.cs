@@ -1,5 +1,5 @@
-﻿using SystemOfEquations;
-using SystemOfEquations.Data;
+﻿using SystemOfEquations.Data;
+using SystemOfEquations.Todoist;
 
 var phase = Phases.MuscleGain3PlusPercent(percent: 5);
 
@@ -8,6 +8,5 @@ Console.WriteLine(phase.MealPrepPlan);
 
 Console.WriteLine();
 Console.Write("Syncing with Todoist...");
-var todoist = new Todoist();
-await todoist.SyncAsync(phase);
+await TodoistService.SyncAsync(phase);
 Console.WriteLine(" Done");
