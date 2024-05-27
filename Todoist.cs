@@ -17,7 +17,7 @@ internal class Todoist
     private async Task AddPhaseAsync(Phase phase, string projectId)
     {
         var tasks = new[]
-                {
+        {
             phase.TrainingWeek.XFitDay,
             phase.TrainingWeek.RunningDay,
             phase.TrainingWeek.NonworkoutDay,
@@ -26,22 +26,22 @@ internal class Todoist
             trainingDay.TrainingDayType,
             Meal = meal,
         })).Where(x => x.Meal.FoodGrouping.PreparationMethod == FoodGrouping.PreparationMethodEnum.PrepareAsNeeded)
-                .Select(async x =>
-                {
-                    var content = $"{x.TrainingDayType} - {x.Meal.Name}";
-                    var dueString = new Dictionary<TrainingDayType, string>()
-                        {
-                    { TrainingDayTypes.XfitDay, "every mon,wed,fri" },
-                    { TrainingDayTypes.RunningDay, "every tue,thu" },
-                    { TrainingDayTypes.NonweightTrainingDay, "every sat,sun" },
-                        }.GetValueOrDefault(x.TrainingDayType);
+        .Select(async x =>
+        {
+            var content = $"{x.TrainingDayType} - {x.Meal.Name}";
+            var dueString = new Dictionary<TrainingDayType, string>()
+            {
+                { TrainingDayTypes.XfitDay, "every mon,wed,fri" },
+                { TrainingDayTypes.RunningDay, "every tue,thu" },
+                { TrainingDayTypes.NonweightTrainingDay, "every sat,sun" },
+            }.GetValueOrDefault(x.TrainingDayType);
 
-                    var parentTodoistTask = await AddTaskAsync(
+            var parentTodoistTask = await AddTaskAsync(
                 $"{content} (synced on {DateTime.Now})", dueString, parentId: null, projectId);
 
-                    await Task.WhenAll(x.Meal.Helpings.Where(h => !h.Food.IsConversion).Select(h => AddTaskAsync(
-                    h.ToString(), dueString: null, parentTodoistTask.Id, projectId: null)));
-                }).ToList();
+            await Task.WhenAll(x.Meal.Helpings.Where(h => !h.Food.IsConversion).Select(h => AddTaskAsync(
+                h.ToString(), dueString: null, parentTodoistTask.Id, projectId: null)));
+        }).ToList();
 
         await Task.WhenAll(tasks);
     }
