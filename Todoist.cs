@@ -5,22 +5,19 @@ namespace SystemOfEquations;
 
 internal class Todoist
 {
-    public async Task PushAsync(Phase phase)
+    public async Task SyncAsync(Phase phase)
     {
         var project = await GetOrCreateProjectAsync("Automation");
 
-        var deleteTask = new Task(async () =>
-        {
-            var todoistTasks = await GetTasksFromProjectAsync(project.Id);
+        await Task.WhenAll(
+            DeleteAllTasksFromProjectAsync(project.Id),
+            AddPhaseAsync(phase, project.Id));
+    }
 
-            await Task.WhenAll(todoistTasks
-                .Where(todoistTask => todoistTask.Parent_Id == null)
-                .Select(todoistTask => DeleteTaskAsync(todoistTask.Id)).ToList());
-        });
-        deleteTask.Start();
-
-        var addTasks = new[]
-        {
+    private async Task AddPhaseAsync(Phase phase, string projectId)
+    {
+        var tasks = new[]
+                {
             phase.TrainingWeek.XFitDay,
             phase.TrainingWeek.RunningDay,
             phase.TrainingWeek.NonworkoutDay,
@@ -28,28 +25,25 @@ internal class Todoist
         {
             trainingDay.TrainingDayType,
             Meal = meal,
-        })).Select(async x =>
-        {
-            if (x.Meal.FoodGrouping.PreparationMethod == FoodGrouping.PreparationMethodEnum.PrepareAsNeeded)
-            {
-                var content = $"{x.TrainingDayType} - {x.Meal.Name}";
-                var dueString = new Dictionary<TrainingDayType, string>()
+        })).Where(x => x.Meal.FoodGrouping.PreparationMethod == FoodGrouping.PreparationMethodEnum.PrepareAsNeeded)
+                .Select(async x =>
                 {
+                    var content = $"{x.TrainingDayType} - {x.Meal.Name}";
+                    var dueString = new Dictionary<TrainingDayType, string>()
+                        {
                     { TrainingDayTypes.XfitDay, "every mon,wed,fri" },
                     { TrainingDayTypes.RunningDay, "every tue,thu" },
                     { TrainingDayTypes.NonweightTrainingDay, "every sat,sun" },
-                }.GetValueOrDefault(x.TrainingDayType);
+                        }.GetValueOrDefault(x.TrainingDayType);
 
-                var parentTodoistTask = await AddTaskAsync(
-                    $"{content} (added {DateTime.Now})", dueString, parentId: null, project.Id);
+                    var parentTodoistTask = await AddTaskAsync(
+                $"{content} (synced on {DateTime.Now})", dueString, parentId: null, projectId);
 
-                await Task.WhenAll(x.Meal.Helpings.Where(h => !h.Food.IsConversion).Select(h => AddTaskAsync(
-                        h.ToString(), dueString: null, parentTodoistTask.Id, projectId: null)));
-            }
-        }).ToList();
+                    await Task.WhenAll(x.Meal.Helpings.Where(h => !h.Food.IsConversion).Select(h => AddTaskAsync(
+                    h.ToString(), dueString: null, parentTodoistTask.Id, projectId: null)));
+                }).ToList();
 
-        await deleteTask;
-        await Task.WhenAll(addTasks);
+        await Task.WhenAll(tasks);
     }
 
     private async Task<TodoistTask> AddTaskAsync(
@@ -66,6 +60,15 @@ internal class Todoist
         result.EnsureSuccessStatusCode();
         var todoistTask = await result.Content.ReadFromJsonAsync<TodoistTask>();
         return todoistTask ?? throw new NullReferenceException(nameof(todoistTask));
+    }
+
+    private async Task DeleteAllTasksFromProjectAsync(string id)
+    {
+        var todoistTasks = await GetTasksFromProjectAsync(id);
+
+        await Task.WhenAll(todoistTasks
+            .Where(todoistTask => todoistTask.Parent_Id == null)
+            .Select(todoistTask => DeleteTaskAsync(todoistTask.Id)).ToList());
     }
 
     private async Task DeleteTaskAsync(string id)

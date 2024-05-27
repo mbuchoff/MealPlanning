@@ -7,7 +7,7 @@ Console.WriteLine(phase);
 Console.WriteLine(phase.MealPrepPlan);
 
 Console.WriteLine();
-Console.Write("Pushing to todoist...");
+Console.Write("Syncing with Todoist...");
 var todoist = new Todoist();
-await todoist.PushAsync(phase);
+await todoist.SyncAsync(phase);
 Console.WriteLine(" Done");
