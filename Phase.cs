@@ -14,7 +14,7 @@ internal record Phase(string Name, MealPrepPlan MealPrepPlan, TrainingWeek Train
 
         foreach(var trainingDay in TrainingWeek.TrainingDays)
         {
-            var daysPerWeek = trainingDay.TrainingDayType.DaysPerWeek;
+            var daysPerWeek = trainingDay.TrainingDayType.DaysTraining.Count;
             totalCals += trainingDay.TotalNutrients.Cals * daysPerWeek;
             totalMacros += trainingDay.TotalNutrients.Macros * daysPerWeek;
             totalFiber += trainingDay.TotalNutrients.Fiber * daysPerWeek;

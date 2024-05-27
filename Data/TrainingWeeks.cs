@@ -151,7 +151,7 @@ internal static class TrainingWeeks
                 FoodGroupings.OatmealWithAlmondButter),
         ]);
 
-    public static TrainingWeek MuscleGain3PlusPercentTrainingWeek(double percent) =>
+    internal static TrainingWeek MuscleGain3PlusPercentTrainingWeek(double percent) =>
         MuscleGain3TrainingWeek.CloneWithTweakedMacros(
             pMultiplier: 1,
             fMultiplier: percent / 100,
