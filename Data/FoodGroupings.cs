@@ -12,7 +12,8 @@ internal static class FoodGroupings
     public static FoodGrouping BlueBerryOatmeal { get; } = new(
         "blueberry oatmeal",
         [new(Foods.BlueBerries_1_Scoop, Servings: 3)],
-        Foods.PeaProtein_1_Scoop,
+        //Foods.PeaProtein_1_Scoop,
+        Foods.WheatBran_1_Scoop,
         Foods.ChiaSeeds_2_5_Tbsp,
         Foods.Oatmeal_Sprouts_1_Scoop,
         FoodGrouping.PreparationMethodEnum.PrepareAsNeeded);

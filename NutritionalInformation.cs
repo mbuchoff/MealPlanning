@@ -18,8 +18,7 @@ internal record NutritionalInformation(
         var thatMultiplier = ratio / that.Servings;
 
         return new(
-            Servings: 1,
-            ServingUnit,
+            1, ServingUnit,
             (Cals * thisMultiplier) + (that.Cals * thatMultiplier),
             (P * thisMultiplier) + (that.P * thatMultiplier),
             (F * thisMultiplier) + (that.F * thatMultiplier),
@@ -28,4 +27,27 @@ internal record NutritionalInformation(
     }
 
     public Macros Macros => new(P, F, CTotal - CFiber);
+
+    public static NutritionalInformation operator *(NutritionalInformation n, double d) => new(
+        n.Servings * d, n.ServingUnit,
+        n.Cals * d,
+        n.P * d,
+        n.F * d,
+        n.CTotal * d,
+        n.CFiber * d);
+
+    public string ToNutrientsString() => $"{Cals:F0} cals, {Macros}, {CFiber:F0}g fiber";
+}
+
+internal static class NutritionalInformationExtensions
+{
+    public static NutritionalInformation Sum(
+        this IEnumerable<NutritionalInformation> nutritionalInformations,
+        double newServings, ServingUnit newServingUnit) => new(
+            newServings, newServingUnit,
+            nutritionalInformations.Sum(n => n.Cals),
+            nutritionalInformations.Sum(n => n.P),
+            nutritionalInformations.Sum(n => n.F),
+            nutritionalInformations.Sum(n => n.CTotal),
+            nutritionalInformations.Sum(n => n.CFiber));
 }

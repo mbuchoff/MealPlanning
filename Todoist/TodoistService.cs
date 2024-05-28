@@ -31,10 +31,13 @@ internal class TodoistService
             var content = $"{x.TrainingDayType} - {x.Meal.Name}";
 
             var parentTodoistTask = await AddTaskAsync(
-                $"{content} (synced on {DateTime.Now})", x.DueString, parentId: null, projectId);
+                content, $"Synced on {DateTime.Now}\n{x.Meal.NutritionalInformation.ToNutrientsString()}",
+                x.DueString, parentId: null, projectId);
 
             await Task.WhenAll(x.Meal.Helpings.Where(h => !h.Food.IsConversion).Select(h => AddTaskAsync(
-                h.ToString(), dueString: null, parentTodoistTask.Id, projectId: null)));
+                h.ToString(),
+                $"Synced on {DateTime.Now}\n{h.NutritionalInformation.ToNutrientsString()}",
+                dueString: null, parentTodoistTask.Id, projectId: null)));
         }).ToList();
 
         await Task.WhenAll(tasks);

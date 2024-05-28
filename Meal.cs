@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using SystemOfEquations.Data;
 using SystemOfEquations.Extensions;
 
 namespace SystemOfEquations;
@@ -55,8 +56,11 @@ internal class Meal
     public string Name { get; }
     public string? ErrorState { get; }
     public FoodGrouping FoodGrouping { get; }
-    public Macros Macros { get; }
     public IEnumerable<Helping> Helpings { get; }
+    public Macros Macros { get; }
+    public NutritionalInformation NutritionalInformation => Helpings
+        .Select(h => h.NutritionalInformation)
+        .Sum(1, ServingUnits.Meal);
 
     public Meal CloneWithTweakedMacros(double pPercent, double fPercent, double cPercent) =>
         new(Name, Macros.CloneWithTweakedMacros(pPercent, fPercent, cPercent), FoodGrouping);
