@@ -69,5 +69,5 @@ internal class TodoistApi
     }
 
     public record Project(string Id, string Name);
-    public record TodoistTask(string Content, string Id, string? Parent_Id);
+    public record TodoistTask(string Content, DateTimeOffset Created_at, string Id, string? Parent_Id);
 }
