@@ -2,8 +2,16 @@
 
 namespace SystemOfEquations.Todoist;
 
-internal class TodoistApi
+internal static class TodoistApi
 {
+    public static async Task AddCommentAsync(string taskId, string comment)
+    {
+        using var httpClient = await CreateHttpClientAsync();
+        var result = await httpClient.PostAsJsonAsync(
+            "https://api.todoist.com/rest/v2/comments", new { Task_id = taskId, Content = comment });
+        result.EnsureSuccessStatusCode();
+    }
+
     public static async Task<TodoistTask> AddTaskAsync(
         string content, string? description, string? dueString, string? parentId, string? projectId)
     {
