@@ -15,7 +15,9 @@ internal class TodoistService
 
     private static async Task AddPhaseAsync(Phase phase, string projectId)
     {
-        var tasks = new[]
+        List<Task> systemTasks = [];
+
+        foreach (var x in new[]
         {
             phase.TrainingWeek.XFitDay,
             phase.TrainingWeek.RunningDay,
@@ -25,30 +27,27 @@ internal class TodoistService
             DueString = GetDueString(trainingDay.TrainingDayType),
             trainingDay.TrainingDayType,
             Meal = meal,
-        })).Where(x => x.Meal.FoodGrouping.PreparationMethod == FoodGrouping.PreparationMethodEnum.PrepareAsNeeded)
-        .Select(async x =>
+        })).Where(x => x.Meal.FoodGrouping.PreparationMethod == FoodGrouping.PreparationMethodEnum.PrepareAsNeeded))
         {
             var content = $"{x.TrainingDayType} - {x.Meal.Name}";
 
+            // Parent tasks need to be added in order so that they appear in order, do don't run them in parallel
             var parentTodoistTask = await AddTaskAsync(
                 content, $"Synced on {DateTime.Now}",
                 x.DueString, parentId: null, projectId);
 
-            var childTasks = x.Meal.Helpings.Where(h => !h.Food.IsConversion).Select(async h =>
-            {
-                var subTask = await AddTaskAsync(
-                    h.ToString(),
-                    $"Synced on {DateTime.Now}",
-                    dueString: null, parentTodoistTask.Id, projectId: null);
-                await AddCommentAsync(subTask.Id, h.NutritionalInformation.ToNutrientsString());
-            }).ToList();
+            // Add child tasks in parallel
+            systemTasks.AddRange(x.Meal.Helpings.Where(h => !h.Food.IsConversion)
+                .Select(h => AddTaskAsync(
+                    h.ToString(), description: null, dueString: null, parentTodoistTask.Id, projectId: null)));
 
-            childTasks.Add(AddCommentAsync(parentTodoistTask.Id, x.Meal.NutritionalInformation.ToNutrientsString()));
+            var comment = string.Join("\n\n",
+                new[] { x.Meal.NutritionalInformation.ToNutrientsString() }.Concat(
+                x.Meal.Helpings.Select(h => $"{h.Food.Name}\n{h.NutritionalInformation.ToNutrientsString()}")));
+            systemTasks.Add(AddCommentAsync(parentTodoistTask.Id, comment));
+        }
 
-            await Task.WhenAll(childTasks);
-        }).ToList();
-
-        await Task.WhenAll(tasks);
+        await Task.WhenAll(systemTasks);
     }
 
     private static async Task<Project> GetOrCreateProjectAsync(string projectName)
