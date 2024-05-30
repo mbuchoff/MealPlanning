@@ -13,7 +13,7 @@ internal static class TodoistApi
     }
 
     public static async Task<TodoistTask> AddTaskAsync(
-        string content, string? description, string? dueString, string? parentId, string? projectId)
+        string content, string? description, string? dueString, string? parentId, string projectId)
     {
         using var httpClient = await CreateHttpClientAsync();
         var result = await httpClient.PostAsJsonAsync("https://api.todoist.com/rest/v2/tasks", new

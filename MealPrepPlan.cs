@@ -1,16 +1,14 @@
 ﻿namespace SystemOfEquations;
 
-internal record MealPrepPlan(IEnumerable<(string Description, Helping Helping)> Helpings)
+internal record MealPrepPlan(IEnumerable<(string Name, IEnumerable<Helping> Helpings)> Meals)
 {
     public override string ToString()
     {
-        var helpingsStr = string.Join("\n", Helpings.Select(h => h.Description == null ?
-            h.Helping.ToString() :
-            $"{h.Description}: {h.Helping}"));
+        var helpingsStr = string.Join("\n", Meals.SelectMany(m => m.Helpings.Select(h => $"{m.Name}: {h}")));
         var totalStr = string.Join("\n", Total);
         return $"{helpingsStr}\n\nTotals:\n{totalStr}";
     }
 
-    public IEnumerable<Helping> Total => Helpings.Select(x => x.Helping).CombineLikeHelpings();
+    public IEnumerable<Helping> Total => Meals.SelectMany(m => m.Helpings).CombineLikeHelpings();
 }
 

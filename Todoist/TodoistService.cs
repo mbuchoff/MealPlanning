@@ -6,16 +6,23 @@ internal class TodoistService
 {
     public static async Task SyncAsync(Phase phase)
     {
-        var project = await GetOrCreateProjectAsync("Automation");
+        var eatingProject = await GetOrCreateProjectAsync("Eating");
+        var cookingProject = await GetOrCreateProjectAsync("Cooking");
 
         await Task.WhenAll(
-            DeleteTasksFromProjectAsync(project.Id, createdBeforeUtc: DateTime.UtcNow),
-            AddPhaseAsync(phase, project.Id));
+            DeleteTasksFromProjectAsync(eatingProject.Id, createdBeforeUtc: DateTime.UtcNow),
+            DeleteTasksFromProjectAsync(cookingProject.Id, createdBeforeUtc: DateTime.UtcNow),
+            AddPhaseAsync(phase, eatingProject.Id, cookingProject.Id));
     }
 
-    private static async Task AddPhaseAsync(Phase phase, string projectId)
+    private static async Task AddPhaseAsync(Phase phase, string eatingProjectId, string cookingProjectId)
     {
-        List<Task> systemTasks = [];
+        List<Task> systemTasks = phase.MealPrepPlan.Meals.Select(async m =>
+        {
+            var parentTask = await AddTaskAsync(m.Name, description: null, dueString: null, parentId: null, cookingProjectId);
+            await Task.WhenAll(m.Helpings.Select(h => AddTaskAsync(
+                h.ToString(), description: null, dueString: null, parentTask.Id, projectId: null)));
+        }).ToList();
 
         foreach (var x in new[]
         {
@@ -31,10 +38,10 @@ internal class TodoistService
         {
             var content = $"{x.TrainingDayType} - {x.Meal.Name}";
 
-            // Parent tasks need to be added in order so that they appear in order, do don't run them in parallel
+            // Parent tasks need to be added in order so that they appear in order, so don't run them in parallel
             var parentTodoistTask = await AddTaskAsync(
                 content, $"Synced on {DateTime.Now}",
-                x.DueString, parentId: null, projectId);
+                x.DueString, parentId: null, eatingProjectId);
 
             // Add child tasks in parallel
             systemTasks.AddRange(x.Meal.Helpings.Where(h => !h.Food.IsConversion)
