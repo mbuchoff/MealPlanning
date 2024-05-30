@@ -2,11 +2,11 @@
 
 internal record TrainingDayType
 {
-    public TrainingDayType(string name, IList<Day> daysTraining, int? daysMealPrepping = null)
+    public TrainingDayType(string name, IList<Day> daysTraining, int? daysEatingPreparedMeals = null)
     {
         Name = name;
         DaysTraining = daysTraining;
-        DaysMealPrepping = daysMealPrepping ?? daysTraining.Count;
+        DaysMealPrepping = daysEatingPreparedMeals ?? daysTraining.Count;
     }
 
     public string Name { get; }
