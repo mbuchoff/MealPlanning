@@ -16,13 +16,19 @@ internal class MealPrepPlans
             trainingDayType.DaysMealPrepping,
             trainingWeek.TrainingDays.Single(td => td.TrainingDayType == trainingDayType).Meals,
             TrainingDayType = trainingDayType,
-        }).SelectMany(x => x.Meals
-            .Where(m => m.FoodGrouping.PreparationMethod == FoodGrouping.PreparationMethodEnum.PrepareInAdvance)
-            .SumWithSameFoodGrouping()
-            .Select(m => new Meal($"{x.TrainingDayType} - {m.Name}", m.Macros, m.FoodGrouping))
-        .Select(m => (
-            m.Name,
-            Helpings: m.Helpings.Where(h => !_foodsExcludedFromMealPrepPlan.Contains(h.Food))))).ToList();
+        }).Select(x => new
+        {
+            x.DaysMealPrepping,
+            Meals = x.Meals
+                .Where(m => m.FoodGrouping.PreparationMethod == FoodGrouping.PreparationMethodEnum.PrepareInAdvance)
+                .SumWithSameFoodGrouping()
+                .Select(m => new Meal($"{x.TrainingDayType} - {m.Name}", m.Macros, m.FoodGrouping)),
+            x.TrainingDayType,
+        }).SelectMany(x => x.Meals.Select(m => (
+            Name: m.Name,
+            Helpings: m.Helpings
+            .Where(h => !_foodsExcludedFromMealPrepPlan.Contains(h.Food))
+            .Select(h => h * x.DaysMealPrepping)))).ToList();
         return new(asdf);
     }
 
