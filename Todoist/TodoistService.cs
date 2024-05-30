@@ -19,7 +19,8 @@ internal class TodoistService
     {
         List<Task> systemTasks = phase.MealPrepPlan.Meals.Select(async m =>
         {
-            var parentTask = await AddTaskAsync(m.Name, description: null, dueString: null, parentId: null, cookingProjectId);
+            var parentTask = await AddTaskAsync(
+                m.Name, description: null, dueString: null, parentId: null, cookingProjectId);
             await Task.WhenAll(m.Helpings.Select(h => AddTaskAsync(
                 h.ToString(), description: null, dueString: null, parentTask.Id, projectId: null)));
         }).ToList();
