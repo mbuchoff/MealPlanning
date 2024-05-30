@@ -2,13 +2,13 @@
 
 namespace SystemOfEquations;
 
-internal class MealPrepPlans
+internal class WeeklyMealsPrepPlans
 {
-    public static MealPrepPlan Phase2MealPrepPlan => CreateMealPrepPlan(TrainingWeeks.MuscleGain2TrainingWeek);
+    public static WeeklyMealsPrepPlan Phase2MealPrepPlan => CreateMealPrepPlan(TrainingWeeks.MuscleGain2TrainingWeek);
 
-    public static MealPrepPlan Phase3MealPrepPlan => CreateMealPrepPlan(TrainingWeeks.MuscleGain3TrainingWeek);
+    public static WeeklyMealsPrepPlan Phase3MealPrepPlan => CreateMealPrepPlan(TrainingWeeks.MuscleGain3TrainingWeek);
 
-    public static MealPrepPlan CreateMealPrepPlan(TrainingWeek trainingWeek) => new(
+    public static WeeklyMealsPrepPlan CreateMealPrepPlan(TrainingWeek trainingWeek) => new(
         new[] { TrainingDayTypes.XfitDay, TrainingDayTypes.RunningDay, TrainingDayTypes.NonweightTrainingDay }
         .Select(trainingDayType => new
         {
@@ -22,10 +22,8 @@ internal class MealPrepPlans
                 .Where(m => m.FoodGrouping.PreparationMethod == FoodGrouping.PreparationMethodEnum.PrepareInAdvance)
                 .SumWithSameFoodGrouping()
                 .Select(m => new Meal($"{x.TrainingDayType} - {m.Name}", m.Macros, m.FoodGrouping)),
-            x.TrainingDayType,
-        }).SelectMany(x => x.Meals.Select(m => (
-            m.Name,
-            Helpings: m.Helpings
+        }).SelectMany(x => x.Meals.Select(m => new MealPrepPlan(m.Name,
+            m.Helpings
                 .Where(h => !_foodsExcludedFromMealPrepPlan.Contains(h.Food))
                 .Select(h => h * x.DaysMealPrepping)))));
 

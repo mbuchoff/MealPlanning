@@ -19,7 +19,7 @@ internal class TodoistService
     private static async Task AddPhaseAsync(
         Phase phase, Task<Project> eatingProjectTask, Task<Project> cookingProjectTask)
     {
-        List<Task> systemTasks = phase.MealPrepPlan.Meals.Select(async m =>
+        List<Task> systemTasks = phase.MealPrepPlan.MealPrepPlans.Select(async m =>
         {
             var cookingProject = await cookingProjectTask;
 

@@ -2,7 +2,7 @@
 
 namespace SystemOfEquations;
 
-internal record Phase(string Name, MealPrepPlan MealPrepPlan, TrainingWeek TrainingWeek)
+internal record Phase(string Name, WeeklyMealsPrepPlan MealPrepPlan, TrainingWeek TrainingWeek)
 {
     public override string ToString()
     {
