@@ -8,9 +8,8 @@ internal class MealPrepPlans
 
     public static MealPrepPlan Phase3MealPrepPlan => CreateMealPrepPlan(TrainingWeeks.MuscleGain3TrainingWeek);
 
-    public static MealPrepPlan CreateMealPrepPlan(TrainingWeek trainingWeek)
-    {
-        var asdf = new[] { TrainingDayTypes.XfitDay, TrainingDayTypes.RunningDay, TrainingDayTypes.NonweightTrainingDay }
+    public static MealPrepPlan CreateMealPrepPlan(TrainingWeek trainingWeek) => new(
+        new[] { TrainingDayTypes.XfitDay, TrainingDayTypes.RunningDay, TrainingDayTypes.NonweightTrainingDay }
         .Select(trainingDayType => new
         {
             trainingDayType.DaysMealPrepping,
@@ -25,12 +24,10 @@ internal class MealPrepPlans
                 .Select(m => new Meal($"{x.TrainingDayType} - {m.Name}", m.Macros, m.FoodGrouping)),
             x.TrainingDayType,
         }).SelectMany(x => x.Meals.Select(m => (
-            Name: m.Name,
+            m.Name,
             Helpings: m.Helpings
             .Where(h => !_foodsExcludedFromMealPrepPlan.Contains(h.Food))
-            .Select(h => h * x.DaysMealPrepping)))).ToList();
-        return new(asdf);
-    }
+            .Select(h => h * x.DaysMealPrepping)))));
 
     private readonly static IEnumerable<Food> _foodsExcludedFromMealPrepPlan = [
         Foods.AlmondButter_1_Tbsp,
