@@ -11,11 +11,9 @@ internal class TodoistService
         var cookingProjectTask = GetOrCreateProjectAsync(allProjectsTask, "Cooking");
 
         await Task.WhenAll(
-        [
             DeleteTasksFromProjectAsync(eatingProjectTask, createdBeforeUtc: DateTime.UtcNow),
             DeleteTasksFromProjectAsync(cookingProjectTask, createdBeforeUtc: DateTime.UtcNow),
-            AddPhaseAsync(phase, eatingProjectTask, cookingProjectTask),
-        ]);
+            AddPhaseAsync(phase, eatingProjectTask, cookingProjectTask));
     }
 
     private static async Task AddPhaseAsync(

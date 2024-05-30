@@ -26,8 +26,8 @@ internal class MealPrepPlans
         }).SelectMany(x => x.Meals.Select(m => (
             m.Name,
             Helpings: m.Helpings
-            .Where(h => !_foodsExcludedFromMealPrepPlan.Contains(h.Food))
-            .Select(h => h * x.DaysMealPrepping)))));
+                .Where(h => !_foodsExcludedFromMealPrepPlan.Contains(h.Food))
+                .Select(h => h * x.DaysMealPrepping)))));
 
     private readonly static IEnumerable<Food> _foodsExcludedFromMealPrepPlan = [
         Foods.AlmondButter_1_Tbsp,
