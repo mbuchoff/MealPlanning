@@ -6,13 +6,13 @@ internal static class FoodGroupings
         "oatmeal with almond butter",
         Foods.Oatmeal_Sprouts_1_Scoop,
         Foods.AlmondButter_1_Tbsp,
-        Foods.PeaProtein_1_Scoop,
+        Foods.WheatBran_1_Scoop,
         FoodGrouping.PreparationMethodEnum.PrepareAsNeeded);
 
     public static FoodGrouping BlueBerryOatmeal { get; } = new(
         "blueberry oatmeal",
         [new(Foods.BlueBerries_1_Scoop, Servings: 3)],
-        Foods.PeaProtein_1_Scoop,
+        Foods.WheatBran_1_Scoop,
         Foods.ChiaSeeds_2_5_Tbsp,
         Foods.Oatmeal_Sprouts_1_Scoop,
         FoodGrouping.PreparationMethodEnum.PrepareAsNeeded);
@@ -32,14 +32,22 @@ internal static class FoodGroupings
         Foods.BrownRice_45_Grams,
         FoodGrouping.PreparationMethodEnum.PrepareInAdvance);
 
-    public static FoodGrouping WheatBerriesAndBeans { get; } = new(
+    public static FoodGrouping _WheatBerriesAndBeans { get; } = new(
         "wheat berries and beans",
+        [new(Foods.WheatBerries_45_Grams, 120.0/45/2)],
         Foods.BlackBeans_Sprouts_45g,
-        Foods.PumpkinSeeds_30_Grams,
-        Foods.WheatBerries_45_Grams,
+        Foods.OliveOil_1_Tbsp,
+        Foods.PearledBarley_45_Grams,
         FoodGrouping.PreparationMethodEnum.PrepareInAdvance);
 
-    public static FoodGrouping PearledBarleyAndBeans { get; } = new(
+    public static FoodGrouping PearledBarley_BlackBeans_OliveOil { get; } = new(
+        "pearled barley and beans",
+        Foods.BlackBeans_Sprouts_45g,
+        Foods.OliveOil_1_Tbsp,
+        Foods.PearledBarley_45_Grams,
+        FoodGrouping.PreparationMethodEnum.PrepareInAdvance);
+
+    public static FoodGrouping PearledBarley_BlackBeans_PumpkinSeeds { get; } = new(
         "pearled barley and beans",
         Foods.BlackBeans_Sprouts_45g,
         Foods.PumpkinSeeds_30_Grams,
@@ -60,10 +68,11 @@ internal static class FoodGroupings
         Foods.Farro_52_Gram,
         FoodGrouping.PreparationMethodEnum.PrepareInAdvance);
 
-    public static FoodGrouping WheatBerriesAndRice { get; } = new(
+    public static FoodGrouping _WheatBerriesAndRice { get; } = new(
         "wheat berries and rice",
-        Foods.WheatBerries_45_Grams,
-        Foods.PumpkinSeeds_30_Grams,
+        [new(Foods.WheatBerries_45_Grams, 120.0/45/2)],
+        Foods.PearledBarley_45_Grams,
+        Foods.OliveOil_1_Tbsp,
         Foods.BrownRice_45_Grams,
         FoodGrouping.PreparationMethodEnum.PrepareInAdvance);
 
