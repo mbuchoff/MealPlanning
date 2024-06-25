@@ -68,13 +68,14 @@ internal class Meal
 
 internal static class MealExtensions
 {
-    public static IEnumerable<Meal> SumWithSameFoodGrouping(this IEnumerable<Meal> meals)
+    public static IEnumerable<Meal> SumWithSameFoodGrouping(this IEnumerable<Meal> meals, int daysPerWeek)
     {
         var mealGroups = meals.GroupBy(m => m.FoodGrouping);
         var groupedHelpings = mealGroups
             .Select(mealGroup => mealGroup.SelectMany(m => m.Helpings)
             .CombineLikeHelpings());
-        var summedMeals = mealGroups.Select(mealGroup => new Meal(mealGroup.Key.Name,
+        var summedMeals = mealGroups.Select(mealGroup => new Meal(
+            $"{mealGroup.Key.Name} - {mealGroup.Count() * daysPerWeek} meals",
             mealGroup.Sum(m => m.Macros),
             mealGroup.Key));
         return summedMeals;

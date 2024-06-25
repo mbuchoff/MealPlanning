@@ -6,12 +6,12 @@ internal record TrainingDayType
     {
         Name = name;
         DaysTraining = daysTraining;
-        DaysMealPrepping = daysEatingPreparedMeals ?? daysTraining.Count;
+        DaysEatingPreparedMeals = daysEatingPreparedMeals ?? daysTraining.Count;
     }
 
     public string Name { get; }
     public IList<Day> DaysTraining { get; }
-    public int DaysMealPrepping { get; }
+    public int DaysEatingPreparedMeals { get; }
 
     public override string ToString() => Name;
 }

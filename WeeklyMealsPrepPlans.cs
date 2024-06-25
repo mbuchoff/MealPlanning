@@ -12,20 +12,20 @@ internal class WeeklyMealsPrepPlans
         new[] { TrainingDayTypes.XfitDay, TrainingDayTypes.RunningDay, TrainingDayTypes.NonweightTrainingDay }
         .Select(trainingDayType => new
         {
-            trainingDayType.DaysMealPrepping,
+            trainingDayType.DaysEatingPreparedMeals,
             trainingWeek.TrainingDays.Single(td => td.TrainingDayType == trainingDayType).Meals,
             TrainingDayType = trainingDayType,
         }).Select(x => new
         {
-            x.DaysMealPrepping,
+            x.DaysEatingPreparedMeals,
             Meals = x.Meals
                 .Where(m => m.FoodGrouping.PreparationMethod == FoodGrouping.PreparationMethodEnum.PrepareInAdvance)
-                .SumWithSameFoodGrouping()
+                .SumWithSameFoodGrouping(x.DaysEatingPreparedMeals)
                 .Select(m => new Meal($"{x.TrainingDayType} - {m.Name}", m.Macros, m.FoodGrouping)),
         }).SelectMany(x => x.Meals.Select(m => new MealPrepPlan(m.Name,
             m.Helpings
                 .Where(h => !_foodsExcludedFromMealPrepPlan.Contains(h.Food))
-                .Select(h => h * x.DaysMealPrepping)))));
+                .Select(h => h * x.DaysEatingPreparedMeals)))));
 
     private readonly static IEnumerable<Food> _foodsExcludedFromMealPrepPlan = [
         Foods.AlmondButter_1_Tbsp,
