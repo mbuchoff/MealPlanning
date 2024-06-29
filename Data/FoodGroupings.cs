@@ -25,7 +25,14 @@ internal static class FoodGroupings
         Foods.BlueBerries_1_Scoop,
         FoodGrouping.PreparationMethodEnum.PrepareAsNeeded);
 
-    public static FoodGrouping RiceAndBeans { get; } = new(
+    public static FoodGrouping Rice_BlackBeans_OliveOil { get; } = new(
+        "rice and beans",
+        Foods.BlackBeans_Sprouts_45g,
+        Foods.OliveOil_1_Tbsp,
+        Foods.BrownRice_45_Grams,
+        FoodGrouping.PreparationMethodEnum.PrepareInAdvance);
+
+    public static FoodGrouping Rice_BlackBeans_PumpkinSeeds { get; } = new(
         "rice and beans",
         Foods.BlackBeans_Sprouts_45g,
         Foods.PumpkinSeeds_30_Grams,

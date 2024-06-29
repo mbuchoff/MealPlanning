@@ -16,25 +16,55 @@ internal class TodoistService
             AddPhaseAsync(phase, eatingProjectTask, cookingProjectTask));
     }
 
+    private static async Task AddHelpingAsync(Project project, TodoistTask parentTodoistTask, Helping h)
+    {
+        Console.WriteLine($"Adding subtask {parentTodoistTask.Content} > {h}...");
+        await AddTaskAsync(
+            h.ToString(), description: null, dueString: null, parentTodoistTask.Id, projectId: null);
+        Console.WriteLine($"Added subtask {parentTodoistTask.Content} > {h}");
+    }
+
+    private static async Task AddHelpingsAsync(
+        Task<Project> projectTask,
+        string content,
+        string? dueString,
+        IEnumerable<Helping> helpings)
+    {
+        var project = await projectTask;
+
+        Console.WriteLine($"Adding task {content}...");
+        var parentTodoistTask = await AddTaskAsync(
+            content,
+            description: null,
+            dueString: dueString,
+            parentId: null,
+            project.Id);
+        Console.WriteLine($"Added task {content}...");
+        await Task.WhenAll(helpings.Select(h => AddHelpingAsync(project, parentTodoistTask, h)).ToList());
+    }
+
+    private static async Task AddMealPrepPlan(Task<Project> projectTask, MealPrepPlan m)
+    {
+        var project = await projectTask;
+
+        Console.WriteLine($"Adding task {m.Name}...");
+        var parentTodoistTask = await AddTaskAsync(
+            m.Name, description: null, dueString: "every thu", parentId: null, project.Id);
+        Console.WriteLine($"Added task {m.Name}");
+        await Task.WhenAll(m.Helpings.Select(h => AddHelpingAsync(project, parentTodoistTask, h)));
+    }
+
     private static async Task AddPhaseAsync(
         Phase phase, Task<Project> eatingProjectTask, Task<Project> cookingProjectTask)
     {
-        List<Task> systemTasks = phase.MealPrepPlan.MealPrepPlans.Select(async m =>
-        {
-            var cookingProject = await cookingProjectTask;
-
-            Console.WriteLine($"Adding task {m.Name}...");
-            var parentTask = await AddTaskAsync(
-                m.Name, description: null, dueString: "every thu", parentId: null, cookingProject.Id);
-            Console.WriteLine($"Added task {m.Name}");
-            await Task.WhenAll(m.Helpings.Select(async h =>
-            {
-                Console.WriteLine($"Adding subtask {m.Name} > {h}...");
-                await AddTaskAsync(
-                    h.ToString(), description: null, dueString: null, parentTask.Id, projectId: null);
-                Console.WriteLine($"Added subtask {m.Name} > {h}");
-            }));
-        }).ToList();
+        List<Task> systemTasks = phase.MealPrepPlan.MealPrepPlans
+            .Select(m => AddMealPrepPlan(cookingProjectTask, m))
+            .Append(AddHelpingsAsync(
+                cookingProjectTask,
+                content: "Totals",
+                dueString: "every tues",
+                phase.MealPrepPlan.Total))
+            .ToList();
 
         foreach (var x in new[]
         {
