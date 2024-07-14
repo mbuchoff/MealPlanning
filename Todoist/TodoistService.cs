@@ -16,7 +16,7 @@ internal class TodoistService
             AddPhaseAsync(phase, eatingProjectTask, cookingProjectTask));
     }
 
-    private static async Task AddHelpingAsync(Project project, TodoistTask parentTodoistTask, Helping h)
+    private static async Task AddHelpingAsync(TodoistTask parentTodoistTask, Helping h)
     {
         Console.WriteLine($"Adding subtask {parentTodoistTask.Content} > {h}...");
         await AddTaskAsync(
@@ -40,7 +40,7 @@ internal class TodoistService
             parentId: null,
             project.Id);
         Console.WriteLine($"Added task {content}...");
-        await Task.WhenAll(helpings.Select(h => AddHelpingAsync(project, parentTodoistTask, h)).ToList());
+        await Task.WhenAll(helpings.Select(h => AddHelpingAsync(parentTodoistTask, h)).ToList());
     }
 
     private static async Task AddMealPrepPlan(Task<Project> projectTask, MealPrepPlan m)
@@ -51,7 +51,7 @@ internal class TodoistService
         var parentTodoistTask = await AddTaskAsync(
             m.Name, description: null, dueString: "every thu", parentId: null, project.Id);
         Console.WriteLine($"Added task {m.Name}");
-        await Task.WhenAll(m.Helpings.Select(h => AddHelpingAsync(project, parentTodoistTask, h)));
+        await Task.WhenAll(m.Helpings.Select(h => AddHelpingAsync(parentTodoistTask, h)));
     }
 
     private static async Task AddPhaseAsync(
