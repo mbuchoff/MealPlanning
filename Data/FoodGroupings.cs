@@ -80,4 +80,11 @@ internal static class FoodGroupings
         Foods.FatToCarbConversion,
         Foods.OrangeJuice_1_Cup,
         FoodGrouping.PreparationMethodEnum.PrepareAsNeeded);
+
+    public static FoodGrouping WorkoutApricots { get; } = new(
+        "workout apricots",
+        Foods.PeaProtein_1_Scoop,
+        Foods.FatToCarbConversion,
+        Foods.DriedApricots,
+        FoodGrouping.PreparationMethodEnum.PrepareAsNeeded);
 }

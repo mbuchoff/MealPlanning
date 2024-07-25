@@ -23,6 +23,9 @@ internal static class Foods
     public static Food ChiaSeeds_2_5_Tbsp { get; } = new("chia seeds", new(
         2.5, ServingUnits.Tablespoon, Cals: 150, P: 5, F: 9, CTotal: 13, CFiber: 10));
 
+    public static Food DriedApricots { get; } = new("dried apricots", new(
+        6.0, ServingUnits.Apricot, Cals: 110, P: 1, F: 0, CTotal: 26, CFiber: 3));
+
     public static Food NutritionalYeast_Sprouts_16_Grams { get; } = new("nutritional yeast from Sprouts", new(
         // 2, ServingUnits.Tablespoon,
         16, ServingUnits.Gram,
