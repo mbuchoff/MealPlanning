@@ -65,7 +65,7 @@ internal static class TodoistApi
     private static async Task<HttpClient> CreateHttpClientAsync()
     {
         var apiKey = await GetApiKeyAsync();
-        var httpClient = new HttpClient();
+        var httpClient = new HttpClient(new HttpClientRetryHandler());
         httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiKey}");
         return httpClient;
     }
