@@ -113,7 +113,7 @@ internal static class TrainingWeeks
                 FoodGroupings.BlueBerryOatmeal),
             new("1/2 shake during working, 1/2 right after",
                 new(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 0, C: 55),
-                FoodGroupings.WorkoutApricots),
+                FoodGroupings.WorkoutShake),
             new("40 minutes after workout",
                 new(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 10, C: 120),
                 FoodGroupings.Rice_BlackBeans_OliveOil),
