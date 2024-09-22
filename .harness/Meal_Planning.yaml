@@ -31,18 +31,4 @@ pipeline:
                   identifier: Run_1
                   spec:
                     shell: Sh
-                    command: ls
-              - stepGroup:
-                  name: dotnet build
-                  identifier: dotnet_build
-                  steps:
-                    - step:
-                        type: Plugin
-                        name: dotnet build
-                        identifier: dotnet_build
-                        spec:
-                          connectorRef: account.harnessImage
-                          image: mcr.microsoft.com/dotnet/sdk:8.0
-                          entrypoint:
-                            - dotnet
-                            - build
+                    command: dotnet build
