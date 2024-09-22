@@ -1,6 +1,4 @@
-﻿using SystemOfEquations.Data;
-
-namespace SystemOfEquations;
+﻿namespace SystemOfEquations.Data;
 
 internal class WeeklyMealsPrepPlans
 {
