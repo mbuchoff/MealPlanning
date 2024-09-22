@@ -31,4 +31,7 @@ pipeline:
                   identifier: Run_1
                   spec:
                     shell: Sh
-                    command: dotnet build
+                    command: |-
+                      sudo apt-get update
+                      sudo apt-get install -y dotnet-sdk-8.0
+                      dotnet build
