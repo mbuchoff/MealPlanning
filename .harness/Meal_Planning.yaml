@@ -42,4 +42,4 @@ pipeline:
                         identifier: dotnet_build
                         spec:
                           connectorRef: account.harnessImage
-                          image: microsoft/dotnet-sdk/
+                          image: microsoft/dotnet-sdk
