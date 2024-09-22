@@ -1,0 +1,34 @@
+pipeline:
+  name: Meal Planning
+  identifier: Meal_Planning
+  projectIdentifier: default_project
+  orgIdentifier: default
+  tags: {}
+  properties:
+    ci:
+      codebase:
+        connectorRef: Meal_Planning
+        build: <+input>
+  stages:
+    - stage:
+        name: dev
+        identifier: dev
+        description: ""
+        type: CI
+        spec:
+          cloneCodebase: true
+          platform:
+            os: Windows
+            arch: Amd64
+          runtime:
+            type: Cloud
+            spec: {}
+          execution:
+            steps:
+              - step:
+                  type: Run
+                  name: Run_1
+                  identifier: Run_1
+                  spec:
+                    shell: Sh
+                    command: ls
