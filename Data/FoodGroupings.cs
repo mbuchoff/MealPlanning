@@ -17,6 +17,14 @@ internal static class FoodGroupings
         Foods.Oatmeal_Sprouts_1_Scoop,
         FoodGrouping.PreparationMethodEnum.PrepareAsNeeded);
 
+    public static FoodGrouping BlueBerryAndEdamame { get; } = new(
+        "blueberry oatmeal and edamame",
+        [new(Foods.BlueBerries_1_Scoop, Servings: 3)],
+        Foods.Edamame_1_3_Cup,
+        Foods.ChiaSeeds_2_5_Tbsp,
+        Foods.Oatmeal_Sprouts_1_Scoop,
+        FoodGrouping.PreparationMethodEnum.PrepareAsNeeded);
+
     public static FoodGrouping ProteinShake { get; } = new(
         "protein shake",
         [new(Foods.AlmondMilk_2_Cup, Servings: 1)],

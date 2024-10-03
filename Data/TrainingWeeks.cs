@@ -135,7 +135,7 @@ internal static class TrainingWeeks
         [
             new("1-3 hours before workout",
                 new(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 20, C: 80),
-                FoodGroupings.BlueBerryOatmeal),
+                FoodGroupings.BlueBerryAndEdamame),
             new("1/2 shake during working, 1/2 right after",
                 new(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 0, C: 55),
                 FoodGroupings.WorkoutShake),
@@ -150,7 +150,11 @@ internal static class TrainingWeeks
                 FoodGroupings.PearledBarley_BlackBeans_OliveOil),
             new("Bedtime",
                 new(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 25, C: 65),
-                FoodGroupings.OatmealWithAlmondButter),
+                new("Oatmeal with protein powder",
+                    Foods.PeaProtein_1_Scoop,
+                    Foods.AlmondButter_1_Tbsp,
+                    Foods.Oatmeal_Sprouts_1_Scoop,
+                    FoodGrouping.PreparationMethodEnum.PrepareAsNeeded)),
         ]);
 
     internal static TrainingWeek MuscleGain3PlusPercentTrainingWeek(double percent) =>
@@ -159,7 +163,7 @@ internal static class TrainingWeeks
             fMultiplier: percent / 100,
             cMultiplier: percent / 100);
 
-    private const double TARGET_WEIGHT = 165;
+    private const double TARGET_WEIGHT = 170;
     private const int MEALS_PER_DAY = 5;
 
     // +1 to include workout shake
