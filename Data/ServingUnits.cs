@@ -2,6 +2,7 @@
 
 internal static class ServingUnits
 {
+    public static ServingUnit Apple = new("apple", decimalsToDisplay: 1);
     public static ServingUnit Apricot = new("apricot", decimalsToDisplay: 0);
     public static ServingUnit BlockTofu = new("block", decimalsToDisplay: 2);
     public static ServingUnit Cup = new("cup", decimalsToDisplay: 1);

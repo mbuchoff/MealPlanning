@@ -7,6 +7,9 @@ internal static class Foods
     public static Food AlmondMilk_2_Cup { get; } = new("almond milk", new(
         2, ServingUnits.Cup, Cals: 59, P: 2, F: 5.1, CTotal: 2, CFiber: 2));
 
+    public static Food Apple { get; } = new("apple", new(
+        1, ServingUnits.Apple, Cals: 95, P: 1, F: 0, CTotal: 25, CFiber: 3));
+
     // https://shop.sprouts.com/product/7647/black-beans
     public static Food BlackBeans_Sprouts_45g { get; } = new("black beans", new(
         45, ServingUnits.Gram, Cals: 150, P: 10, F: 0.5, CTotal: 28, CFiber: 7));
@@ -22,9 +25,6 @@ internal static class Foods
 
     public static Food ChiaSeeds_2_5_Tbsp { get; } = new("chia seeds", new(
         2.5, ServingUnits.Tablespoon, Cals: 150, P: 5, F: 9, CTotal: 13, CFiber: 10));
-
-    public static Food Edamame_1_3_Cup { get; } = new("edamame", new(
-        1 / 3.0, ServingUnits.Cup, Cals: 130, P: 14, F: 5, CTotal: 9, CFiber: 6));
 
     public static Food NutritionalYeast_Sprouts_16_Grams { get; } = new("nutritional yeast from Sprouts", new(
         // 2, ServingUnits.Tablespoon,
@@ -124,6 +124,8 @@ internal static class Foods
         NutritionalYeast_Sprouts_16_Grams.NutritionalInformation.Combine(Gluten_30_Grams.NutritionalInformation, 4),
         Water: new(Base: 0, PerServing: 0.0366666666666667));
 
+    public static Food Edamame_1_Scoop { get; } = new Food("edamame",
+        new(1 / 3.0, ServingUnits.Cup, Cals: 130, P: 14, F: 5, CTotal: 9, CFiber: 6)).Convert(ServingUnits.Scoop);
     public static Food Oatmeal_Sprouts_1_Scoop { get; } = Oatmeal_Sprouts_1_2_Cup.Convert(ServingUnits.Scoop);
     public static Food Oatmeal_Walmart_1_Scoop { get; } = Oatmeal_Walmart_1_2_Cup.Convert(ServingUnits.Scoop);
     public static Food PeaProtein_1_Scoop { get; } = PeaProtein_1_3_Cup.Convert(ServingUnits.Scoop);
