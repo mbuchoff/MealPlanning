@@ -110,7 +110,7 @@ internal static class TrainingWeeks
         [
             new("1-3 hours before workout",
                 new(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 20, C: 80),
-                FoodGroupings.BlueBerryOatmealAndEdamame),
+                FoodGroupings.ApplesBlueberriesOatmealAndEdamame),
             new("1/2 shake during working, 1/2 right after",
                 new(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 0, C: 55),
                 FoodGroupings.WorkoutShake),
@@ -135,7 +135,7 @@ internal static class TrainingWeeks
         [
             new("1-3 hours before workout",
                 new(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 20, C: 80),
-                FoodGroupings.ApplesOatmealAndEdamame),
+                FoodGroupings.ApplesBlueberriesOatmealAndEdamame),
             new("1/2 shake during working, 1/2 right after",
                 new(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 0, C: 55),
                 FoodGroupings.WorkoutShake),
