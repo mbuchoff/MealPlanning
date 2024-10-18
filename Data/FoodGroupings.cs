@@ -3,13 +3,12 @@
 internal static class FoodGroupings
 {
     public static FoodGrouping ApplesBlueberriesOatmealAndEdamame { get; } = new(
-    "apples, blueberries, oatmeal, and edamame",
-    [new(Foods.Apple, Servings: 2), new(Foods.BlueBerries_1_Scoop, Servings: 2)],
-    Foods.Edamame_1_Scoop,
-    Foods.ChiaSeeds_2_5_Tbsp,
-    Foods.Oatmeal_Sprouts_1_Scoop,
-    FoodGrouping.PreparationMethodEnum.PrepareAsNeeded);
-
+        "apples, blueberries, oatmeal, and edamame",
+        [new(Foods.Apple, Servings: 2), new(Foods.BlueBerries_1_Scoop, Servings: 2)],
+        Foods.Edamame_1_Scoop,
+        Foods.ChiaSeeds_2_5_Tbsp,
+        Foods.Oatmeal_Sprouts_1_Scoop,
+        FoodGrouping.PreparationMethodEnum.PrepareAsNeeded);
 
     public static FoodGrouping OatmealWithAlmondButter { get; } = new(
         "oatmeal with almond butter",
@@ -26,11 +25,10 @@ internal static class FoodGroupings
         Foods.Oatmeal_Sprouts_1_Scoop,
         FoodGrouping.PreparationMethodEnum.PrepareAsNeeded);
 
-    public static FoodGrouping BlueBerryOatmealAndEdamame { get; } = new(
-        "blueberry oatmeal and edamame",
-        [new(Foods.BlueBerries_1_Scoop, Servings: 3)],
+    public static FoodGrouping OatmealAndEdamame { get; } = new(
+        "Oatmeal and edamame",
         Foods.Edamame_1_Scoop,
-        Foods.ChiaSeeds_2_5_Tbsp,
+        Foods.AlmondButter_1_Tbsp,
         Foods.Oatmeal_Sprouts_1_Scoop,
         FoodGrouping.PreparationMethodEnum.PrepareAsNeeded);
 

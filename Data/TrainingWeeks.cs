@@ -125,11 +125,7 @@ internal static class TrainingWeeks
                 FoodGroupings.PearledBarley_BlackBeans_PumpkinSeeds),
             new("Bedtime",
                 new(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 25, C: 35),
-                new("Oatmeal with protein powder",
-                    Foods.PeaProtein_1_Scoop,
-                    Foods.AlmondButter_1_Tbsp,
-                    Foods.Oatmeal_Sprouts_1_Scoop,
-                    FoodGrouping.PreparationMethodEnum.PrepareAsNeeded)),
+                FoodGroupings.OatmealAndEdamame),
         ],
         xfitMeals:
         [
@@ -150,11 +146,7 @@ internal static class TrainingWeeks
                 FoodGroupings.PearledBarley_BlackBeans_OliveOil),
             new("Bedtime",
                 new(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 25, C: 65),
-                new("Oatmeal with protein powder",
-                    Foods.PeaProtein_1_Scoop,
-                    Foods.AlmondButter_1_Tbsp,
-                    Foods.Oatmeal_Sprouts_1_Scoop,
-                    FoodGrouping.PreparationMethodEnum.PrepareAsNeeded)),
+                FoodGroupings.OatmealAndEdamame),
         ]);
 
     internal static TrainingWeek MuscleGain3PlusPercentTrainingWeek(double percent) =>
