@@ -4,7 +4,7 @@ internal static class FoodGroupings
 {
     public static FoodGrouping ApplesBlueberriesOatmealAndEdamame { get; } = new(
         "apples, blueberries, oatmeal, and edamame",
-        [new(Foods.Apple, Servings: 2), new(Foods.BlueBerries_1_Scoop, Servings: 2)],
+        [new(Foods.Apple, Servings: 1), new(Foods.BlueBerries_1_Scoop, Servings: 2)],
         Foods.Edamame_1_Scoop,
         Foods.ChiaSeeds_2_5_Tbsp,
         Foods.Oatmeal_Sprouts_1_Scoop,
