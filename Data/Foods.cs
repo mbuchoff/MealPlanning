@@ -2,8 +2,12 @@
 
 internal static class Foods
 {
+    public static Food AllBran_2_3_Cup { get; } = new("All Bran", new(
+        2.0 / 3.0, ServingUnits.Cup, Cals: 120, P: 5, F: 2, CTotal: 32, CFiber: 12));
+
     public static Food AlmondButter_1_Tbsp { get; } = new("almond butter", new(
         1, ServingUnits.Tablespoon, Cals: 130, P: 4.5, F: 11.5, CTotal: 4.5, CFiber: 2.5));
+
     public static Food AlmondMilk_2_Cup { get; } = new("almond milk", new(
         2, ServingUnits.Cup, Cals: 59, P: 2, F: 5.1, CTotal: 2, CFiber: 2));
 
@@ -61,6 +65,9 @@ internal static class Foods
     public static Food FatToCarbConversion { get; } = new Food("fat to carb conversion", new(
         1, ServingUnits.Gram, Cals: 9, P: 0, F: 1, CTotal: -9.0 / 4.0, CFiber: 0), IsConversion: true);
 
+    public static Food ProteinToFatConversion { get; } = new Food("protein to fat conversion", new(
+        1, ServingUnits.Gram, Cals: 9, P: -9.0 / 4.0, F: 1, CTotal: 0, CFiber: 0), IsConversion: true);
+
     public static Food Gluten_30_Grams { get; } = new("gluten", new(
         // 0.25, ServingUnits.Cup,
         30, ServingUnits.Gram,
@@ -104,6 +111,9 @@ internal static class Foods
     public static Food SunflowerSeeds_30_Grams { get; } = new("Sunflower seeds", new(
         30, ServingUnits.Gram, Cals: 180, P: 6, F: 15, CTotal: 6, CFiber: 3));
 
+    public static Food ToastedWheatfuls { get; } = new("toasted wheatfuls", new(
+        50, ServingUnits.Gram, Cals: 200, P: 7, F: 1.5, CTotal: 48, CFiber: 8));
+
     public static Food Tofu_1_5_Block { get; } = new("tofu", new(
         0.2, ServingUnits.BlockTofu, Cals: 130, P: 14, F: 7, CTotal: 2, CFiber: 2));
 
@@ -129,6 +139,8 @@ internal static class Foods
     public static Food Oatmeal_Sprouts_1_Scoop { get; } = Oatmeal_Sprouts_1_2_Cup.Convert(ServingUnits.Scoop);
     public static Food Oatmeal_Walmart_1_Scoop { get; } = Oatmeal_Walmart_1_2_Cup.Convert(ServingUnits.Scoop);
     public static Food PeaProtein_1_Scoop { get; } = PeaProtein_1_3_Cup.Convert(ServingUnits.Scoop);
+    public static Food PumpkinSeeds_1_Scoop { get; } = PumpkinSeeds_30_Grams
+        .Copy(ServingUnits.Cup, newServings: 0.25).Convert(ServingUnits.Scoop);
     public static Food WheatBran_1_Scoop { get; } = WheatBran_1_2_Cup.Convert(ServingUnits.Scoop);
     public static Food PeaProtein_1_Tbsp { get; } = PeaProtein_1_3_Cup.Convert(ServingUnits.Tablespoon);
 }

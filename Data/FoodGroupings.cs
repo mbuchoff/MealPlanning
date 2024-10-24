@@ -1,21 +1,31 @@
-﻿namespace SystemOfEquations.Data;
+﻿using static SystemOfEquations.FoodGrouping;
+
+namespace SystemOfEquations.Data;
 
 internal static class FoodGroupings
 {
+    public static FoodGrouping AllBran(bool withEdamame = true) => new(
+        "All Bran",
+        [new(Foods.AlmondMilk_2_Cup, Servings: 0.5)],
+        Foods.PumpkinSeeds_1_Scoop,
+        withEdamame ? Foods.Edamame_1_Scoop : Foods.ProteinToFatConversion,
+        Foods.AllBran_2_3_Cup,
+        PreparationMethodEnum.PrepareAsNeeded);
+
     public static FoodGrouping ApplesBlueberriesOatmealAndEdamame { get; } = new(
         "apples, blueberries, oatmeal, and edamame",
         [new(Foods.Apple, Servings: 1), new(Foods.BlueBerries_1_Scoop, Servings: 2)],
         Foods.Edamame_1_Scoop,
         Foods.ChiaSeeds_2_5_Tbsp,
         Foods.Oatmeal_Sprouts_1_Scoop,
-        FoodGrouping.PreparationMethodEnum.PrepareAsNeeded);
+        PreparationMethodEnum.PrepareAsNeeded);
 
     public static FoodGrouping OatmealWithAlmondButter { get; } = new(
         "oatmeal with almond butter",
         Foods.Oatmeal_Sprouts_1_Scoop,
         Foods.AlmondButter_1_Tbsp,
         Foods.WheatBran_1_Scoop,
-        FoodGrouping.PreparationMethodEnum.PrepareAsNeeded);
+        PreparationMethodEnum.PrepareAsNeeded);
 
     public static FoodGrouping BlueBerryOatmeal { get; } = new(
         "blueberry oatmeal",
@@ -23,14 +33,14 @@ internal static class FoodGroupings
         Foods.WheatBran_1_Scoop,
         Foods.ChiaSeeds_2_5_Tbsp,
         Foods.Oatmeal_Sprouts_1_Scoop,
-        FoodGrouping.PreparationMethodEnum.PrepareAsNeeded);
+        PreparationMethodEnum.PrepareAsNeeded);
 
     public static FoodGrouping OatmealAndEdamame { get; } = new(
         "Oatmeal and edamame",
         Foods.Edamame_1_Scoop,
         Foods.AlmondButter_1_Tbsp,
         Foods.Oatmeal_Sprouts_1_Scoop,
-        FoodGrouping.PreparationMethodEnum.PrepareAsNeeded);
+        PreparationMethodEnum.PrepareAsNeeded);
 
     public static FoodGrouping ProteinShake { get; } = new(
         "protein shake",
@@ -38,61 +48,69 @@ internal static class FoodGroupings
         Foods.PeaProtein_1_Scoop,
         Foods.ChiaSeeds_2_5_Tbsp,
         Foods.BlueBerries_1_Scoop,
-        FoodGrouping.PreparationMethodEnum.PrepareAsNeeded);
+        PreparationMethodEnum.PrepareAsNeeded);
 
     public static FoodGrouping Rice_BlackBeans_OliveOil { get; } = new(
         "rice and beans",
         Foods.BlackBeans_Sprouts_45g,
         Foods.OliveOil_1_Tbsp,
         Foods.BrownRice_45_Grams,
-        FoodGrouping.PreparationMethodEnum.PrepareInAdvance);
+        PreparationMethodEnum.PrepareInAdvance);
 
     public static FoodGrouping Rice_BlackBeans_PumpkinSeeds { get; } = new(
         "rice and beans",
         Foods.BlackBeans_Sprouts_45g,
         Foods.PumpkinSeeds_30_Grams,
         Foods.BrownRice_45_Grams,
-        FoodGrouping.PreparationMethodEnum.PrepareInAdvance);
+        PreparationMethodEnum.PrepareInAdvance);
 
     public static FoodGrouping PearledBarley_BlackBeans_OliveOil { get; } = new(
         "pearled barley and beans",
         Foods.BlackBeans_Sprouts_45g,
         Foods.OliveOil_1_Tbsp,
         Foods.PearledBarley_45_Grams,
-        FoodGrouping.PreparationMethodEnum.PrepareInAdvance);
+        PreparationMethodEnum.PrepareInAdvance);
 
     public static FoodGrouping PearledBarley_BlackBeans_PumpkinSeeds { get; } = new(
         "pearled barley and beans",
         Foods.BlackBeans_Sprouts_45g,
         Foods.PumpkinSeeds_30_Grams,
         Foods.PearledBarley_45_Grams,
-        FoodGrouping.PreparationMethodEnum.PrepareInAdvance);
+        PreparationMethodEnum.PrepareInAdvance);
 
     public static FoodGrouping Seitan { get; } = new(
         "seitan",
         Foods.Seitan_Sprouts_Yeast_1_Gram_Gluten_4x,
         Foods.OliveOil_1_Tbsp,
         Foods.WheatBerries_45_Grams,
-        FoodGrouping.PreparationMethodEnum.PrepareInAdvance);
+        PreparationMethodEnum.PrepareInAdvance);
+
+    public static FoodGrouping ToastedWheatfuls { get; } = new(
+        "toasted wheatfuls",
+        [new(Foods.AlmondMilk_2_Cup, Servings: 0.5)],
+        Foods.ToastedWheatfuls,
+        Foods.PumpkinSeeds_30_Grams,
+        Foods.Edamame_1_Scoop,
+        PreparationMethodEnum.PrepareAsNeeded);
 
     public static FoodGrouping Tofu { get; } = new(
         "tofu",
         Foods.Tofu_1_5_Block,
         Foods.PumpkinSeeds_30_Grams,
         Foods.Farro_52_Gram,
-        FoodGrouping.PreparationMethodEnum.PrepareInAdvance);
+        PreparationMethodEnum.PrepareInAdvance);
 
     public static FoodGrouping PearledBarleyAndRice { get; } = new(
         "pearled barley and rice",
         Foods.PearledBarley_45_Grams,
         Foods.OliveOil_1_Tbsp,
         Foods.BrownRice_45_Grams,
-        FoodGrouping.PreparationMethodEnum.PrepareInAdvance);
+        PreparationMethodEnum.PrepareInAdvance);
 
     public static FoodGrouping WorkoutShake { get; } = new(
         "workout shake",
         Foods.PeaProtein_1_Scoop,
         Foods.FatToCarbConversion,
         Foods.OrangeJuice_1_Cup,
-        FoodGrouping.PreparationMethodEnum.PrepareAsNeeded);
+        PreparationMethodEnum.PrepareAsNeeded);
 }
