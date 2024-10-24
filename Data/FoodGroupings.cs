@@ -10,6 +10,14 @@ internal static class FoodGroupings
         Foods.Oatmeal_Sprouts_1_Scoop,
         FoodGrouping.PreparationMethodEnum.PrepareAsNeeded);
 
+    public static FoodGrouping ToastedWheatfuls { get; } = new(
+        "toasted wheatfuls",
+        [new(Foods.AlmondMilk_2_Cup, Servings: 0.5)],
+        Foods.ToastedWheatfuls,
+        Foods.PumpkinSeeds_30_Grams,
+        Foods.Edamame_1_Scoop,
+        FoodGrouping.PreparationMethodEnum.PrepareAsNeeded);
+
     public static FoodGrouping OatmealWithAlmondButter { get; } = new(
         "oatmeal with almond butter",
         Foods.Oatmeal_Sprouts_1_Scoop,
