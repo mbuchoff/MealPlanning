@@ -2,6 +2,9 @@
 
 internal static class Foods
 {
+    public static Food AllBran_2_3_Cup { get; } = new("All Bran", new(
+        2.0 / 3.0, ServingUnits.Cup, Cals: 120, P: 5, F: 2, CTotal: 32, CFiber: 12));
+
     public static Food AlmondButter_1_Tbsp { get; } = new("almond butter", new(
         1, ServingUnits.Tablespoon, Cals: 130, P: 4.5, F: 11.5, CTotal: 4.5, CFiber: 2.5));
 
@@ -136,6 +139,8 @@ internal static class Foods
     public static Food Oatmeal_Sprouts_1_Scoop { get; } = Oatmeal_Sprouts_1_2_Cup.Convert(ServingUnits.Scoop);
     public static Food Oatmeal_Walmart_1_Scoop { get; } = Oatmeal_Walmart_1_2_Cup.Convert(ServingUnits.Scoop);
     public static Food PeaProtein_1_Scoop { get; } = PeaProtein_1_3_Cup.Convert(ServingUnits.Scoop);
+    public static Food PumpkinSeeds_1_Scoop { get; } = PumpkinSeeds_30_Grams
+        .Copy(ServingUnits.Cup, newServings: 0.25).Convert(ServingUnits.Scoop);
     public static Food WheatBran_1_Scoop { get; } = WheatBran_1_2_Cup.Convert(ServingUnits.Scoop);
     public static Food PeaProtein_1_Tbsp { get; } = PeaProtein_1_3_Cup.Convert(ServingUnits.Tablespoon);
 }

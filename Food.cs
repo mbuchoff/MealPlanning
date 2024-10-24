@@ -12,6 +12,15 @@ internal record Food(
             new(amountWater.Base * d, amountWater.PerServing * d);
     }
 
+    public Food Copy(ServingUnit newServingUnit, double newServings) =>
+        new(Name,
+            new(newServings, newServingUnit,
+                NutritionalInformation.Cals,
+                NutritionalInformation.P,
+                NutritionalInformation.F,
+                NutritionalInformation.CTotal,
+                NutritionalInformation.CFiber));
+
     public string ToString(double quantity) =>
         $"{NutritionalInformation.ServingUnit.ToString(quantity * NutritionalInformation.Servings)} {Name}" +
         $"{(Water == null ? "" : $", {(Water.Base + Water.PerServing * quantity):f1} cups water")}";
@@ -22,7 +31,9 @@ internal record Food(
 
         if (servingUnit.UnitConversion.CentralUnit != newServingUnit.UnitConversion.CentralUnit)
         {
-            throw new Exception($"{servingUnit} has a different central unit than {newServingUnit}.");
+            throw new Exception(
+                $"Cannot convert {Name} from {servingUnit} to {newServingUnit} because they have a different " +
+                $"{nameof(newServingUnit.UnitConversion.CentralUnit)}.");
         }
 
         var multiplier = newServingUnit.UnitConversion.NumCentralUnitsInThisUnit /
