@@ -20,6 +20,14 @@ internal static class FoodGroupings
         Foods.Oatmeal_Sprouts_1_Scoop,
         PreparationMethodEnum.PrepareAsNeeded);
 
+    public static FoodGrouping Ezekial(bool withEdamame = true) => new(
+        "Ezekial",
+        [new(Foods.AlmondMilk_2_Cup, Servings: 0.5)],
+        Foods.PumpkinSeeds_1_Scoop,
+        withEdamame ? Foods.Edamame_1_Scoop : Foods.ProteinToFatConversion,
+        Foods.Ezeliel_1_2_Cup,
+        PreparationMethodEnum.PrepareAsNeeded);
+
     public static FoodGrouping OatmealWithAlmondButter { get; } = new(
         "oatmeal with almond butter",
         Foods.Oatmeal_Sprouts_1_Scoop,
