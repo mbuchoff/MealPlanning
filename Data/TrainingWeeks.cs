@@ -86,7 +86,7 @@ internal static class TrainingWeeks
                     [new(Foods.BlueBerries_1_Scoop, 3)],
                     Foods.PeaProtein_1_Scoop,
                     Foods.AlmondMilk_2_Cup,
-                    Foods.Oatmeal_Sprouts_1_Scoop,
+                    Foods.Oats_1_Scoop,
                     FoodGrouping.PreparationMethodEnum.PrepareAsNeeded)),
             new("3-5 hours after last meal",
                 new(P: PROTEIN_PER_MEAL_ON_NONWORKOUT_DAY, F: 20, C: 60),

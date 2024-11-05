@@ -2,9 +2,6 @@
 
 internal static class Foods
 {
-    public static Food AllBran_2_3_Cup { get; } = new("All Bran", new(
-        2.0 / 3.0, ServingUnits.Cup, Cals: 120, P: 5, F: 2, CTotal: 32, CFiber: 12));
-
     public static Food AlmondButter_1_Tbsp { get; } = new("almond butter", new(
         1, ServingUnits.Tablespoon, Cals: 130, P: 4.5, F: 11.5, CTotal: 4.5, CFiber: 2.5));
 
@@ -43,7 +40,7 @@ internal static class Foods
         0.5, ServingUnits.Cup, Cals: 140, P: 5, F: 2.5, CTotal: 27, CFiber: 4));
 
     // https://shop.sprouts.com/product/7931/rolled-oats
-    public static Food Oatmeal_Sprouts_1_2_Cup { get; } = new("oatmeal from Sprouts", new(
+    public static Food Oats_1_2_Cup { get; } = new("oats", new(
         0.5, ServingUnits.Cup, Cals: 170, P: 6, F: 3, CTotal: 30, CFiber: 5));
 
     public static Food OliveOil_1_Tbsp { get; } = new("olive oil", new(
@@ -77,16 +74,7 @@ internal static class Foods
         Cals: 120,
         P: 23, F: 1, CTotal: 4, CFiber: 0));
 
-    public static Food Gluten_4_Tbsp { get; } = new(
-        Gluten_30_Grams.Name,
-        new NutritionalInformation(4, ServingUnits.Tablespoon,
-            Gluten_30_Grams.NutritionalInformation.Cals,
-            Gluten_30_Grams.NutritionalInformation.P,
-            Gluten_30_Grams.NutritionalInformation.F,
-            Gluten_30_Grams.NutritionalInformation.CTotal,
-            Gluten_30_Grams.NutritionalInformation.CFiber),
-        Gluten_30_Grams.Water,
-        Gluten_30_Grams.IsConversion);
+    public static Food Gluten_4_Tbsp { get; } = Gluten_30_Grams.Copy(ServingUnits.Tablespoon, 4);
 
     // https://shop.sprouts.com/product/57875/pea-isolate-80percent-protein-powder
     public static Food PeaProtein_1_3_Cup { get; } = new("pea protein", new(
@@ -98,6 +86,10 @@ internal static class Foods
         45, ServingUnits.Gram, Cals: 160, P: 4, F: 0.5, CTotal: 35, CFiber: 7),
         Water: new(Base: 1.5, PerServing: 0.6));
 
+    // https://shop.sprouts.com/store/sprouts/products/17847854-organic-tri-color-quinoa-bulk-1-lb
+    public static Food Quinoa_45_Grams { get; } = new("quinoa", new(
+        45, ServingUnits.Gram, Cals: 170, P: 6, F: 2.5, CTotal: 29, CFiber: 3));
+
     // https://shop.sprouts.com/product/7654/organic-dark-red-kidney-beans
     public static Food RedKidneyBeans_1_4_Cup { get; } = new("red kidney beans", new(
         1.0 / 4, ServingUnits.Cup, Cals: 150, P: 10, F: 0, CTotal: 28, CFiber: 7));
@@ -105,10 +97,6 @@ internal static class Foods
     // https://shop.sprouts.com/product/7706/organic-split-red-lentils
     public static Food RedLentils_1_4_Cup { get; } = new("red lentils", new(
         1.0 / 4, ServingUnits.Cup, Cals: 170, P: 11, F: 1, CTotal: 30, CFiber: 5));
-
-    // https://shop.sprouts.com/product/22870/10-bean-soup-mix
-    public static Food Sprouts_10_Bean_Soup_Mix_35_Grams { get; } = new("Sprouts 10-bean soup mix", new(
-        35, ServingUnits.Gram, Cals: 120, P: 8, F: 0, CTotal: 22, CFiber: 5));
 
     // https://shop.sprouts.com/product/55813/organic-raw-hulled-sunflower-seeds
     public static Food SunflowerSeeds_30_Grams { get; } = new("Sunflower seeds", new(
@@ -139,8 +127,7 @@ internal static class Foods
 
     public static Food Edamame_1_Scoop { get; } = new Food("edamame",
         new(1 / 3.0, ServingUnits.Cup, Cals: 130, P: 14, F: 5, CTotal: 9, CFiber: 6)).Convert(ServingUnits.Scoop);
-    public static Food Oatmeal_Sprouts_1_Scoop { get; } = Oatmeal_Sprouts_1_2_Cup.Convert(ServingUnits.Scoop);
-    public static Food Oatmeal_Walmart_1_Scoop { get; } = Oatmeal_Walmart_1_2_Cup.Convert(ServingUnits.Scoop);
+    public static Food Oats_1_Scoop { get; } = Oats_1_2_Cup.Convert(ServingUnits.Scoop);
     public static Food PeaProtein_1_Scoop { get; } = PeaProtein_1_3_Cup.Convert(ServingUnits.Scoop);
     public static Food PumpkinSeeds_1_Scoop { get; } = PumpkinSeeds_30_Grams
         .Copy(ServingUnits.Cup, newServings: 0.25).Convert(ServingUnits.Scoop);

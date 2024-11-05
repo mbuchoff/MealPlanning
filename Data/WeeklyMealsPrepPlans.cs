@@ -29,7 +29,7 @@ internal class WeeklyMealsPrepPlans
         Foods.AlmondButter_1_Tbsp,
         Foods.BlueBerries_1_Scoop,
         Foods.ChiaSeeds_2_5_Tbsp,
-        Foods.Oatmeal_Sprouts_1_Scoop,
+        Foods.Oats_1_Scoop,
         Foods.PeaProtein_1_Scoop,
     ];
 }
