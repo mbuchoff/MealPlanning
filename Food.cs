@@ -12,15 +12,6 @@ internal record Food(
             new(amountWater.Base * d, amountWater.PerServing * d);
     }
 
-    public Food Copy(ServingUnit newServingUnit, double newServings) =>
-        new(Name,
-            new(newServings, newServingUnit,
-                NutritionalInformation.Cals,
-                NutritionalInformation.P,
-                NutritionalInformation.F,
-                NutritionalInformation.CTotal,
-                NutritionalInformation.CFiber));
-
     public string ToString(double quantity) =>
         $"{NutritionalInformation.ServingUnit.ToString(quantity * NutritionalInformation.Servings)} {Name}" +
         $"{(Water == null ? "" : $", {(Water.Base + Water.PerServing * quantity):f1} cups water")}";

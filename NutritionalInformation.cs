@@ -1,24 +1,34 @@
-﻿namespace SystemOfEquations;
+﻿using SystemOfEquations.Extensions;
+
+namespace SystemOfEquations;
 
 internal record NutritionalInformation(
-    double Servings, ServingUnit ServingUnit,
+    IEnumerable<(double Servings, ServingUnit ServingUnit)> ServingInfo,
     double Cals,
     double P,
     double F,
     double CTotal, double CFiber)
 {
-    public NutritionalInformation Combine(NutritionalInformation that, double ratio)
+    public NutritionalInformation Combine(NutritionalInformation that, ServingUnit servingUnit, double ratio)
     {
-        if (this.ServingUnit != that.ServingUnit)
+        (double Servings, ServingUnit ServingUnit)? maybeThisServingInfo = ServingInfo
+            .FirstOrDefault(si => si.ServingUnit == servingUnit);
+        (double Servings, ServingUnit ServingUnit)? maybeThatServingInfo = that.ServingInfo
+            .FirstOrDefault(si => si.ServingUnit == servingUnit);
+
+        if (maybeThisServingInfo == null || maybeThisServingInfo == null)
         {
-            throw new Exception($"{nameof(ServingUnit)}s are different");
+            throw new Exception($"Cannot find {servingUnit} in both {nameof(NutritionalInformation)}s");
         }
 
-        var thisMultiplier = 1.0 / Servings;
-        var thatMultiplier = ratio / that.Servings;
+        var thisServingInfo = maybeThatServingInfo.Value;
+        var thatServingInfo = maybeThatServingInfo.Value;
+
+        var thisMultiplier = 1.0 / thisServingInfo.Servings;
+        var thatMultiplier = ratio / thatServingInfo.Servings;
 
         return new(
-            1, ServingUnit,
+            [(1, thisServingInfo.ServingUnit)],
             (Cals * thisMultiplier) + (that.Cals * thatMultiplier),
             (P * thisMultiplier) + (that.P * thatMultiplier),
             (F * thisMultiplier) + (that.F * thatMultiplier),
@@ -29,7 +39,7 @@ internal record NutritionalInformation(
     public Macros Macros => new(P, F, CTotal - CFiber);
 
     public static NutritionalInformation operator *(NutritionalInformation n, double d) => new(
-        n.Servings * d, n.ServingUnit,
+        n.ServingInfo.Select(si => (si.Servings * d, si.ServingUnit)).ToList(),
         n.Cals * d,
         n.P * d,
         n.F * d,
@@ -44,7 +54,7 @@ internal static class NutritionalInformationExtensions
     public static NutritionalInformation Sum(
         this IEnumerable<NutritionalInformation> nutritionalInformations,
         double newServings, ServingUnit newServingUnit) => new(
-            newServings, newServingUnit,
+            [(newServings, newServingUnit)],
             nutritionalInformations.Sum(n => n.Cals),
             nutritionalInformations.Sum(n => n.P),
             nutritionalInformations.Sum(n => n.F),

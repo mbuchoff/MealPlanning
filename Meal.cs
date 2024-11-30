@@ -21,7 +21,7 @@ internal class Meal
             new(pMacros.C, fMacros.C, cMacros.C, remainingMacros.C));
         Name = name;
         Macros = macros;
-        Helpings = foodGrouping.StaticHelpings.Append(
+        Helpings = foodGrouping.StaticHelpings.Concat(
         [
             new Helping(foodGrouping.PFood, pFoodServings),
             new Helping(foodGrouping.FFood, fFoodServings),
