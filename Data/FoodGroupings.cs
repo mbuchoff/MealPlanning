@@ -17,7 +17,7 @@ internal static class FoodGroupings
         [new(Foods.AlmondMilk_2_Cup, Servings: 0.5)],
         Foods.PumpkinSeeds_1_Scoop,
         withEdamame ? Foods.Edamame_1_Scoop : Foods.ProteinToFatConversion,
-        Foods.Ezeliel_1_2_Cup,
+        Foods.Ezeliel_Low_Sodium_1_2_Cup,
         PreparationMethodEnum.PrepareAsNeeded);
 
     public static FoodGrouping OatmealWithAlmondButter { get; } = new(
