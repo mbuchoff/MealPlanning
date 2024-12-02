@@ -5,21 +5,29 @@ internal record FoodGrouping
     internal FoodGrouping(
         string name,
         IList<Helping> staticHelpings,
-        Food pFood,
-        Food fFood,
-        Food cFood,
+        Food pFood, ServingUnit pServingUnit,
+        Food fFood, ServingUnit fServingUnit,
+        Food cFood, ServingUnit cServingUnit,
         PreparationMethodEnum preparationMethod)
     {
         Name = name;
         StaticHelpings = staticHelpings;
         PFood = pFood;
+        PServingUnit = pServingUnit;
         FFood = fFood;
+        FServingUnit = fServingUnit;
         CFood = cFood;
+        CServingUnit = cServingUnit;
         PreparationMethod = preparationMethod;
     }
 
-    internal FoodGrouping(string name, Food pFood, Food fFood, Food cFood, PreparationMethodEnum preparationMethod) :
-        this(name, [], pFood, fFood, cFood, preparationMethod)
+    internal FoodGrouping(
+        string name,
+        Food pFood, ServingUnit pServingUnit,
+        Food fFood, ServingUnit fServingUnit,
+        Food cFood, ServingUnit cServingUnit,
+        PreparationMethodEnum preparationMethod) :
+            this(name, [], pFood, pServingUnit, fFood, fServingUnit, cFood, cServingUnit, preparationMethod)
     {
 
     }
@@ -27,8 +35,11 @@ internal record FoodGrouping
     public string Name { get; }
     public IList<Helping> StaticHelpings { get; }
     public Food PFood { get; }
+    public ServingUnit PServingUnit { get; }
     public Food FFood { get; }
+    public ServingUnit FServingUnit { get; }
     public Food CFood { get; }
+    public ServingUnit CServingUnit { get; }
 
     public enum PreparationMethodEnum { PrepareInAdvance, PrepareAsNeeded }
     public PreparationMethodEnum PreparationMethod { get; }
