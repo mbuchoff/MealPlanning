@@ -6,7 +6,10 @@ internal static class FoodGroupings
 {
     public static FoodGrouping ApplesBlueberriesOatmealAndEdamame { get; } = new(
         "apples, blueberries, oatmeal, and edamame",
-        [new(Foods.Apple, Servings: 1), new(Foods.BlueBerries_1_Scoop, Servings: 2)],
+        [
+            new(Foods.Apple, ServingUnits.Apple, Servings: 1),
+            new(Foods.BlueBerries_1_Scoop, ServingUnits.Scoop, Servings: 2),
+        ],
         Foods.Edamame_1_Scoop,
         Foods.ChiaSeeds_2_5_Tbsp,
         Foods.Oats_1_Scoop,
@@ -14,7 +17,7 @@ internal static class FoodGroupings
 
     public static FoodGrouping Ezekial(bool withEdamame = true) => new(
         "Ezekial",
-        [new(Foods.AlmondMilk_2_Cup, Servings: 0.5)],
+        [new(Foods.AlmondMilk_2_Cup, ServingUnits.Cup, Servings: 0.5)],
         Foods.PumpkinSeeds,
         withEdamame ? Foods.Edamame_1_Scoop : Foods.ProteinToFatConversion,
         Foods.Ezeliel_1_2_Cup,
@@ -29,7 +32,7 @@ internal static class FoodGroupings
 
     public static FoodGrouping BlueBerryOatmeal { get; } = new(
         "blueberry oatmeal",
-        [new(Foods.BlueBerries_1_Scoop, Servings: 3)],
+        [new(Foods.BlueBerries_1_Scoop, ServingUnits.Scoop, Servings: 3)],
         Foods.WheatBran_1_Scoop,
         Foods.ChiaSeeds_2_5_Tbsp,
         Foods.Oats_1_Scoop,
@@ -44,7 +47,7 @@ internal static class FoodGroupings
 
     public static FoodGrouping ProteinShake { get; } = new(
         "protein shake",
-        [new(Foods.AlmondMilk_2_Cup, Servings: 1)],
+        [new(Foods.AlmondMilk_2_Cup, ServingUnits.Cup, Servings: 1)],
         Foods.PeaProtein_1_Scoop,
         Foods.ChiaSeeds_2_5_Tbsp,
         Foods.BlueBerries_1_Scoop,
@@ -60,14 +63,14 @@ internal static class FoodGroupings
     public static FoodGrouping Rice_BlackBeans_PumpkinSeeds { get; } = new(
         "rice and beans",
         Foods.BlackBeans_Sprouts_45g,
-        Foods.PumpkinSeeds_30_Grams,
+        Foods.PumpkinSeeds,
         Foods.BrownRice_45_Grams,
         PreparationMethodEnum.PrepareInAdvance);
 
     public static FoodGrouping PearledBarley_BlackBeans_PumpkinSeeds { get; } = new(
         "pearled barley and beans",
         Foods.BlackBeans_Sprouts_45g,
-        Foods.PumpkinSeeds_30_Grams,
+        Foods.PumpkinSeeds,
         Foods.PearledBarley_45_Grams,
         PreparationMethodEnum.PrepareInAdvance);
 
@@ -81,7 +84,7 @@ internal static class FoodGroupings
     public static FoodGrouping Tofu { get; } = new(
         "tofu",
         Foods.Tofu_1_5_Block,
-        Foods.PumpkinSeeds_30_Grams,
+        Foods.PumpkinSeeds,
         Foods.Farro_52_Gram,
         PreparationMethodEnum.PrepareInAdvance);
 
