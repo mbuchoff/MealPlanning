@@ -12,25 +12,34 @@ internal record Food(
             new(amountWater.Base * d, amountWater.PerServing * d);
     }
 
-    public string ToString(double quantity) =>
-        $"{NutritionalInformation.ServingUnit.ToString(quantity * NutritionalInformation.Servings)} {Name}" +
-        $"{(Water == null ? "" : $", {(Water.Base + Water.PerServing * quantity):f1} cups water")}";
+    public string ToString(ServingUnit servingUnit, double quantity)
+    {
+        var servingInfo = NutritionalInformation.ServingInfo.Single(si => si.ServingUnit ==  servingUnit);
+
+        return
+            $"{servingInfo.ServingUnit.ToString(quantity * servingInfo.Servings)} {Name}" +
+            $"{(Water == null ? "" : $", {(Water.Base + Water.PerServing * quantity):f1} cups water")}";
+    }
 
     public Food Convert(ServingUnit newServingUnit, AmountWater? water = null)
     {
-        var servingUnit = NutritionalInformation.ServingUnit;
+        var servingInfos = NutritionalInformation.ServingInfo
+            .Where(si => si.ServingUnit.UnitConversion.CentralUnit == newServingUnit.UnitConversion.CentralUnit)
+            .ToList();
 
-        if (servingUnit.UnitConversion.CentralUnit != newServingUnit.UnitConversion.CentralUnit)
+        if (servingInfos.Count == 0)
         {
             throw new Exception(
-                $"Cannot convert {Name} from {servingUnit} to {newServingUnit} because they have a different " +
+                $"Cannot convert {Name} to {newServingUnit} because there is no matching central unit: " +
                 $"{nameof(newServingUnit.UnitConversion.CentralUnit)}.");
         }
 
-        var multiplier = newServingUnit.UnitConversion.NumCentralUnitsInThisUnit /
-            (NutritionalInformation.Servings * servingUnit.UnitConversion.NumCentralUnitsInThisUnit);
+        (var servings, var servingUnit) = servingInfos.First();
 
-        return new(Name, new(1, newServingUnit,
+        var multiplier = newServingUnit.UnitConversion.NumCentralUnitsInThisUnit /
+            (servings * servingUnit.UnitConversion.NumCentralUnitsInThisUnit);
+
+        return new(Name, new([(1, newServingUnit)],
             NutritionalInformation.Cals * multiplier,
             NutritionalInformation.P * multiplier,
             NutritionalInformation.F * multiplier,
