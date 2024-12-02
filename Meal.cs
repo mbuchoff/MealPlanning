@@ -1,6 +1,5 @@
 ﻿using System.Text;
 using SystemOfEquations.Data;
-using SystemOfEquations.Extensions;
 
 namespace SystemOfEquations;
 
@@ -23,9 +22,9 @@ internal class Meal
         Macros = macros;
         Helpings = foodGrouping.StaticHelpings.Concat(
         [
-            new Helping(foodGrouping.PFood, pFoodServings),
-            new Helping(foodGrouping.FFood, fFoodServings),
-            new Helping(foodGrouping.CFood, cFoodServings),
+            new Helping(foodGrouping.PFood, foodGrouping.PServingUnit, pFoodServings),
+            new Helping(foodGrouping.FFood, foodGrouping.FServingUnit, fFoodServings),
+            new Helping(foodGrouping.CFood, foodGrouping.CServingUnit, cFoodServings),
         ]);
 
         foreach (var helping in Helpings)
