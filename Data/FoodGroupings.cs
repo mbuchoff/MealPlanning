@@ -82,7 +82,7 @@ internal static class FoodGroupings
         "seitan",
         Foods.Seitan_Sprouts_Yeast_1_Gram_Gluten_4x,
         Foods.OliveOil_1_Tbsp,
-        Foods.WheatBerries_45_Grams,
+        Foods.BrownRice_45_Grams,
         PreparationMethodEnum.PrepareInAdvance);
 
     public static FoodGrouping ToastedWheatfuls { get; } = new(
