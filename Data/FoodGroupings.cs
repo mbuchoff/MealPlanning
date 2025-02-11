@@ -35,9 +35,9 @@ internal static class FoodGroupings
         Foods.Oats_1_Scoop,
         PreparationMethodEnum.PrepareAsNeeded);
 
-    public static FoodGrouping OatmealAndEdamame { get; } = new(
+    public static FoodGrouping Oatmeal(bool withEdamame = true) => new(
         "Oatmeal and edamame",
-        Foods.Edamame_1_Scoop,
+        withEdamame ? Foods.Edamame_1_Scoop : Foods.ProteinToFatConversion,
         Foods.AlmondButter_1_Tbsp,
         Foods.Oats_1_Scoop,
         PreparationMethodEnum.PrepareAsNeeded);
