@@ -155,7 +155,7 @@ internal static class TrainingWeeks
             fMultiplier: percent / 100,
             cMultiplier: percent / 100);
 
-    private const double TARGET_WEIGHT = 170;
+    private const double TARGET_WEIGHT = 175;
     private const int MEALS_PER_DAY = 5;
 
     // +1 to include workout shake
