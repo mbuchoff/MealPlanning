@@ -1,4 +1,6 @@
-﻿namespace SystemOfEquations.Data;
+﻿using static SystemOfEquations.FoodGrouping;
+
+namespace SystemOfEquations.Data;
 
 internal static class TrainingWeeks
 {
@@ -125,7 +127,12 @@ internal static class TrainingWeeks
                 FoodGroupings.WorkoutShake),
             new("Bedtime",
                 new(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 20, C: 120),
-                FoodGroupings.Oatmeal(withEdamame: false)),
+                new("Oatmeal and edamame",
+                    [new(Foods.Ezekiel_English_Muffin, 3)],
+                    Foods.ProteinToCarbConversion,
+                    Foods.AlmondButter_1_Tbsp,
+                    Foods.Oats_1_Scoop,
+                    PreparationMethodEnum.PrepareAsNeeded)),
         ],
         xfitMeals:
         [
@@ -146,7 +153,12 @@ internal static class TrainingWeeks
                 FoodGroupings.WorkoutShake),
             new("Bedtime",
                 new(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 20, C: 120),
-                FoodGroupings.Oatmeal(withEdamame: false)),
+                new("Oatmeal and edamame",
+                    [new(Foods.Ezekiel_English_Muffin, 3)],
+                    Foods.ProteinToCarbConversion,
+                    Foods.AlmondButter_1_Tbsp,
+                    Foods.Oats_1_Scoop,
+                    PreparationMethodEnum.PrepareAsNeeded)),
         ]);
 
     internal static TrainingWeek MuscleGain3PlusPercentTrainingWeek(double percent) =>

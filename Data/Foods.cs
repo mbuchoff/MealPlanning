@@ -27,11 +27,14 @@ internal static class Foods
     public static Food ChiaSeeds_2_5_Tbsp { get; } = new("chia seeds", new(
         2.5, ServingUnits.Tablespoon, Cals: 150, P: 5, F: 9, CTotal: 13, CFiber: 10));
 
-    public static Food Ezeliel_1_2_Cup { get; } = new("Ezekiel", new(
+    public static Food Ezeliel_Cereal_1_2_Cup { get; } = new("Ezekiel cereal", new(
         0.5, ServingUnits.Cup, Cals: 180, P: 8, F: 1, CTotal: 35, CFiber: 6));
 
-    public static Food Ezeliel_Low_Sodium_1_2_Cup { get; } = new("Ezekiel, low sodium", new(
+    public static Food Ezeliel_Cereal_Low_Sodium_1_2_Cup { get; } = new("Ezekiel cereal, low sodium", new(
         0.5, ServingUnits.Cup, Cals: 190, P: 8, F: 1, CTotal: 38, CFiber: 7));
+
+    public static Food Ezekiel_English_Muffin { get; } = new("Ezekiel english muffin", new(
+        1, ServingUnits.Apple, Cals: 90, P: 6, F: 0.5, CTotal: 17, CFiber: 3));
 
     public static Food NutritionalYeast_Sprouts_16_Grams { get; } = new("nutritional yeast from Sprouts", new(
         // 2, ServingUnits.Tablespoon,
@@ -66,7 +69,10 @@ internal static class Foods
         Water: new(Base: 0, PerServing: 1.333333333332));
 
     public static Food FatToCarbConversion { get; } = new Food("fat to carb conversion", new(
-        1, ServingUnits.Gram, Cals: 9, P: 0, F: 1, CTotal: -9.0 / 4.0, CFiber: 0), IsConversion: true);
+        1, ServingUnits.Gram, Cals: 0, P: 0, F: 1, CTotal: -9.0 / 4.0, CFiber: 0), IsConversion: true);
+
+    public static Food ProteinToCarbConversion { get; } = new Food("protein to carb conversion", new(
+        1, ServingUnits.Gram, Cals: 0, P: -1, F: 0, CTotal: 1, CFiber: 0), IsConversion: true);
 
     public static Food ProteinToFatConversion { get; } = new Food("protein to fat conversion", new(
         1, ServingUnits.Gram, Cals: 9, P: -9.0 / 4.0, F: 1, CTotal: 0, CFiber: 0), IsConversion: true);
