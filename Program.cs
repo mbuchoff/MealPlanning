@@ -1,7 +1,7 @@
 ﻿using SystemOfEquations.Data;
 using SystemOfEquations.Todoist;
 
-var phase = Phases.MuscleGain3PlusPercent(percent: -3.13);
+var phase = Phases.MuscleGain3PlusPercent(percent: -4.85);
 
 Console.WriteLine(phase);
 Console.WriteLine(phase.MealPrepPlan);
