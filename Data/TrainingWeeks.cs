@@ -112,7 +112,7 @@ internal static class TrainingWeeks
         [
             new("Waking",
                 new(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 20, C: 60),
-                FoodGroupings.ApplesBlueberriesOatmealAndEdamame),
+                FoodGroupings.BlueberriesOatmealAndEdamame),
             new("Meal 2",
                 new(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 20, C: 80),
                 FoodGroupings.Ezekial(withEdamame: false)),
@@ -138,7 +138,7 @@ internal static class TrainingWeeks
         [
             new("Waking",
                 new(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 20, C: 60),
-                FoodGroupings.ApplesBlueberriesOatmealAndEdamame),
+                FoodGroupings.BlueberriesOatmealAndEdamame),
             new("Meal 2",
                 new(P: PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 20, C: 80),
                 FoodGroupings.Ezekial(withEdamame: false)),
