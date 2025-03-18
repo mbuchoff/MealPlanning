@@ -49,7 +49,7 @@ internal class TodoistService
 
         Console.WriteLine($"Adding task {m.Name}...");
         var parentTodoistTask = await AddTaskAsync(
-            m.Name, description: null, dueString: "every thu", parentId: null, project.Id);
+            m.Name, description: null, dueString: "every tue", parentId: null, project.Id);
         Console.WriteLine($"Added task {m.Name}");
         await Task.WhenAll(m.Helpings.Select(h => AddHelpingAsync(parentTodoistTask, h)));
     }
