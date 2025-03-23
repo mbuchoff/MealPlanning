@@ -22,7 +22,7 @@ internal record Food(
                 NutritionalInformation.CFiber));
 
     public string ToString(double quantity) =>
-        $"{NutritionalInformation.ServingUnit.ToString(quantity * NutritionalInformation.Servings)} {Name}" +
+        $"{NutritionalInformation.ServingUnit.ToString(quantity * NutritionalInformation.ServingUnits)} {Name}" +
         $"{(Water == null ? "" : $", {(Water.Base + Water.PerServing * quantity):f1} cups water")}";
 
     public Food Convert(ServingUnit newServingUnit, AmountWater? water = null)
@@ -37,7 +37,7 @@ internal record Food(
         }
 
         var multiplier = newServingUnit.UnitConversion.NumCentralUnitsInThisUnit /
-            (NutritionalInformation.Servings * servingUnit.UnitConversion.NumCentralUnitsInThisUnit);
+            (NutritionalInformation.ServingUnits * servingUnit.UnitConversion.NumCentralUnitsInThisUnit);
 
         return new(Name, new(1, newServingUnit,
             NutritionalInformation.Cals * multiplier,

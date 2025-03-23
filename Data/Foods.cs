@@ -134,6 +134,9 @@ internal static class Foods
         NutritionalYeast_Sprouts_16_Grams.NutritionalInformation.Combine(Gluten_30_Grams.NutritionalInformation, 4),
         Water: new(Base: 0, PerServing: 0.0366666666666667));
 
+    public static Food Whole_Grain_Pasta_56_Grams { get; } = new(
+        "Pasta", new(56, ServingUnits.Gram, Cals: 180, P: 8, F: 1.5, CTotal: 39, CFiber: 7));
+
     public static Food Edamame_1_Scoop { get; } = new Food("edamame",
         new(1 / 3.0, ServingUnits.Cup, Cals: 130, P: 14, F: 5, CTotal: 9, CFiber: 6)).Convert(ServingUnits.Scoop);
     public static Food Oats_1_Scoop { get; } = Oats_1_2_Cup.Convert(ServingUnits.Scoop);

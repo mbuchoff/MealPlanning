@@ -37,9 +37,17 @@ internal static class FoodGroupings
 
     public static FoodGrouping Oatmeal(bool withEdamame = true) => new(
         "Oatmeal and edamame",
-        withEdamame ? Foods.Edamame_1_Scoop : Foods.ProteinToFatConversion,
+        withEdamame ? Foods.Edamame_1_Scoop : Foods.ProteinToCarbConversion,
         Foods.AlmondButter_1_Tbsp,
         Foods.Oats_1_Scoop,
+        PreparationMethodEnum.PrepareAsNeeded);
+
+    public static FoodGrouping EnglishMuffinsAndPasta(bool withEdamame = true) => new(
+        "English muffins and pasta",
+        [new(Foods.Ezekiel_English_Muffin, Servings: 3)],
+        withEdamame ? Foods.Edamame_1_Scoop : Foods.ProteinToCarbConversion,
+        Foods.OliveOil_1_Tbsp,
+        Foods.Whole_Grain_Pasta_56_Grams,
         PreparationMethodEnum.PrepareAsNeeded);
 
     public static FoodGrouping ProteinShake { get; } = new(

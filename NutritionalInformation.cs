@@ -1,7 +1,7 @@
 ﻿namespace SystemOfEquations;
 
 internal record NutritionalInformation(
-    double Servings, ServingUnit ServingUnit,
+    double ServingUnits, ServingUnit ServingUnit,
     double Cals,
     double P,
     double F,
@@ -14,8 +14,8 @@ internal record NutritionalInformation(
             throw new Exception($"{nameof(ServingUnit)}s are different");
         }
 
-        var thisMultiplier = 1.0 / Servings;
-        var thatMultiplier = ratio / that.Servings;
+        var thisMultiplier = 1.0 / ServingUnits;
+        var thatMultiplier = ratio / that.ServingUnits;
 
         return new(
             1, ServingUnit,
@@ -29,7 +29,7 @@ internal record NutritionalInformation(
     public Macros Macros => new(P, F, CTotal - CFiber);
 
     public static NutritionalInformation operator *(NutritionalInformation n, double d) => new(
-        n.Servings * d, n.ServingUnit,
+        n.ServingUnits * d, n.ServingUnit,
         n.Cals * d,
         n.P * d,
         n.F * d,
