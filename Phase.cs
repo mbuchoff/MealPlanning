@@ -8,9 +8,9 @@ internal record Phase(string Name, WeeklyMealsPrepPlan MealPrepPlan, TrainingWee
     {
         var sb = new StringBuilder();
 
-        var totalCals = 0.0;
+        var totalCals = 0.0M;
         var totalMacros = new Macros(0, 0, 0);
-        var totalFiber = 0.0;
+        var totalFiber = 0.0M;
 
         foreach(var trainingDay in TrainingWeek.TrainingDays)
         {

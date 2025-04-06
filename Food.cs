@@ -6,13 +6,13 @@ internal record Food(
     Food.AmountWater? Water = null,
     bool IsConversion = false)
 {
-    public record AmountWater(double Base, double PerServing)
+    public record AmountWater(decimal Base, decimal PerServing)
     {
-        public static AmountWater operator *(AmountWater amountWater, double d) =>
+        public static AmountWater operator *(AmountWater amountWater, decimal d) =>
             new(amountWater.Base * d, amountWater.PerServing * d);
     }
 
-    public Food Copy(ServingUnit newServingUnit, double newServings) =>
+    public Food Copy(ServingUnit newServingUnit, decimal newServings) =>
         new(Name,
             new(newServings, newServingUnit,
                 NutritionalInformation.Cals,
@@ -21,7 +21,7 @@ internal record Food(
                 NutritionalInformation.CTotal,
                 NutritionalInformation.CFiber));
 
-    public string ToString(double quantity) =>
+    public string ToString(decimal quantity) =>
         $"{NutritionalInformation.ServingUnit.ToString(quantity * NutritionalInformation.ServingUnits)} {Name}" +
         $"{(Water == null ? "" : $", {(Water.Base + Water.PerServing * quantity):f1} cups water")}";
 

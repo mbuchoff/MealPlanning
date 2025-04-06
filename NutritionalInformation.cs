@@ -1,20 +1,20 @@
 ﻿namespace SystemOfEquations;
 
 internal record NutritionalInformation(
-    double ServingUnits, ServingUnit ServingUnit,
-    double Cals,
-    double P,
-    double F,
-    double CTotal, double CFiber)
+    decimal ServingUnits, ServingUnit ServingUnit,
+    decimal Cals,
+    decimal P,
+    decimal F,
+    decimal CTotal, decimal CFiber)
 {
-    public NutritionalInformation Combine(NutritionalInformation that, double ratio)
+    public NutritionalInformation Combine(NutritionalInformation that, decimal ratio)
     {
         if (this.ServingUnit != that.ServingUnit)
         {
             throw new Exception($"{nameof(ServingUnit)}s are different");
         }
 
-        var thisMultiplier = 1.0 / ServingUnits;
+        var thisMultiplier = 1.0M / ServingUnits;
         var thatMultiplier = ratio / that.ServingUnits;
 
         return new(
@@ -28,7 +28,7 @@ internal record NutritionalInformation(
 
     public Macros Macros => new(P, F, CTotal - CFiber);
 
-    public static NutritionalInformation operator *(NutritionalInformation n, double d) => new(
+    public static NutritionalInformation operator *(NutritionalInformation n, decimal d) => new(
         n.ServingUnits * d, n.ServingUnit,
         n.Cals * d,
         n.P * d,
@@ -43,7 +43,7 @@ internal static class NutritionalInformationExtensions
 {
     public static NutritionalInformation Sum(
         this IEnumerable<NutritionalInformation> nutritionalInformations,
-        double newServings, ServingUnit newServingUnit) => new(
+        decimal newServings, ServingUnit newServingUnit) => new(
             newServings, newServingUnit,
             nutritionalInformations.Sum(n => n.Cals),
             nutritionalInformations.Sum(n => n.P),

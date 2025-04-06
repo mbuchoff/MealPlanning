@@ -4,39 +4,8 @@ using SystemOfEquations.Extensions;
 
 namespace SystemOfEquations;
 
-internal class Meal
+internal class Meal(string name, Macros macros, FoodGrouping foodGrouping)
 {
-    public Meal(string name, Macros macros, FoodGrouping foodGrouping)
-    {
-        FoodGrouping = foodGrouping;
-
-        var pMacros = foodGrouping.PFood.NutritionalInformation.Macros;
-        var fMacros = foodGrouping.FFood.NutritionalInformation.Macros;
-        var cMacros = foodGrouping.CFood.NutritionalInformation.Macros;
-
-        var remainingMacros = macros - foodGrouping.StaticHelpings.Sum(h => h.Macros);
-        (var pFoodServings, var fFoodServings, var cFoodServings) = Equation.Solve(
-            new(pMacros.P, fMacros.P, cMacros.P, remainingMacros.P),
-            new(pMacros.F, fMacros.F, cMacros.F, remainingMacros.F),
-            new(pMacros.C, fMacros.C, cMacros.C, remainingMacros.C));
-        Name = name;
-        Macros = macros;
-        Helpings = foodGrouping.StaticHelpings.Append(
-        [
-            new Helping(foodGrouping.PFood, pFoodServings),
-            new Helping(foodGrouping.FFood, fFoodServings),
-            new Helping(foodGrouping.CFood, cFoodServings),
-        ]);
-
-        foreach (var helping in Helpings)
-        {
-            if (helping.Servings < 0 && !helping.Food.IsConversion)
-            {
-                ErrorState = $"{helping.Servings:F2} servings in {helping.Food.Name}.";
-            }
-        }
-    }
-
     public override string ToString()
     {
         var sb = new StringBuilder();
@@ -53,16 +22,66 @@ internal class Meal
         return sb.ToString();
     }
 
-    public string Name { get; }
-    public string? ErrorState { get; }
-    public FoodGrouping FoodGrouping { get; }
-    public IEnumerable<Helping> Helpings { get; }
-    public Macros Macros { get; }
+    public string Name { get; } = name;
+    public string? ErrorState { get; private set; }
+    public FoodGrouping FoodGrouping { get; } = foodGrouping;
+
+    private IEnumerable<Helping>? _helpings = null;
+    public IEnumerable<Helping> Helpings
+    {
+        get
+        {
+            if (_helpings != null)
+            {
+                return _helpings;
+            }
+
+            var pMacros = FoodGrouping.PFood.NutritionalInformation.Macros;
+            var fMacros = FoodGrouping.FFood.NutritionalInformation.Macros;
+            var cMacros = FoodGrouping.CFood.NutritionalInformation.Macros;
+            var remainingMacros = Macros - FoodGrouping.StaticHelpings.Sum(h => h.Macros);
+
+            var solution = Equation.Solve(
+                new(pMacros.P, fMacros.P, cMacros.P, remainingMacros.P),
+                new(pMacros.F, fMacros.F, cMacros.F, remainingMacros.F),
+                new(pMacros.C, fMacros.C, cMacros.C, remainingMacros.C));
+
+            if (solution == null)
+            {
+                _helpings = [];
+                ErrorState = "No solution";
+            }
+            else
+            {
+                (var pFoodServings, var fFoodServings, var cFoodServings) = solution.Value;
+
+                _helpings = FoodGrouping.StaticHelpings.Append(
+                [
+                    new Helping(FoodGrouping.PFood, pFoodServings),
+                    new Helping(FoodGrouping.FFood, fFoodServings),
+                    new Helping(FoodGrouping.CFood, cFoodServings),
+                ]);
+
+                foreach (var helping in Helpings)
+                {
+                    if (helping.Servings < 0 && !helping.Food.IsConversion)
+                    {
+                        ErrorState = $"{helping.Servings:F2} servings in {helping.Food.Name}.";
+                    }
+                }
+
+            }
+
+            return _helpings;
+        }
+    }
+
+    public Macros Macros { get; } = macros;
     public NutritionalInformation NutritionalInformation => Helpings
         .Select(h => h.NutritionalInformation)
         .Sum(1, ServingUnits.Meal);
 
-    public Meal CloneWithTweakedMacros(double pPercent, double fPercent, double cPercent) =>
+    public Meal CloneWithTweakedMacros(decimal pPercent, decimal fPercent, decimal cPercent) =>
         new(Name, Macros.CloneWithTweakedMacros(pPercent, fPercent, cPercent), FoodGrouping);
 }
 

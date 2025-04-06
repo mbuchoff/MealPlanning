@@ -38,5 +38,5 @@ internal record TrainingDay
 
     public IEnumerable<Meal> Meals { get; }
     public TrainingDayType TrainingDayType { get; }
-    public (double Cals, Macros Macros, double Fiber) TotalNutrients { get; }
+    public (decimal Cals, Macros Macros, decimal Fiber) TotalNutrients { get; }
 }

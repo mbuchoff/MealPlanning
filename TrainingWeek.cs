@@ -23,7 +23,7 @@ internal record TrainingWeek
 
     public IEnumerable<TrainingDay> TrainingDays => [NonworkoutDay, RunningDay, XFitDay];
 
-    public TrainingWeek CloneWithTweakedMacros(double pMultiplier, double fMultiplier, double cMultiplier) => new(
+    public TrainingWeek CloneWithTweakedMacros(decimal pMultiplier, decimal fMultiplier, decimal cMultiplier) => new(
         Name,
         NonworkoutDay.Meals.Select(m => m.CloneWithTweakedMacros(pMultiplier, fMultiplier, cMultiplier)),
         RunningDay.Meals.Select(m => m.CloneWithTweakedMacros(pMultiplier, fMultiplier, cMultiplier)),

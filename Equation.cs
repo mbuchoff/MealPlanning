@@ -1,36 +1,36 @@
 ﻿namespace SystemOfEquations;
 
-public record Equation(double X, double Y, double Z, double C)
+public record Equation(decimal X, decimal Y, decimal Z, decimal C)
 {
-    public static (double X, double Y, double Z) Solve(Equation eq1, Equation eq2, Equation eq3)
+    public static (decimal X, decimal Y, decimal Z)? Solve(Equation eq1, Equation eq2, Equation eq3)
     {
-        static double Determinant(double[,] mat) =>
+        static decimal Determinant(decimal[,] mat) =>
             mat[0, 0] * (mat[1, 1] * mat[2, 2] - mat[1, 2] * mat[2, 1]) -
             mat[0, 1] * (mat[1, 0] * mat[2, 2] - mat[1, 2] * mat[2, 0]) +
             mat[0, 2] * (mat[1, 0] * mat[2, 1] - mat[1, 1] * mat[2, 0]);
 
         // Coefficients of the equations
-        double[,] A = {
+        decimal[,] A = {
             { eq1.X, eq1.Y, eq1.Z },
             { eq2.X, eq2.Y, eq2.Z },
             { eq3.X, eq3.Y, eq3.Z }
         };
 
         // Constants of the equations
-        double[] B = [eq1.C, eq2.C, eq3.C];
+        decimal[] B = [eq1.C, eq2.C, eq3.C];
 
         // Calculate the determinant of A
-        double detA = Determinant(A);
+        decimal detA = Determinant(A);
 
         if (detA == 0)
         {
-            return (double.NaN, double.NaN, double.NaN);
+            return null;
         }
 
         // Find determinants of matrices with B replacing respective columns
-        double[,] Ax = (double[,])A.Clone();
-        double[,] Ay = (double[,])A.Clone();
-        double[,] Az = (double[,])A.Clone();
+        decimal[,] Ax = (decimal[,])A.Clone();
+        decimal[,] Ay = (decimal[,])A.Clone();
+        decimal[,] Az = (decimal[,])A.Clone();
 
         for (int i = 0; i < 3; i++)
         {
@@ -39,9 +39,9 @@ public record Equation(double X, double Y, double Z, double C)
             Az[i, 2] = B[i];
         }
 
-        double x = Determinant(Ax) / detA;
-        double y = Determinant(Ay) / detA;
-        double z = Determinant(Az) / detA;
+        decimal x = Determinant(Ax) / detA;
+        decimal y = Determinant(Ay) / detA;
+        decimal z = Determinant(Az) / detA;
 
         return (x, y, z);
     }

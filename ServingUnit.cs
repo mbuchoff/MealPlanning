@@ -3,7 +3,7 @@
 public class ServingUnit
 {
     public ServingUnit(string unitName, int decimalsToDisplay,
-        (double NumCentralUnitsInThisUnit, ServingUnit Unit)? unitConversion = null)
+        (decimal NumCentralUnitsInThisUnit, ServingUnit Unit)? unitConversion = null)
     {
         UnitName = unitName;
         DecimalsToDisplay = decimalsToDisplay;
@@ -20,13 +20,13 @@ public class ServingUnit
 
     public string UnitName { get; }
     public int DecimalsToDisplay { get; }
-    public (double NumCentralUnitsInThisUnit, ServingUnit CentralUnit) UnitConversion { get; }
+    public (decimal NumCentralUnitsInThisUnit, ServingUnit CentralUnit) UnitConversion { get; }
 
     public override string ToString() => UnitName;
-    public string ToString(double servings)
+    public string ToString(decimal servings)
     {
         var servingsStr = servings.ToString($"F{DecimalsToDisplay}");
-        var pluralOrSingularEnding = double.Parse(servingsStr) == 1 ? "" : "s";
+        var pluralOrSingularEnding = decimal.Parse(servingsStr) == 1 ? "" : "s";
         return $"{servingsStr} {UnitName}{pluralOrSingularEnding}";
     }
 }
