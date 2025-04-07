@@ -8,19 +8,6 @@ internal record TrainingDay
     {
         TrainingDayType = trainingDayType;
         Meals = meals;
-
-        var invalidMeal = Meals.FirstOrDefault(m => m.ErrorState != null);
-
-        if (invalidMeal != null)
-        {
-            throw new Exception($"{TrainingDayType} > {invalidMeal.Name} > {invalidMeal.ErrorState}");
-        }
-
-        var helpings = Meals.SelectMany(m => m.Helpings).ToList();
-        TotalNutrients = (
-            Cals: helpings.Sum(h => h.Servings * h.Food.NutritionalInformation.Cals),
-            Macros: helpings.Sum(h => h.Servings * h.Food.NutritionalInformation.Macros),
-            Fiber: helpings.Sum(h => h.Servings * h.Food.NutritionalInformation.CFiber));
     }
 
     public override string ToString()
@@ -38,5 +25,31 @@ internal record TrainingDay
 
     public IEnumerable<Meal> Meals { get; }
     public TrainingDayType TrainingDayType { get; }
-    public (decimal Cals, Macros Macros, decimal Fiber) TotalNutrients { get; }
+
+    private (decimal Cals, Macros Macros, decimal Fiber)? _totalNutrients;
+    public (decimal Cals, Macros Macros, decimal Fiber) TotalNutrients
+    {
+        get
+        {
+            try
+            {
+                if (_totalNutrients != null)
+                {
+                    return _totalNutrients.Value;
+                }
+
+                var helpings = Meals.SelectMany(m => m.Helpings).ToList();
+                _totalNutrients = (
+                    Cals: helpings.Sum(h => h.Servings * h.Food.NutritionalInformation.Cals),
+                    Macros: helpings.Sum(h => h.Servings * h.Food.NutritionalInformation.Macros),
+                    Fiber: helpings.Sum(h => h.Servings * h.Food.NutritionalInformation.CFiber));
+
+                return _totalNutrients.Value;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"{TrainingDayType} > {ex.Message}");
+            }
+        }
+    }
 }

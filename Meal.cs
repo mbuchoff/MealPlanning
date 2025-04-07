@@ -23,7 +23,6 @@ internal class Meal(string name, Macros macros, FoodGrouping foodGrouping)
     }
 
     public string Name { get; } = name;
-    public string? ErrorState { get; private set; }
     public FoodGrouping FoodGrouping { get; } = foodGrouping;
 
     private IEnumerable<Helping>? _helpings = null;
@@ -48,8 +47,7 @@ internal class Meal(string name, Macros macros, FoodGrouping foodGrouping)
 
             if (solution == null)
             {
-                _helpings = [];
-                ErrorState = "No solution";
+                throw new Exception("No solution");
             }
             else
             {
@@ -66,7 +64,7 @@ internal class Meal(string name, Macros macros, FoodGrouping foodGrouping)
                 {
                     if (helping.Servings < 0 && !helping.Food.IsConversion)
                     {
-                        ErrorState = $"{helping.Servings:F2} servings in {helping.Food.Name}.";
+                        throw new Exception($"{Name} > {helping.Servings:F2} servings in {helping.Food.Name}.");
                     }
                 }
 

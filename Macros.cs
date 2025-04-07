@@ -36,7 +36,7 @@ public record Macros(decimal P, decimal F, decimal C)
             },
         };
         var totalCals = macroDetails.Sum(m => m.CalsPerGram * m.Grams);
-        if (totalCals == 0)
+        if (totalCals < 1)
         {
             return "";
         }
