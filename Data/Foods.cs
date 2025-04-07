@@ -139,6 +139,8 @@ internal static class Foods
 
     public static Food Edamame_1_Scoop { get; } = new Food("edamame",
         new(1M / 3, ServingUnits.Cup, Cals: 130, P: 14, F: 5, CTotal: 9, CFiber: 6)).Convert(ServingUnits.Scoop);
+    public static Food Ezeliel_Cereal_Low_Sodium_1_Scoop { get; } =
+        Ezeliel_Cereal_Low_Sodium_1_2_Cup.Convert(ServingUnits.Scoop);
     public static Food Oats_1_Scoop { get; } = Oats_1_2_Cup.Convert(ServingUnits.Scoop);
     public static Food PeaProtein_1_Scoop { get; } = PeaProtein_1_3_Cup.Convert(ServingUnits.Scoop);
     public static Food PumpkinSeeds_1_Scoop { get; } = PumpkinSeeds_30_Grams

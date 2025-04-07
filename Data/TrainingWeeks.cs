@@ -162,7 +162,7 @@ internal static class TrainingWeeks
                     Foods.PeaProtein_1_Scoop,
                     Foods.ChiaSeeds_2_5_Tbsp,
                     Foods.Oats_1_Scoop,
-                    FoodGrouping.PreparationMethodEnum.PrepareAsNeeded)),
+                    PreparationMethodEnum.PrepareAsNeeded)),
             new("3-5 hours after last meal",
                 new(P: FAT_LOSS_PROTEIN_PER_MEAL_ON_NONWORKOUT_DAY, F: 20, C: 25),
                 new("seitan",
