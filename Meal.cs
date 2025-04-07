@@ -67,7 +67,6 @@ internal class Meal(string name, Macros macros, FoodGrouping foodGrouping)
                         throw new Exception($"{Name} > {helping.Servings:F2} servings in {helping.Food.Name}.");
                     }
                 }
-
             }
 
             return _helpings;

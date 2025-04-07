@@ -1,7 +1,7 @@
 ﻿using SystemOfEquations.Data;
 using SystemOfEquations.Todoist;
 
-var phase = Phases.BasePlusPercent(percent: 31.9M);
+var phase = Phases.BasePlusPercent(percent: 36.7M);
 
 Console.WriteLine(phase);
 Console.WriteLine(phase.MealPrepPlan);

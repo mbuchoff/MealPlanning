@@ -48,7 +48,7 @@ internal static class FoodGroupings
         withEdamame ? Foods.Edamame_1_Scoop : Foods.ProteinToCarbConversion,
         Foods.OliveOil_1_Tbsp,
         Foods.Whole_Grain_Pasta_56_Grams,
-        PreparationMethodEnum.PrepareInAdvance);
+        PreparationMethodEnum.PrepareAsNeeded);
 
     public static FoodGrouping ProteinShake { get; } = new(
         "protein shake",
