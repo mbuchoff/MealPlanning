@@ -217,7 +217,7 @@ internal static class TrainingWeeks
                 new(P: FAT_LOSS_PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 20, C: 50),
                 FoodGroupings.Seitan),
             new("1/2 shake during working, 1/2 right after",
-                new(P: FAT_LOSS_PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 20, C: 80),
+                new(P: FAT_LOSS_PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 20, C: 65),
                 FoodGroupings.WorkoutShake),
             new("Bedtime",
                 new(P: FAT_LOSS_PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 20, C: 120),
