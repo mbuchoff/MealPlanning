@@ -185,7 +185,7 @@ internal static class TrainingWeeks
                 new("Shake",
                     [new(Foods.AlmondMilk_2_Cup, 1)],
                     Foods.PeaProtein_1_Scoop,
-                    Foods.ChiaSeeds_2_5_Tbsp,
+                    Foods.AlmondButter_1_Tbsp,
                     Foods.FatToCarbConversion,
                     FoodGrouping.PreparationMethodEnum.PrepareAsNeeded)),
         ],
