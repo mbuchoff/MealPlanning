@@ -1,8 +1,8 @@
 ﻿namespace SystemOfEquations;
 
-internal record FoodGrouping
+public record FoodGrouping
 {
-    internal FoodGrouping(
+    public FoodGrouping(
         string name,
         IList<Helping> staticHelpings,
         Food pFood,
@@ -18,7 +18,7 @@ internal record FoodGrouping
         PreparationMethod = preparationMethod;
     }
 
-    internal FoodGrouping(string name, Food pFood, Food fFood, Food cFood, PreparationMethodEnum preparationMethod) :
+    public FoodGrouping(string name, Food pFood, Food fFood, Food cFood, PreparationMethodEnum preparationMethod) :
         this(name, [], pFood, fFood, cFood, preparationMethod)
     {
 

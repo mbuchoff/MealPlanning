@@ -9,7 +9,7 @@ internal static class Foods
         2, ServingUnits.Cup, Cals: 59, P: 2, F: 5.1M, CTotal: 2, CFiber: 2));
 
     public static Food Apple { get; } = new("apple", new(
-        1, ServingUnits.Apple, Cals: 95, P: 1, F: 0, CTotal: 25, CFiber: 3));
+        1, ServingUnits.None, Cals: 95, P: 1, F: 0, CTotal: 25, CFiber: 3));
 
     // https://shop.sprouts.com/product/7647/black-beans
     public static Food BlackBeans_Sprouts_45g { get; } = new("black beans", new(
@@ -34,7 +34,7 @@ internal static class Foods
         0.5M, ServingUnits.Cup, Cals: 190, P: 8, F: 1, CTotal: 38, CFiber: 7));
 
     public static Food Ezekiel_English_Muffin { get; } = new("Ezekiel english muffin", new(
-        1, ServingUnits.Apple, Cals: 90, P: 6, F: 0.5M, CTotal: 17, CFiber: 3));
+        1, ServingUnits.None, Cals: 90, P: 6, F: 0.5M, CTotal: 17, CFiber: 3));
 
     public static Food NutritionalYeast_Sprouts_16_Grams { get; } = new("nutritional yeast from Sprouts", new(
         // 2, ServingUnits.Tablespoon,

@@ -1,6 +1,6 @@
 ﻿namespace SystemOfEquations;
 
-internal record Food(
+public record Food(
     string Name,
     NutritionalInformation NutritionalInformation,
     Food.AmountWater? Water = null,

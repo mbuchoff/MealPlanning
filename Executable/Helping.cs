@@ -1,6 +1,6 @@
 namespace SystemOfEquations;
 
-internal record Helping(Food Food, decimal Servings)
+public record Helping(Food Food, decimal Servings)
 {
     public override string ToString() => Food.ToString(Servings);
 

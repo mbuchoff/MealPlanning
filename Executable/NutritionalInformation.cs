@@ -1,6 +1,6 @@
 ﻿namespace SystemOfEquations;
 
-internal record NutritionalInformation(
+public record NutritionalInformation(
     decimal ServingUnits, ServingUnit ServingUnit,
     decimal Cals,
     decimal P,

@@ -4,7 +4,7 @@ using SystemOfEquations.Extensions;
 
 namespace SystemOfEquations;
 
-internal class Meal(string name, Macros macros, FoodGrouping foodGrouping)
+public class Meal(string name, Macros macros, FoodGrouping foodGrouping)
 {
     public override string ToString()
     {
