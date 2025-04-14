@@ -14,13 +14,32 @@ public class UnitTest1
         var hs = m.Helpings.Select(h => new
         {
             h.Food.Name,
+            h.NutritionalInformation,
             h.Servings,
         }).OrderBy(x => x.Name);
         Assert.Equivalent(new[]
         {
-            new { cFood.Name, Servings = cServings },
-            new { fFood.Name, Servings = fServings },
-            new { pFood.Name, Servings = pServings },
+            new
+            {
+                cFood.Name,
+                NutritionalInformation = new NutritionalInformation(
+                    cServings, ServingUnits.None, Cals: 4 * cServings, P: 0, F: 0, CTotal: cServings, CFiber: 0),
+                Servings = cServings,
+            },
+            new
+            {
+                fFood.Name,
+                NutritionalInformation = new NutritionalInformation(
+                    fServings, ServingUnits.None, Cals: 9 * fServings, P: 0, F: fServings, CTotal: 0, CFiber: 0),
+                Servings = fServings,
+            },
+            new
+            {
+                pFood.Name,
+                NutritionalInformation = new NutritionalInformation(
+                    pServings, ServingUnits.None, Cals: 4 * pServings, P: pServings, F: 0, CTotal: 0, CFiber: 0),
+                Servings = pServings,
+            },
         }, hs);
     }
 
