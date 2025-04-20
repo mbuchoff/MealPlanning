@@ -1,10 +1,12 @@
-﻿namespace SystemOfEquations.Data;
+﻿using SystemOfEquations.Data.TrainingWeeks;
+
+namespace SystemOfEquations.Data;
 
 internal class WeeklyMealsPrepPlans
 {
-    public static WeeklyMealsPrepPlan Phase2MealPrepPlan => CreateMealPrepPlan(TrainingWeeks.MuscleGain2TrainingWeek);
+    public static WeeklyMealsPrepPlan Phase2MealPrepPlan => CreateMealPrepPlan(new MuscleGain2());
 
-    public static WeeklyMealsPrepPlan Phase3MealPrepPlan => CreateMealPrepPlan(TrainingWeeks.MuscleGain3TrainingWeek);
+    public static WeeklyMealsPrepPlan Phase3MealPrepPlan => CreateMealPrepPlan(new MuscleGain3());
 
     public static WeeklyMealsPrepPlan CreateMealPrepPlan(TrainingWeek trainingWeek) => new(
         new[] { TrainingDayTypes.XfitDay, TrainingDayTypes.RunningDay, TrainingDayTypes.NonweightTrainingDay }
