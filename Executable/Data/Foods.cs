@@ -96,36 +96,36 @@ internal static class Foods
         Water: new(Base: 1.5M, PerServing: 0.6M));
 
     // https://shop.sprouts.com/store/sprouts/products/17847854-organic-tri-color-quinoa-bulk-1-lb
-    public static Food Quinoa_45_Grams { get; } = new("quinoa", new(
-        45, ServingUnits.Gram, Cals: 170, P: 6, F: 2.5M, CTotal: 29, CFiber: 3));
+    public static Food Quinoa_45_Grams { get; } = new("quinoa",
+        new(45, ServingUnits.Gram, Cals: 170, P: 6, F: 2.5M, CTotal: 29, CFiber: 3));
 
     // https://shop.sprouts.com/product/7654/organic-dark-red-kidney-beans
-    public static Food RedKidneyBeans_1_4_Cup { get; } = new("red kidney beans", new(
-        1M / 4, ServingUnits.Cup, Cals: 150, P: 10, F: 0, CTotal: 28, CFiber: 7));
+    public static Food RedKidneyBeans_1_4_Cup { get; } = new("red kidney beans",
+        new(1M / 4, ServingUnits.Cup, Cals: 150, P: 10, F: 0, CTotal: 28, CFiber: 7));
 
     // https://shop.sprouts.com/product/7706/organic-split-red-lentils
-    public static Food RedLentils_1_4_Cup { get; } = new("red lentils", new(
-        1M / 4, ServingUnits.Cup, Cals: 170, P: 11, F: 1, CTotal: 30, CFiber: 5));
+    public static Food RedLentils_1_4_Cup { get; } = new("red lentils",
+        new(1M / 4, ServingUnits.Cup, Cals: 170, P: 11, F: 1, CTotal: 30, CFiber: 5));
 
     // https://shop.sprouts.com/product/55813/organic-raw-hulled-sunflower-seeds
-    public static Food SunflowerSeeds_30_Grams { get; } = new("Sunflower seeds", new(
-        30, ServingUnits.Gram, Cals: 180, P: 6, F: 15, CTotal: 6, CFiber: 3));
+    public static Food SunflowerSeeds_30_Grams { get; } = new("Sunflower seeds",
+        new(30, ServingUnits.Gram, Cals: 180, P: 6, F: 15, CTotal: 6, CFiber: 3));
 
-    public static Food ToastedWheatfuls { get; } = new("toasted wheatfuls", new(
-        50, ServingUnits.Gram, Cals: 200, P: 7, F: 1.5M, CTotal: 48, CFiber: 8));
+    public static Food ToastedWheatfuls { get; } = new("toasted wheatfuls",
+        new(50, ServingUnits.Gram, Cals: 200, P: 7, F: 1.5M, CTotal: 48, CFiber: 8));
 
-    public static Food Tofu_1_5_Block { get; } = new("tofu", new(
-        0.2M, ServingUnits.BlockTofu, Cals: 130, P: 14, F: 7, CTotal: 2, CFiber: 2));
+    public static Food Tofu_1_5_Block { get; } = new("tofu",
+        new(0.2M, ServingUnits.BlockTofu, Cals: 130, P: 14, F: 7, CTotal: 2, CFiber: 2));
 
     // https://shop.sprouts.com/product/22564/hard-spring-wheat-berries
-    public static Food WheatBerries_45_Grams { get; } = new("wheat berries", new(
-        45, ServingUnits.Gram, Cals: 150, P: 7, F: 1, CTotal: 31, CFiber: 5),
-        Water: new(Base: 2, PerServing: 0.669144981411M));
+    public static Food WheatBerries_45_Grams { get; } = new("wheat berries",
+        new(45, ServingUnits.Gram, Cals: 150, P: 7, F: 1, CTotal: 31, CFiber: 5),
+        Water: new(Base: 2, PerServing: 0.8M));
 
     // https://shop.sprouts.com/product/7847/wheat-bran
     // https://www.healthline.com/nutrition/wheat-bran#nutrition
-    public static Food WheatBran_1_2_Cup { get; } = new("wheat bran", new(
-        0.5M, ServingUnits.Cup, Cals: 63, P: 4.5M, F: 1.3M, CTotal: 18.5M, CFiber: 12.5M));
+    public static Food WheatBran_1_2_Cup { get; } = new("wheat bran",
+        new(0.5M, ServingUnits.Cup, Cals: 63, P: 4.5M, F: 1.3M, CTotal: 18.5M, CFiber: 12.5M));
 
     public static Food BlueBerries_1_Scoop { get; } = BlueBerries_1_Cup.Convert(ServingUnits.Scoop);
 
