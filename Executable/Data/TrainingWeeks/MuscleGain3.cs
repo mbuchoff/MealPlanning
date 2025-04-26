@@ -53,7 +53,7 @@ internal record MuscleGain3 : TrainingWeekBase
                 FoodGroupings.WorkoutShake),
             new("Bedtime",
                 new(P: MUSCLE_GAIN_PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 20, C: 120),
-                FoodGroupings.EnglishMuffinsAndPasta(withEdamame: false)),
+                FoodGroupings.EnglishMuffinsAndPasta(englishMuffins: 3, withEdamame: false)),
         ],
         xfitMeals:
         [
@@ -74,7 +74,7 @@ internal record MuscleGain3 : TrainingWeekBase
                 FoodGroupings.WorkoutShake),
             new("Bedtime",
                 new(P: MUSCLE_GAIN_PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 20, C: 120),
-                FoodGroupings.EnglishMuffinsAndPasta(withEdamame: false)),
+                FoodGroupings.EnglishMuffinsAndPasta(englishMuffins: 3, withEdamame: false)),
         ])
     {
 

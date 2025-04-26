@@ -58,7 +58,7 @@ internal record Base : TrainingWeekBase
             FoodGroupings.WorkoutShake),
         new("Bedtime",
             new(P: FAT_LOSS_PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 20, C: 55),
-            FoodGroupings.EnglishMuffinsAndPasta(withEdamame: true)),
+            FoodGroupings.EnglishMuffinsAndPasta(englishMuffins: 2, withEdamame: true)),
         ],
         xfitMeals:
         [
@@ -75,16 +75,16 @@ internal record Base : TrainingWeekBase
             FoodGroupings.Ezekial(withEdamame: true)),
         new("Meal 3",
             new(P: FAT_LOSS_PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 20, C: 25),
-            FoodGroupings.Seitan),
+            FoodGroupings.Tofu),
         new("Meal 4",
             new(P: FAT_LOSS_PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 20, C: 50),
-            FoodGroupings.Seitan),
+            FoodGroupings.Tofu),
         new("1/2 shake during working, 1/2 right after",
             new(P: FAT_LOSS_PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 0, C: 65),
             FoodGroupings.WorkoutShake),
         new("Bedtime",
             new(P: FAT_LOSS_PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 20, C: 80),
-            FoodGroupings.EnglishMuffinsAndPasta(withEdamame: false)),
+            FoodGroupings.EnglishMuffinsAndPasta(englishMuffins: 3, withEdamame: false)),
         ])
     {
 

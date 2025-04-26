@@ -42,9 +42,9 @@ internal static class FoodGroupings
         Foods.Oats_1_Scoop,
         PreparationMethodEnum.PrepareAsNeeded);
 
-    public static FoodGrouping EnglishMuffinsAndPasta(bool withEdamame = true) => new(
+    public static FoodGrouping EnglishMuffinsAndPasta(int englishMuffins, bool withEdamame = true) => new(
         "English muffins and pasta",
-        [new(Foods.Ezekiel_English_Muffin, Servings: 3)],
+        [new(Foods.Ezekiel_English_Muffin, Servings: englishMuffins)],
         withEdamame ? Foods.Edamame_1_Scoop : Foods.ProteinToCarbConversion,
         Foods.OliveOil_1_Tbsp,
         Foods.Whole_Grain_Pasta_56_Grams,
@@ -103,7 +103,7 @@ internal static class FoodGroupings
 
     public static FoodGrouping Tofu { get; } = new(
         "tofu",
-        Foods.Tofu_1_5_Block,
+        Foods.Tofu_91_Grams,
         Foods.PumpkinSeeds_30_Grams,
         Foods.Farro_52_Gram,
         PreparationMethodEnum.PrepareInAdvance);
