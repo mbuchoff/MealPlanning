@@ -66,7 +66,7 @@ internal record Base : TrainingWeekBase
             new(P: FAT_LOSS_PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 20, C: 25),
              new("blueberries, oatmeal, and edamame",
                 [new(Foods.BlueBerries_1_Scoop, Servings: 2)],
-                Foods.Edamame_1_Scoop,
+                Foods.Tofu_91_Grams,
                 Foods.AlmondButter_1_Tbsp,
                 Foods.Oats_1_Scoop,
                 PreparationMethodEnum.PrepareAsNeeded)),
