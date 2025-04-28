@@ -117,7 +117,7 @@ internal static class FoodGroupings
 
     public static FoodGrouping WheatBerries { get; } = new(
         "wheat berries",
-        Foods.Edamame_1_Scoop,
+        Foods.Tofu_91_Grams,
         Foods.PumpkinSeeds_30_Grams,
         Foods.WheatBerries_45_Grams,
         PreparationMethodEnum.PrepareInAdvance);
