@@ -14,7 +14,7 @@ internal static class FoodGroupings
 
     public static FoodGrouping Ezekial(bool withEdamame = true) => new(
         "Ezekial",
-        [new(Foods.AlmondMilk_2_Cup, Servings: 0.5M)],
+        [new(Foods.AlmondMilk_1_Scoop, Servings: 3)],
         Foods.PumpkinSeeds_1_Scoop,
         withEdamame ? Foods.Edamame_1_Scoop : Foods.ProteinToFatConversion,
         Foods.Ezeliel_Cereal_Low_Sodium_1_Scoop,
@@ -105,7 +105,7 @@ internal static class FoodGroupings
         "tofu",
         Foods.Tofu_91_Grams,
         Foods.PumpkinSeeds_30_Grams,
-        Foods.Farro_52_Gram,
+        Foods.BrownRice_45_Grams,
         PreparationMethodEnum.PrepareInAdvance);
 
     public static FoodGrouping PearledBarleyAndRice { get; } = new(
