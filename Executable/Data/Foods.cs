@@ -71,6 +71,9 @@ internal static class Foods
     public static Food FatToCarbConversion { get; } = new Food("fat to carb conversion", new(
         1, ServingUnits.Gram, Cals: 0, P: 0, F: 1, CTotal: -9M / 4M, CFiber: 0), IsConversion: true);
 
+    public static Food FatToProteinConversion { get; } = new Food("fat to protein conversion", new(
+        1, ServingUnits.Gram, Cals: 0, P: -9M / 4M, F: 1, CTotal: 0, CFiber: 0), IsConversion: true);
+
     public static Food ProteinToCarbConversion { get; } = new Food("protein to carb conversion", new(
         1, ServingUnits.Gram, Cals: 0, P: -1, F: 0, CTotal: 1, CFiber: 0), IsConversion: true);
 

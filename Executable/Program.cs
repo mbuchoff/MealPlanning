@@ -1,7 +1,11 @@
-﻿using SystemOfEquations.Data;
+﻿using SystemOfEquations;
+using SystemOfEquations.Data.TrainingWeeks;
 using SystemOfEquations.Todoist;
 
-var phase = Phases.BasePlusPercent(percent: 36.7M);
+// 3200
+var percentIncrease = 30.75M;
+var trainingWeek = new Base().PlusPercent(100 + percentIncrease);
+var phase = new Phase($"{trainingWeek.Name}, plus {percentIncrease}%", trainingWeek);
 
 Console.WriteLine(phase);
 Console.WriteLine(phase.MealPrepPlan);

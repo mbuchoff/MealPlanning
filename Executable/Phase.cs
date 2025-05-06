@@ -1,9 +1,16 @@
 ﻿using System.Text;
+using SystemOfEquations.Data;
+using SystemOfEquations.Data.TrainingWeeks;
 
 namespace SystemOfEquations;
 
 internal record Phase(string Name, WeeklyMealsPrepPlan MealPrepPlan, TrainingWeek TrainingWeek)
 {
+    public Phase(string name, TrainingWeek trainingWeek)
+        : this(name, WeeklyMealsPrepPlans.CreateMealPrepPlan(trainingWeek), trainingWeek)
+    {
+    }
+
     public override string ToString()
     {
         try

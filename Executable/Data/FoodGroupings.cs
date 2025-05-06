@@ -115,7 +115,7 @@ internal static class FoodGroupings
         Foods.BrownRice_45_Grams,
         PreparationMethodEnum.PrepareInAdvance);
 
-    public static FoodGrouping WheatBerries { get; } = new(
+    public static FoodGrouping TofuAndWheatBerries { get; } = new(
         "wheat berries",
         Foods.Tofu_91_Grams,
         Foods.PumpkinSeeds_30_Grams,
