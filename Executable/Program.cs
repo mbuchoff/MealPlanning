@@ -2,8 +2,8 @@
 using SystemOfEquations.Data.TrainingWeeks;
 using SystemOfEquations.Todoist;
 
-// 3200
-var percentIncrease = 30.75M;
+// 3100
+var percentIncrease = 24.75M;
 var trainingWeek = new Base().PlusPercent(100 + percentIncrease);
 var phase = new Phase($"{trainingWeek.Name}, plus {percentIncrease}%", trainingWeek);
 
