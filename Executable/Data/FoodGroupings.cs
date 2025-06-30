@@ -14,7 +14,7 @@ internal static class FoodGroupings
 
     public static FoodGrouping Ezekial(bool withEdamame = true) => new(
         "Ezekial",
-        [new(Foods.AlmondMilk_1_Scoop, Servings: 3)],
+        [new(Foods.AlmondMilk_1_Scoop, Servings: 2)],
         Foods.PumpkinSeeds_1_Scoop,
         withEdamame ? Foods.Edamame_1_Scoop : Foods.ProteinToFatConversion,
         Foods.Ezeliel_Cereal_Low_Sodium_1_Scoop,

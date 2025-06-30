@@ -123,7 +123,7 @@ internal static class Foods
     // https://shop.sprouts.com/product/22564/hard-spring-wheat-berries
     public static Food WheatBerries_45_Grams { get; } = new("wheat berries",
         new(45, ServingUnits.Gram, Cals: 150, P: 7, F: 1, CTotal: 31, CFiber: 5),
-        Water: new(Base: 2, PerServing: 1.2M));
+        Water: new(Base: 2, PerServing: 1.4M));
 
     // https://shop.sprouts.com/product/7847/wheat-bran
     // https://www.healthline.com/nutrition/wheat-bran#nutrition
