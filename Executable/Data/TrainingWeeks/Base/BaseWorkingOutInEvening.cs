@@ -1,10 +1,10 @@
 ﻿using static SystemOfEquations.FoodGrouping;
 
-namespace SystemOfEquations.Data.TrainingWeeks;
+namespace SystemOfEquations.Data.TrainingWeeks.Base;
 
-internal record Base : TrainingWeekBase
+internal record BaseWorkingOutInEvening : TrainingWeekBase
 {
-    internal Base() : base(
+    internal BaseWorkingOutInEvening() : base(
         "Base",
         nonworkoutMeals:
         [
