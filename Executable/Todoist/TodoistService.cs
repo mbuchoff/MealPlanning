@@ -57,28 +57,31 @@ internal class TodoistService
     private static async Task AddPhaseAsync(
         Phase phase, Task<Project> eatingProjectTask, Task<Project> cookingProjectTask)
     {
-        List<Task> systemTasks = phase.MealPrepPlan.MealPrepPlans
-            .Select(m => AddMealPrepPlan(cookingProjectTask, m))
-            .Append(AddHelpingsAsync(
-                cookingProjectTask,
-                content: "Totals",
-                dueString: "every tues",
-                phase.MealPrepPlan.Total))
-            .ToList();
+        List<Task> systemTasks =
+        [
+            .. phase.MealPrepPlan.MealPrepPlans.Select(m =>
+                AddMealPrepPlan(cookingProjectTask, m)),
+                    AddHelpingsAsync(
+                            cookingProjectTask,
+                            content: "Totals",
+                            dueString: "every tues",
+                            phase.MealPrepPlan.Total),
+        ];
 
         foreach (var x in new[]
         {
             phase.TrainingWeek.XFitDay,
             phase.TrainingWeek.RunningDay,
             phase.TrainingWeek.NonworkoutDay,
-        }.SelectMany(trainingDay => trainingDay.Meals.Select(meal => new
+        }.SelectMany(trainingDay => trainingDay.Meals.Select((meal, mealIdx) => new
         {
             DueString = GetDueString(trainingDay.TrainingDayType),
+            Idx = mealIdx,
             trainingDay.TrainingDayType,
             Meal = meal,
         })).Where(x => x.Meal.FoodGrouping.PreparationMethod == FoodGrouping.PreparationMethodEnum.PrepareAsNeeded))
         {
-            var content = $"{x.TrainingDayType} - {x.Meal.Name}";
+            var content = $"{x.Idx + 1} - {x.TrainingDayType} - {x.Meal.Name}";
 
             // Parent tasks need to be added in order so that they appear in order, so don't run them in parallel
             var eatingProject = await eatingProjectTask;
