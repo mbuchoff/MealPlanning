@@ -1,6 +1,5 @@
 ﻿using System.Text;
 using SystemOfEquations.Data;
-using SystemOfEquations.Data.TrainingWeeks;
 
 namespace SystemOfEquations;
 
