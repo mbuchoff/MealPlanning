@@ -11,7 +11,7 @@ internal abstract record TrainingWeekBase : TrainingWeek
     {
     }
 
-    private const decimal TARGET_WEIGHT = 165;
+    private const decimal TARGET_WEIGHT = 170;
     private const int MEALS_PER_DAY = 5;
 
     // +1 to include workout shake

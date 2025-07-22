@@ -44,8 +44,8 @@ internal record MuscleGain2 : TrainingWeekBase
                 new Macros(P: MUSCLE_GAIN_PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 20, C: 80),
                 Oatmeal),
             new("1/2 shake during workout, 1/2 right after", new(P: MUSCLE_GAIN_PROTEIN_PER_MEAL_ON_NONWORKOUT_DAY, F: 0, C:35), FoodGroupings.WorkoutShake),
-            new("40 minutes after workout", new(P: MUSCLE_GAIN_PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 10, C: 120), FoodGroupings.Seitan),
-            new("2-4 hours after last meal", new(P: MUSCLE_GAIN_PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 20, C: 100), FoodGroupings.Seitan),
+            new("40 minutes after workout", new(P: MUSCLE_GAIN_PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 10, C: 120), WheatBerriesAndRice),
+            new("2-4 hours after last meal", new(P: MUSCLE_GAIN_PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 20, C: 100), WheatBerriesAndRice),
             new("3-5 hours after last meal", new(P: MUSCLE_GAIN_PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 20, C: 50), FoodGroupings.Ezekial(withEdamame: true)),
             new("Bedtime", new(P: MUSCLE_GAIN_PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 25, C: 35), FoodGroupings.EnglishMuffinsAndPasta(englishMuffins: 0)),
         ])
@@ -60,4 +60,12 @@ internal record MuscleGain2 : TrainingWeekBase
         Foods.ChiaSeeds_2_5_Tbsp,
         Foods.Oats_1_Scoop,
         PreparationMethodEnum.PrepareAsNeeded);
+
+    private static readonly FoodGrouping WheatBerriesAndRice = new(
+        "wheat berries and rice",
+        [new(Foods.Ezekiel_English_Muffin, 1)],
+        Foods.WheatBerries_45_Grams,
+        Foods.PumpkinSeeds_30_Grams,
+        Foods.BrownRice_45_Grams,
+        PreparationMethodEnum.PrepareInAdvance);
 }
