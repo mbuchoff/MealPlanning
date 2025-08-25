@@ -27,6 +27,9 @@ internal static class Foods
     public static Food ChiaSeeds_2_5_Tbsp { get; } = new("chia seeds", new(
         2.5M, ServingUnits.Tablespoon, Cals: 150, P: 5, F: 9, CTotal: 13, CFiber: 10));
 
+    public static Food Creatine_1_Scoop { get; } = new("creatine", new(
+        1M, ServingUnits.Scoop, Cals: 0, P: 0, F: 0, CTotal: 0, CFiber: 0));
+
     public static Food Ezeliel_Cereal_1_2_Cup { get; } = new("Ezekiel cereal", new(
         0.5M, ServingUnits.Cup, Cals: 180, P: 8, F: 1, CTotal: 35, CFiber: 6));
 

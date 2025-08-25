@@ -34,4 +34,32 @@ public record FoodGrouping
     public PreparationMethodEnum PreparationMethod { get; }
 
     public override string ToString() => Name;
+    
+    public FoodGrouping AddStaticFood(Food food, int servings = 1)
+    {
+        var newStaticHelpings = StaticHelpings.ToList();
+        newStaticHelpings.Add(new Helping(food, servings));
+        
+        return new FoodGrouping(
+            Name,
+            newStaticHelpings,
+            PFood,
+            FFood,
+            CFood,
+            PreparationMethod);
+    }
+    
+    public FoodGrouping AddStaticFood(params Helping[] helpings)
+    {
+        var newStaticHelpings = StaticHelpings.ToList();
+        newStaticHelpings.AddRange(helpings);
+        
+        return new FoodGrouping(
+            Name,
+            newStaticHelpings,
+            PFood,
+            FFood,
+            CFood,
+            PreparationMethod);
+    }
 }

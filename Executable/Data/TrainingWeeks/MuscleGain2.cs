@@ -10,7 +10,11 @@ internal record MuscleGain2 : TrainingWeekBase
         [
             new("Waking", new(P: MUSCLE_GAIN_PROTEIN_PER_MEAL_ON_NONWORKOUT_DAY, F: 10, C: 60),
                 new("Blueberry oatmeal shake",
-                    [new(Foods.BlueBerries_1_Scoop, Servings: 3), new(Foods.AlmondMilk_2_Cup)],
+                    [
+                        new(Foods.BlueBerries_1_Scoop, Servings: 3),
+                        new(Foods.AlmondMilk_2_Cup),
+                        new(Foods.Creatine_1_Scoop),
+                    ],
                     Foods.PeaProtein_1_Scoop,
                     Foods.FatToCarbConversion,
                     Foods.Oats_1_Scoop,
@@ -31,7 +35,7 @@ internal record MuscleGain2 : TrainingWeekBase
         [
             new("1-3 hours before workout",
                 new Macros(P: MUSCLE_GAIN_PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 20, C: 50),
-                FoodGroupings.BlueberriesOatmealAndEdamame),
+                FoodGroupings.BlueberriesOatmealAndEdamame.AddStaticFood(Foods.Creatine_1_Scoop)),
             new("1/2 shake during workout, 1/2 right after", new(P: MUSCLE_GAIN_PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 0, C:35), FoodGroupings.WorkoutShake),
             new("40 minutes after workout", new(P: MUSCLE_GAIN_PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 10, C: 100), FoodGroupings.Ezekial(withEdamame: false)),
             new("2-4 hours after last meal", new(P: MUSCLE_GAIN_PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 20, C: 65), FoodGroupings.Seitan),
@@ -42,7 +46,7 @@ internal record MuscleGain2 : TrainingWeekBase
         [
             new("1-3 hours before workout",
                 new Macros(P: MUSCLE_GAIN_PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 20, C: 80),
-                Oatmeal),
+                Oatmeal.AddStaticFood(Foods.Creatine_1_Scoop)),
             new("1/2 shake during workout, 1/2 right after", new(P: MUSCLE_GAIN_PROTEIN_PER_MEAL_ON_NONWORKOUT_DAY, F: 0, C:35), FoodGroupings.WorkoutShake),
             new("40 minutes after workout", new(P: MUSCLE_GAIN_PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 10, C: 120), WheatBerriesAndRice),
             new("2-4 hours after last meal", new(P: MUSCLE_GAIN_PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 20, C: 100), WheatBerriesAndRice),
