@@ -63,7 +63,7 @@ internal record MuscleGain2 : TrainingWeekBase
 
     private static readonly FoodGrouping WheatBerriesAndRice = new(
         "wheat berries and rice",
-        [new(Foods.Ezekiel_English_Muffin, 1)],
+        [new(Foods.Ezekiel_English_Muffin, 0)],
         Foods.WheatBerries_45_Grams,
         Foods.PumpkinSeeds_30_Grams,
         Foods.BrownRice_45_Grams,
