@@ -104,6 +104,11 @@ public class WeeklyMealsPrepPlanTests
     [Fact]
     public void CreateMealPrepPlan_Should_Scale_StaticHelpings_By_DaysEatingPreparedMeals()
     {
+        // This test verifies that when creating a weekly meal prep plan from a training week,
+        // all foods (including static helpings) are correctly aggregated across all daily meal plans.
+        // For example, if a food appears in meals for 3 different days, the total should reflect
+        // the sum of servings needed for all those days.
+        
         // This test uses the actual MuscleGain2 training week
         var trainingWeek = new MuscleGain2();
         var mealPrepPlan = WeeklyMealsPrepPlans.CreateMealPrepPlan(trainingWeek);
