@@ -1,4 +1,5 @@
 ﻿using System.Net.Http.Json;
+using Microsoft.Extensions.Configuration;
 
 namespace SystemOfEquations.Todoist;
 
@@ -71,10 +72,23 @@ internal static class TodoistApi
     }
 
     private static string? _apiKey;
-    private static async Task<string> GetApiKeyAsync()
+    private static Task<string> GetApiKeyAsync()
     {
-        _apiKey ??= await File.ReadAllTextAsync(@"C:\Users\mbuch\OneDrive\Desktop\secrets\todoist.txt");
-        return _apiKey;
+        if (_apiKey == null)
+        {
+            var configuration = new ConfigurationBuilder()
+                .AddUserSecrets<Program>()
+                .Build();
+            
+            _apiKey = configuration["Todoist:ApiKey"];
+            
+            if (string.IsNullOrEmpty(_apiKey))
+            {
+                throw new InvalidOperationException(
+                    "Todoist API key not found. Please run: dotnet user-secrets set \"Todoist:ApiKey\" \"YOUR_API_KEY\"");
+            }
+        }
+        return Task.FromResult(_apiKey);
     }
 
     public record Project(string Id, string Name);

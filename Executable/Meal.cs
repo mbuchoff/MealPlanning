@@ -87,13 +87,29 @@ internal static class MealExtensions
     public static IEnumerable<Meal> SumWithSameFoodGrouping(this IEnumerable<Meal> meals, int daysPerWeek)
     {
         var mealGroups = meals.GroupBy(m => m.FoodGrouping);
-        var groupedHelpings = mealGroups
-            .Select(mealGroup => mealGroup.SelectMany(m => m.Helpings)
-            .CombineLikeHelpings());
-        var summedMeals = mealGroups.Select(mealGroup => new Meal(
-            $"{mealGroup.Key.Name} - {mealGroup.Count() * daysPerWeek} meals",
-            mealGroup.Sum(m => m.Macros),
-            mealGroup.Key));
+        var summedMeals = mealGroups.Select(mealGroup =>
+        {
+            var mealCount = mealGroup.Count() * daysPerWeek;
+            var totalMacros = mealGroup.Sum(m => m.Macros);
+            
+            // Create a new FoodGrouping with scaled static helpings
+            var scaledStaticHelpings = mealGroup.Key.StaticHelpings
+                .Select(h => h * mealCount)
+                .ToList();
+            
+            var scaledFoodGrouping = new FoodGrouping(
+                mealGroup.Key.Name,
+                scaledStaticHelpings,
+                mealGroup.Key.PFood,
+                mealGroup.Key.FFood,
+                mealGroup.Key.CFood,
+                mealGroup.Key.PreparationMethod);
+            
+            return new Meal(
+                $"{mealGroup.Key.Name} - {mealCount} meals",
+                totalMacros,
+                scaledFoodGrouping);
+        });
         return summedMeals;
     }
 }

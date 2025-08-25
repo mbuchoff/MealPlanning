@@ -5,6 +5,15 @@
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <UserSecretsId>29802fec-9c05-4fa0-ab4b-99fbf99fcacc</UserSecretsId>
   </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Test" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="9.0.0" />
+  </ItemGroup>
 
 </Project>
