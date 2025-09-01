@@ -16,19 +16,19 @@ internal class TodoistService
             AddPhaseAsync(phase, eatingProjectTask, cookingProjectTask));
     }
 
-    private static async Task AddHelpingAsync(TodoistTask parentTodoistTask, Helping h)
+    private static async Task AddServingAsync(TodoistTask parentTodoistTask, FoodServing s)
     {
-        Console.WriteLine($"Adding subtask {parentTodoistTask.Content} > {h}...");
+        Console.WriteLine($"Adding subtask {parentTodoistTask.Content} > {s}...");
         await AddTaskAsync(
-            h.ToString(), description: null, dueString: null, parentTodoistTask.Id, projectId: null);
-        Console.WriteLine($"Added subtask {parentTodoistTask.Content} > {h}");
+            s.ToString(), description: null, dueString: null, parentTodoistTask.Id, projectId: null);
+        Console.WriteLine($"Added subtask {parentTodoistTask.Content} > {s}");
     }
 
-    private static async Task AddHelpingsAsync(
+    private static async Task AddServingsAsync(
         Task<Project> projectTask,
         string content,
         string? dueString,
-        IEnumerable<Helping> helpings)
+        IEnumerable<FoodServing> servings)
     {
         var project = await projectTask;
 
@@ -40,7 +40,7 @@ internal class TodoistService
             parentId: null,
             project.Id);
         Console.WriteLine($"Added task {content}...");
-        await Task.WhenAll(helpings.Select(h => AddHelpingAsync(parentTodoistTask, h)).ToList());
+        await Task.WhenAll(servings.Select(s => AddServingAsync(parentTodoistTask, s)).ToList());
     }
 
     private static async Task AddMealPrepPlan(Task<Project> projectTask, MealPrepPlan m)
@@ -51,7 +51,7 @@ internal class TodoistService
         var parentTodoistTask = await AddTaskAsync(
             m.Name, description: null, dueString: "every tue", parentId: null, project.Id);
         Console.WriteLine($"Added task {m.Name}");
-        await Task.WhenAll(m.Helpings.Select(h => AddHelpingAsync(parentTodoistTask, h)));
+        await Task.WhenAll(m.Servings.Select(s => AddServingAsync(parentTodoistTask, s)));
     }
 
     private static async Task AddPhaseAsync(
@@ -61,7 +61,7 @@ internal class TodoistService
         [
             .. phase.MealPrepPlan.MealPrepPlans.Select(m =>
                 AddMealPrepPlan(cookingProjectTask, m)),
-                    AddHelpingsAsync(
+                    AddServingsAsync(
                             cookingProjectTask,
                             content: "Totals",
                             dueString: "every tues",
@@ -92,18 +92,18 @@ internal class TodoistService
             Console.WriteLine($"Added task {content}");
 
             // Add child tasks in parallel
-            systemTasks.AddRange(x.Meal.Helpings.Where(h => !h.Food.IsConversion)
-                .Select(async h =>
+            systemTasks.AddRange(x.Meal.Servings.Where(s => !s.IsConversion)
+                .Select(async s =>
                 {
-                    Console.WriteLine($"Adding subtask {content} > {h}...");
+                    Console.WriteLine($"Adding subtask {content} > {s}...");
                     await AddTaskAsync(
-                        h.ToString(), description: null, dueString: null, parentTodoistTask.Id, projectId: null);
-                    Console.WriteLine($"Added subtask {content} > {h}");
+                        s.ToString(), description: null, dueString: null, parentTodoistTask.Id, projectId: null);
+                    Console.WriteLine($"Added subtask {content} > {s}");
                 }));
 
             var comment = string.Join("\n\n",
                 new[] { x.Meal.NutritionalInformation.ToNutrientsString() }.Concat(
-                x.Meal.Helpings.Select(h => $"{h.Food.Name}\n{h.NutritionalInformation.ToNutrientsString()}")));
+                x.Meal.Servings.Select(s => $"{s.Name}\n{s.NutritionalInformation.ToNutrientsString()}")));
             Console.WriteLine($"Adding comment for {content}...");
             systemTasks.Add(AddCommentAsync(parentTodoistTask.Id, comment));
             Console.WriteLine($"Added comment for {content}");

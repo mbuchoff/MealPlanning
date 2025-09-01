@@ -4,10 +4,10 @@ internal record WeeklyMealsPrepPlan(IEnumerable<MealPrepPlan> MealPrepPlans)
 {
     public override string ToString()
     {
-        var helpingsStr = string.Join("\n", MealPrepPlans.SelectMany(m => m.Helpings.Select(h => $"{m.Name}: {h}")));
+        var servingsStr = string.Join("\n", MealPrepPlans.SelectMany(m => m.Servings.Select(s => $"{m.Name}: {s}")));
         var totalStr = string.Join("\n", Total);
-        return $"{helpingsStr}\n\nTotals:\n{totalStr}";
+        return $"{servingsStr}\n\nTotals:\n{totalStr}";
     }
 
-    public IEnumerable<Helping> Total => MealPrepPlans.SelectMany(m => m.Helpings).CombineLikeHelpings();
+    public IEnumerable<FoodServing> Total => MealPrepPlans.SelectMany(m => m.Servings).CombineLikeServings();
 }

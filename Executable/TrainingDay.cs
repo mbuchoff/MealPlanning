@@ -38,11 +38,11 @@ internal record TrainingDay
                     return _totalNutrients.Value;
                 }
 
-                var helpings = Meals.SelectMany(m => m.Helpings).ToList();
+                var servings = Meals.SelectMany(m => m.Servings).ToList();
                 _totalNutrients = (
-                    Cals: helpings.Sum(h => h.Servings * h.Food.NutritionalInformation.Cals),
-                    Macros: helpings.Sum(h => h.Servings * h.Food.NutritionalInformation.Macros),
-                    Fiber: helpings.Sum(h => h.Servings * h.Food.NutritionalInformation.CFiber));
+                    Cals: servings.Sum(s => s.NutritionalInformation.Cals),
+                    Macros: servings.Sum(s => s.NutritionalInformation.Macros),
+                    Fiber: servings.Sum(s => s.NutritionalInformation.CFiber));
 
                 return _totalNutrients.Value;
             }

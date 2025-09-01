@@ -11,9 +11,9 @@ internal record MuscleGain2 : TrainingWeekBase
             new("Waking", new(P: MUSCLE_GAIN_PROTEIN_PER_MEAL_ON_NONWORKOUT_DAY, F: 10, C: 60),
                 new("Blueberry oatmeal shake",
                     [
-                        new(Foods.BlueBerries_1_Scoop, Servings: 3),
-                        new(Foods.AlmondMilk_2_Cup),
-                        new(Foods.Creatine_1_Scoop),
+                        Foods.BlueBerries_1_Scoop * 3,
+                        Foods.AlmondMilk_2_Cup,
+                        Foods.Creatine_1_Scoop,
                     ],
                     Foods.PeaProtein_1_Scoop,
                     Foods.FatToCarbConversion,
@@ -25,7 +25,7 @@ internal record MuscleGain2 : TrainingWeekBase
             new("Bedtime",
                 new Macros(P: MUSCLE_GAIN_PROTEIN_PER_MEAL_ON_NONWORKOUT_DAY, F: 25, C: 0),
                 new("Bedtime",
-                    [new(Foods.AlmondMilk_2_Cup, Servings: 1)],
+                    [Foods.AlmondMilk_2_Cup],
                     Foods.PeaProtein_1_Scoop,
                     Foods.AlmondButter_1_Tbsp,
                     Foods.FatToCarbConversion,
@@ -59,7 +59,7 @@ internal record MuscleGain2 : TrainingWeekBase
 
     private static readonly FoodGrouping Oatmeal = new(
         "blueberries, oatmeal, and edamame",
-        [new(Foods.Ezekiel_English_Muffin, Servings: 1), new(Foods.BlueBerries_1_Scoop, Servings: 4)],
+        [Foods.Ezekiel_English_Muffin, Foods.BlueBerries_1_Scoop * 4],
         Foods.Edamame_1_Scoop,
         Foods.ChiaSeeds_2_5_Tbsp,
         Foods.Oats_1_Scoop,
@@ -67,7 +67,7 @@ internal record MuscleGain2 : TrainingWeekBase
 
     private static readonly FoodGrouping WheatBerriesAndRice = new(
         "wheat berries and rice",
-        [new(Foods.Ezekiel_English_Muffin, 0)],
+        [Foods.Ezekiel_English_Muffin * 0],
         Foods.WheatBerries_45_Grams,
         Foods.PumpkinSeeds_30_Grams,
         Foods.BrownRice_45_Grams,

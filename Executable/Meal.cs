@@ -13,9 +13,9 @@ public class Meal(string name, Macros macros, FoodGrouping foodGrouping)
 
         if (FoodGrouping.PreparationMethod == FoodGrouping.PreparationMethodEnum.PrepareAsNeeded)
         {
-            foreach (var helping in Helpings.Where(h => !h.Food.IsConversion))
+            foreach (var serving in Servings.Where(s => !s.IsConversion))
             {
-                sb.AppendLine(helping.ToString());
+                sb.AppendLine(serving.ToString());
             }
         }
 
@@ -25,20 +25,20 @@ public class Meal(string name, Macros macros, FoodGrouping foodGrouping)
     public string Name { get; } = name;
     public FoodGrouping FoodGrouping { get; } = foodGrouping;
 
-    private IEnumerable<Helping>? _helpings = null;
-    public IEnumerable<Helping> Helpings
+    private IEnumerable<FoodServing>? _servings = null;
+    public IEnumerable<FoodServing> Servings
     {
         get
         {
-            if (_helpings != null)
+            if (_servings != null)
             {
-                return _helpings;
+                return _servings;
             }
 
             var pMacros = FoodGrouping.PFood.NutritionalInformation.Macros;
             var fMacros = FoodGrouping.FFood.NutritionalInformation.Macros;
             var cMacros = FoodGrouping.CFood.NutritionalInformation.Macros;
-            var remainingMacros = Macros - FoodGrouping.StaticHelpings.Sum(h => h.Macros);
+            var remainingMacros = Macros - FoodGrouping.StaticServings.Sum(s => s.NutritionalInformation.Macros);
 
             var solution = Equation.Solve(
                 new(pMacros.P, fMacros.P, cMacros.P, remainingMacros.P),
@@ -53,29 +53,29 @@ public class Meal(string name, Macros macros, FoodGrouping foodGrouping)
             {
                 (var pFoodServings, var fFoodServings, var cFoodServings) = solution.Value;
 
-                _helpings = FoodGrouping.StaticHelpings.Append(
+                _servings = FoodGrouping.StaticServings.Append(
                 [
-                    new Helping(FoodGrouping.PFood, pFoodServings),
-                    new Helping(FoodGrouping.FFood, fFoodServings),
-                    new Helping(FoodGrouping.CFood, cFoodServings),
+                    FoodGrouping.PFood * pFoodServings,
+                    FoodGrouping.FFood * fFoodServings,
+                    FoodGrouping.CFood * cFoodServings,
                 ]);
 
-                foreach (var helping in Helpings)
+                foreach (var serving in Servings)
                 {
-                    if (helping.Servings < 0 && !helping.Food.IsConversion)
+                    if (serving.NutritionalInformation.ServingUnits < 0 && !serving.IsConversion)
                     {
-                        throw new Exception($"{Name} > {helping.Servings:F2} servings in {helping.Food.Name}.");
+                        throw new Exception($"{Name} > {serving.NutritionalInformation.ServingUnits:F2} servings in {serving.Name}.");
                     }
                 }
             }
 
-            return _helpings;
+            return _servings;
         }
     }
 
     public Macros Macros { get; } = macros;
-    public NutritionalInformation NutritionalInformation => Helpings
-        .Select(h => h.NutritionalInformation)
+    public NutritionalInformation NutritionalInformation => Servings
+        .Select(s => s.NutritionalInformation)
         .Sum(1, ServingUnits.Meal);
 
     public Meal CloneWithTweakedMacros(decimal pPercent, decimal fPercent, decimal cPercent) =>
@@ -92,14 +92,14 @@ internal static class MealExtensions
             var mealCount = mealGroup.Count() * daysPerWeek;
             var totalMacros = mealGroup.Sum(m => m.Macros);
             
-            // Create a new FoodGrouping with scaled static helpings
-            var scaledStaticHelpings = mealGroup.Key.StaticHelpings
-                .Select(h => h * mealCount)
+            // Create a new FoodGrouping with scaled static servings
+            var scaledStaticServings = mealGroup.Key.StaticServings
+                .Select(s => s * mealCount)
                 .ToList();
             
             var scaledFoodGrouping = new FoodGrouping(
                 mealGroup.Key.Name,
-                scaledStaticHelpings,
+                scaledStaticServings,
                 mealGroup.Key.PFood,
                 mealGroup.Key.FFood,
                 mealGroup.Key.CFood,

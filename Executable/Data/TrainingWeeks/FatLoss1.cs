@@ -23,7 +23,7 @@ internal record FatLoss1 : TrainingWeekBase
             new("Bedtime",
                 new Macros(P: FAT_LOSS_PROTEIN_PER_MEAL_ON_NONWORKOUT_DAY, F: 25, C: 0),
                 new("Shake",
-                    [new (Foods.AlmondMilk_2_Cup)],
+                    [Foods.AlmondMilk_2_Cup],
                     Foods.PeaProtein_1_Scoop,
                     Foods.AlmondButter_1_Tbsp,
                     Foods.FatToCarbConversion,

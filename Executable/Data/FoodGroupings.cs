@@ -6,7 +6,7 @@ internal static class FoodGroupings
 {
     public static FoodGrouping BlueberriesOatmealAndEdamame { get; } = new(
         "blueberries, oatmeal, and edamame",
-        [new(Foods.BlueBerries_1_Scoop, Servings: 2)],
+        [Foods.BlueBerries_1_Scoop * 2],
         Foods.Edamame_1_Scoop,
         Foods.ChiaSeeds_2_5_Tbsp,
         Foods.Oats_1_Scoop,
@@ -14,7 +14,7 @@ internal static class FoodGroupings
 
     public static FoodGrouping Ezekial(bool withEdamame = true) => new(
         "Ezekial",
-        [new(Foods.AlmondMilk_1_Scoop, Servings: 2)],
+        [Foods.AlmondMilk_1_Scoop * 2],
         Foods.PumpkinSeeds_1_Scoop,
         withEdamame ? Foods.Edamame_1_Scoop : Foods.ProteinToFatConversion,
         Foods.Ezeliel_Cereal_Low_Sodium_1_Scoop,
@@ -29,7 +29,7 @@ internal static class FoodGroupings
 
     public static FoodGrouping BlueBerryOatmeal { get; } = new(
         "blueberry oatmeal",
-        [new(Foods.BlueBerries_1_Scoop, Servings: 3)],
+        [Foods.BlueBerries_1_Scoop * 3],
         Foods.WheatBran_1_Scoop,
         Foods.ChiaSeeds_2_5_Tbsp,
         Foods.Oats_1_Scoop,
@@ -44,7 +44,7 @@ internal static class FoodGroupings
 
     public static FoodGrouping EnglishMuffinsAndPasta(int englishMuffins, bool withEdamame = true) => new(
         "English muffins and pasta",
-        englishMuffins == 0 ? [] : [new(Foods.Ezekiel_English_Muffin, Servings: englishMuffins)],
+        englishMuffins == 0 ? [] : [Foods.Ezekiel_English_Muffin * englishMuffins],
         withEdamame ? Foods.Edamame_1_Scoop : Foods.ProteinToCarbConversion,
         Foods.OliveOil_1_Tbsp,
         Foods.Whole_Grain_Pasta_56_Grams,
@@ -52,7 +52,7 @@ internal static class FoodGroupings
 
     public static FoodGrouping ProteinShake { get; } = new(
         "protein shake",
-        [new(Foods.AlmondMilk_2_Cup, Servings: 1)],
+        [Foods.AlmondMilk_2_Cup],
         Foods.PeaProtein_1_Scoop,
         Foods.ChiaSeeds_2_5_Tbsp,
         Foods.BlueBerries_1_Scoop,
@@ -95,7 +95,7 @@ internal static class FoodGroupings
 
     public static FoodGrouping ToastedWheatfuls { get; } = new(
         "toasted wheatfuls",
-        [new(Foods.AlmondMilk_2_Cup, Servings: 0.5M)],
+        [Foods.AlmondMilk_2_Cup * 0.5M],
         Foods.ToastedWheatfuls,
         Foods.PumpkinSeeds_30_Grams,
         Foods.Edamame_1_Scoop,
