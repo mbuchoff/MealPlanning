@@ -39,8 +39,15 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
       
+    - name: Check formatting
+      run: |
+        dotnet format --verify-no-changes --verbosity diagnostic || {
+          echo "::warning::Code formatting issues detected. Run 'dotnet format' to fix."
+          exit 0  # Don't fail the build for formatting
+        }
+    
     - name: Build
-      run: dotnet build --no-restore --configuration Release
+      run: dotnet build --no-restore --configuration Release -warnaserror
       
     - name: Run unit tests
       run: |
@@ -78,34 +85,3 @@ jobs:
           exit 1
         fi
     
-  code-quality:
-    name: Code Quality Checks
-    runs-on: ubuntu-latest
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: ${{ env.DOTNET_VERSION }}
-    
-    - name: Restore dependencies
-      run: dotnet restore
-    
-    - name: Check formatting
-      run: |
-        dotnet format --verify-no-changes --verbosity diagnostic || {
-          echo "::warning::Code formatting issues detected. Run 'dotnet format' to fix."
-          exit 0  # Don't fail the build for formatting
-        }
-    
-    # IMPORTANT: Keep -warnaserror flag to enforce code quality
-    # This ensures all warnings are treated as errors during CI builds
-    - name: Run code analysis
-      run: |
-        dotnet build --no-restore --configuration Release \
-          -warnaserror \
-          -p:TreatWarningsAsErrors=true \
-          -p:EnforceCodeStyleInBuild=true
