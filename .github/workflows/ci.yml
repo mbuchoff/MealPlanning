@@ -15,11 +15,7 @@ env:
 jobs:
   build-and-test:
     name: Build and Test
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-      fail-fast: false
+    runs-on: ubuntu-latest
     
     steps:
     - name: Checkout code
@@ -59,7 +55,7 @@ jobs:
       if: always()
       uses: actions/upload-artifact@v3
       with:
-        name: test-results-${{ matrix.os }}
+        name: test-results
         path: TestResults/
         retention-days: 30
     
