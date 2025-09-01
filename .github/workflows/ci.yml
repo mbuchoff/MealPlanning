@@ -29,7 +29,7 @@ jobs:
         dotnet-version: ${{ env.DOTNET_VERSION }}
     
     - name: Cache NuGet packages
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: ~/.nuget/packages
         key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
@@ -53,7 +53,7 @@ jobs:
       
     - name: Upload test results
       if: always()
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: test-results
         path: TestResults/
@@ -101,9 +101,11 @@ jobs:
           exit 0  # Don't fail the build for formatting
         }
     
+    # IMPORTANT: Keep -warnaserror flag to enforce code quality
+    # This ensures all warnings are treated as errors during CI builds
     - name: Run code analysis
       run: |
         dotnet build --no-restore --configuration Release \
           -warnaserror \
-          -p:TreatWarningsAsErrors=false \
+          -p:TreatWarningsAsErrors=true \
           -p:EnforceCodeStyleInBuild=true

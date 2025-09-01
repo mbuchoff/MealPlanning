@@ -21,10 +21,12 @@ public class WaterCalculationTests
         var twoServings = testFood.WithServing(90, ServingUnits.Gram);
         
         // One serving: Base + PerServing = 1.5 + 0.5 = 2.0
+        Assert.NotNull(oneServing.Water);
         Assert.Equal(2.0M, oneServing.Water.Base + oneServing.Water.PerServing);
         
         // Two servings: Base should stay same, only PerServing doubles
         // Should be: 1.5 + (0.5 * 2) = 2.5, NOT (1.5 * 2) + (0.5 * 2) = 4.0
+        Assert.NotNull(twoServings.Water);
         Assert.Equal(1.5M, twoServings.Water.Base); // Base should NOT change
         Assert.Equal(1.0M, twoServings.Water.PerServing); // PerServing should double
         Assert.Equal(2.5M, twoServings.Water.Base + twoServings.Water.PerServing);
