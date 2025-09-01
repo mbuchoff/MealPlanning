@@ -18,14 +18,16 @@ internal class WeeklyMealsPrepPlans
         }).Select(x => new
         {
             x.DaysEatingPreparedMeals,
-            Meals = x.Meals
+            MealsWithCounts = x.Meals
                 .Where(m => m.FoodGrouping.PreparationMethod == FoodGrouping.PreparationMethodEnum.PrepareInAdvance)
-                .SumWithSameFoodGrouping(x.DaysEatingPreparedMeals)
-                .Select(m => new Meal($"{x.TrainingDayType} - {m.Name}", m.Macros, m.FoodGrouping)),
-        }).SelectMany(x => x.Meals.Select(m => new MealPrepPlan(m.Name,
-            m.Servings
+                .SumWithSameFoodGrouping(x.DaysEatingPreparedMeals),
+            TrainingDayType = x.TrainingDayType,
+        }).SelectMany(x => x.MealsWithCounts.Select(mc => new MealPrepPlan(
+            $"{x.TrainingDayType} - {mc.Meal.Name}",
+            mc.Meal.Servings
                 .Where(s => !_foodsExcludedFromMealPrepPlan.Any(excluded => excluded.Name == s.Name))
-                .Select(s => s * x.DaysEatingPreparedMeals)))));
+                .Select(s => s * x.DaysEatingPreparedMeals),
+            mc.MealCount))));
 
     private readonly static IEnumerable<FoodServing> _foodsExcludedFromMealPrepPlan = [
         Foods.AlmondButter_1_Tbsp,
