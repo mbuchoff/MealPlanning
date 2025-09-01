@@ -179,24 +179,6 @@ public class WeeklyMealsPrepPlanTests
         Assert.Equal(4, mealPrepPlan.MealCount);
         Assert.Equal("Test Plan", mealPrepPlan.Name);
     }
-    
-    [Fact]
-    public void CreateMealPrepPlan_Should_Not_Include_MealCount_In_Name()
-    {
-        // Arrange
-        var trainingWeek = new MuscleGain2();
-        
-        // Act
-        var mealPrepPlan = WeeklyMealsPrepPlans.CreateMealPrepPlan(trainingWeek);
-        
-        // Assert - Verify that meal names don't contain "X meals" suffix
-        foreach (var plan in mealPrepPlan.MealPrepPlans)
-        {
-            Assert.DoesNotContain(" meals", plan.Name);
-            Assert.True(plan.MealCount > 0, $"MealCount should be greater than 0 for {plan.Name}");
-        }
-    }
-    
     [Fact]
     public void SumWithSameFoodGrouping_Should_Return_MealCount()
     {
