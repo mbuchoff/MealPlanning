@@ -35,31 +35,31 @@ public record FoodGrouping
 
     public override string ToString() => Name;
     
-    public FoodGrouping AddStaticFood(FoodServing food, decimal servings = 1)
+    public static FoodGrouping operator +(FoodGrouping grouping, FoodServing food)
     {
-        var newStaticServings = StaticServings.ToList();
-        newStaticServings.Add(food * servings);
+        var newStaticServings = grouping.StaticServings.ToList();
+        newStaticServings.Add(food);
         
         return new FoodGrouping(
-            Name,
+            grouping.Name,
             newStaticServings,
-            PFood,
-            FFood,
-            CFood,
-            PreparationMethod);
+            grouping.PFood,
+            grouping.FFood,
+            grouping.CFood,
+            grouping.PreparationMethod);
     }
     
-    public FoodGrouping AddStaticFood(params FoodServing[] servings)
+    public static FoodGrouping operator +(FoodGrouping grouping, (FoodServing food, decimal servings) item)
     {
-        var newStaticServings = StaticServings.ToList();
-        newStaticServings.AddRange(servings);
+        var newStaticServings = grouping.StaticServings.ToList();
+        newStaticServings.Add(item.food * item.servings);
         
         return new FoodGrouping(
-            Name,
+            grouping.Name,
             newStaticServings,
-            PFood,
-            FFood,
-            CFood,
-            PreparationMethod);
+            grouping.PFood,
+            grouping.FFood,
+            grouping.CFood,
+            grouping.PreparationMethod);
     }
 }

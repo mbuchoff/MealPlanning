@@ -51,7 +51,35 @@ internal class TodoistService
         var parentTodoistTask = await AddTaskAsync(
             m.Name, description: null, dueString: "every tue", parentId: null, project.Id);
         Console.WriteLine($"Added task {m.Name}");
-        await Task.WhenAll(m.Servings.Select(s => AddServingAsync(parentTodoistTask, s)));
+        
+        // Create subtasks for each meal quantity
+        var subtasks = new List<Task>();
+        for (int mealCount = 1; mealCount <= m.MealCount; mealCount++)
+        {
+            var quantityLabel = mealCount == 1 ? "1 meal" : $"{mealCount} meals";
+            subtasks.Add(AddMealQuantitySubtask(parentTodoistTask, quantityLabel, m.Servings, mealCount, m.MealCount));
+        }
+        
+        await Task.WhenAll(subtasks);
+    }
+    
+    private static async Task AddMealQuantitySubtask(
+        TodoistTask parentTask, 
+        string quantityLabel, 
+        IEnumerable<FoodServing> baseServings,
+        int mealCount,
+        int totalMealCount)
+    {
+        Console.WriteLine($"Adding subtask {parentTask.Content} > {quantityLabel}...");
+        var quantityTask = await AddTaskAsync(
+            quantityLabel, description: null, dueString: null, parentTask.Id, projectId: null);
+        Console.WriteLine($"Added subtask {parentTask.Content} > {quantityLabel}");
+        
+        // Scale servings based on meal count ratio
+        decimal scaleFactor = (decimal)mealCount / totalMealCount;
+        var scaledServings = baseServings.Select(s => s * scaleFactor);
+        
+        await Task.WhenAll(scaledServings.Select(s => AddServingAsync(quantityTask, s)));
     }
 
     private static async Task AddPhaseAsync(

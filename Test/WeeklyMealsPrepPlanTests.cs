@@ -37,10 +37,10 @@ public class WeeklyMealsPrepPlanTests
         // Create meal prep plans simulating different training days
         var mealPrepPlans = new List<MealPrepPlan>
         {
-            new MealPrepPlan("XfitDay - Rice Bowl - 2 meals", 
-                meal1.Servings.Select(s => s * 2)), // 2 Xfit days
-            new MealPrepPlan("RunningDay - Rice Bowl - 3 meals", 
-                meal2.Servings.Select(s => s * 3)), // 3 Running days
+            new MealPrepPlan("XfitDay - Rice Bowl", 
+                meal1.Servings.Select(s => s * 2), 2), // 2 Xfit days
+            new MealPrepPlan("RunningDay - Rice Bowl", 
+                meal2.Servings.Select(s => s * 3), 3), // 3 Running days
         };
         
         var weeklyPlan = new WeeklyMealsPrepPlan(mealPrepPlans);
@@ -73,17 +73,17 @@ public class WeeklyMealsPrepPlanTests
             {
                 food1 * 2,
                 food2 * 1.5M
-            }),
+            }, 1),
             new MealPrepPlan("Plan 2", new List<FoodServing>
             {
                 food1 * 3,
                 food2 * 2.5M
-            }),
+            }, 1),
             new MealPrepPlan("Plan 3", new List<FoodServing>
             {
                 food1 * 1.5M
                 // No food2 in this plan
-            })
+            }, 1)
         };
         
         var weeklyPlan = new WeeklyMealsPrepPlan(mealPrepPlans);
@@ -151,7 +151,7 @@ public class WeeklyMealsPrepPlanTests
         
         var mealPrepPlans = new List<MealPrepPlan>
         {
-            new MealPrepPlan("Test Plan", new List<FoodServing> { food * 5 })
+            new MealPrepPlan("Test Plan", new List<FoodServing> { food * 5 }, 1)
         };
         
         var weeklyPlan = new WeeklyMealsPrepPlan(mealPrepPlans);
@@ -163,5 +163,65 @@ public class WeeklyMealsPrepPlanTests
         Assert.Contains("Test Plan: 500 grams Test Food", output);
         Assert.Contains("Totals:", output);
         Assert.Contains("500 grams Test Food", output);
+    }
+    
+    [Fact]
+    public void MealPrepPlan_Should_Include_MealCount()
+    {
+        // Arrange
+        var food = new FoodServing("Test Food",
+            new(ServingUnits: 100, ServingUnits.Gram, Cals: 100, P: 10, F: 5, CTotal: 15, CFiber: 2));
+        
+        // Act
+        var mealPrepPlan = new MealPrepPlan("Test Plan", new List<FoodServing> { food * 2 }, 4);
+        
+        // Assert
+        Assert.Equal(4, mealPrepPlan.MealCount);
+        Assert.Equal("Test Plan", mealPrepPlan.Name);
+    }
+    
+    [Fact]
+    public void CreateMealPrepPlan_Should_Not_Include_MealCount_In_Name()
+    {
+        // Arrange
+        var trainingWeek = new MuscleGain2();
+        
+        // Act
+        var mealPrepPlan = WeeklyMealsPrepPlans.CreateMealPrepPlan(trainingWeek);
+        
+        // Assert - Verify that meal names don't contain "X meals" suffix
+        foreach (var plan in mealPrepPlan.MealPrepPlans)
+        {
+            Assert.DoesNotContain(" meals", plan.Name);
+            Assert.True(plan.MealCount > 0, $"MealCount should be greater than 0 for {plan.Name}");
+        }
+    }
+    
+    [Fact]
+    public void SumWithSameFoodGrouping_Should_Return_MealCount()
+    {
+        // Arrange
+        var foodGrouping = new FoodGrouping(
+            "Test Grouping",
+            [],
+            new FoodServing("Protein", new(ServingUnits: 100, ServingUnits.Gram, Cals: 100, P: 20, F: 5, CTotal: 0, CFiber: 0)),
+            new FoodServing("Fat", new(ServingUnits: 10, ServingUnits.Gram, Cals: 90, P: 0, F: 10, CTotal: 0, CFiber: 0)),
+            new FoodServing("Carb", new(ServingUnits: 100, ServingUnits.Gram, Cals: 100, P: 2, F: 0, CTotal: 25, CFiber: 2)),
+            FoodGrouping.PreparationMethodEnum.PrepareInAdvance);
+        
+        var meals = new List<Meal>
+        {
+            new Meal("Meal 1", new Macros(P: 30, F: 15, C: 50), foodGrouping),
+            new Meal("Meal 2", new Macros(P: 30, F: 15, C: 50), foodGrouping),
+        };
+        
+        // Act
+        var result = meals.SumWithSameFoodGrouping(2).ToList();
+        
+        // Assert
+        Assert.Single(result);
+        var (meal, mealCount) = result.First();
+        Assert.Equal(4, mealCount); // 2 meals * 2 days = 4
+        Assert.Equal("Test Grouping", meal.Name);
     }
 }
