@@ -1,3 +1,3 @@
 ﻿namespace SystemOfEquations;
 
-internal record MealPrepPlan(string Name, IEnumerable<Helping> Helpings);
+internal record MealPrepPlan(string Name, IEnumerable<FoodServing> Servings);

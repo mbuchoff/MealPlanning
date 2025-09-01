@@ -4,59 +4,59 @@ public record FoodGrouping
 {
     public FoodGrouping(
         string name,
-        IList<Helping> staticHelpings,
-        Food pFood,
-        Food fFood,
-        Food cFood,
+        IList<FoodServing> staticServings,
+        FoodServing pFood,
+        FoodServing fFood,
+        FoodServing cFood,
         PreparationMethodEnum preparationMethod)
     {
         Name = name;
-        StaticHelpings = staticHelpings;
+        StaticServings = staticServings;
         PFood = pFood;
         FFood = fFood;
         CFood = cFood;
         PreparationMethod = preparationMethod;
     }
 
-    public FoodGrouping(string name, Food pFood, Food fFood, Food cFood, PreparationMethodEnum preparationMethod) :
+    public FoodGrouping(string name, FoodServing pFood, FoodServing fFood, FoodServing cFood, PreparationMethodEnum preparationMethod) :
         this(name, [], pFood, fFood, cFood, preparationMethod)
     {
 
     }
 
     public string Name { get; }
-    public IList<Helping> StaticHelpings { get; }
-    public Food PFood { get; }
-    public Food FFood { get; }
-    public Food CFood { get; }
+    public IList<FoodServing> StaticServings { get; }
+    public FoodServing PFood { get; }
+    public FoodServing FFood { get; }
+    public FoodServing CFood { get; }
 
     public enum PreparationMethodEnum { PrepareInAdvance, PrepareAsNeeded }
     public PreparationMethodEnum PreparationMethod { get; }
 
     public override string ToString() => Name;
     
-    public FoodGrouping AddStaticFood(Food food, int servings = 1)
+    public FoodGrouping AddStaticFood(FoodServing food, decimal servings = 1)
     {
-        var newStaticHelpings = StaticHelpings.ToList();
-        newStaticHelpings.Add(new Helping(food, servings));
+        var newStaticServings = StaticServings.ToList();
+        newStaticServings.Add(food * servings);
         
         return new FoodGrouping(
             Name,
-            newStaticHelpings,
+            newStaticServings,
             PFood,
             FFood,
             CFood,
             PreparationMethod);
     }
     
-    public FoodGrouping AddStaticFood(params Helping[] helpings)
+    public FoodGrouping AddStaticFood(params FoodServing[] servings)
     {
-        var newStaticHelpings = StaticHelpings.ToList();
-        newStaticHelpings.AddRange(helpings);
+        var newStaticServings = StaticServings.ToList();
+        newStaticServings.AddRange(servings);
         
         return new FoodGrouping(
             Name,
-            newStaticHelpings,
+            newStaticServings,
             PFood,
             FFood,
             CFood,

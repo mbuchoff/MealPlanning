@@ -23,11 +23,11 @@ internal class WeeklyMealsPrepPlans
                 .SumWithSameFoodGrouping(x.DaysEatingPreparedMeals)
                 .Select(m => new Meal($"{x.TrainingDayType} - {m.Name}", m.Macros, m.FoodGrouping)),
         }).SelectMany(x => x.Meals.Select(m => new MealPrepPlan(m.Name,
-            m.Helpings
-                .Where(h => !_foodsExcludedFromMealPrepPlan.Contains(h.Food))
-                .Select(h => h * x.DaysEatingPreparedMeals)))));
+            m.Servings
+                .Where(s => !_foodsExcludedFromMealPrepPlan.Any(excluded => excluded.Name == s.Name))
+                .Select(s => s * x.DaysEatingPreparedMeals)))));
 
-    private readonly static IEnumerable<Food> _foodsExcludedFromMealPrepPlan = [
+    private readonly static IEnumerable<FoodServing> _foodsExcludedFromMealPrepPlan = [
         Foods.AlmondButter_1_Tbsp,
         Foods.BlueBerries_1_Scoop,
         Foods.ChiaSeeds_2_5_Tbsp,

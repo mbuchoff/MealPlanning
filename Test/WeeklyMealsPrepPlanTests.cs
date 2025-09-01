@@ -7,24 +7,24 @@ namespace Test;
 public class WeeklyMealsPrepPlanTests
 {
     [Fact]
-    public void WeeklyMealsPrepPlan_Total_Should_Aggregate_StaticHelpings_Correctly()
+    public void WeeklyMealsPrepPlan_Total_Should_Aggregate_StaticServings_Correctly()
     {
         // Arrange - Create a simplified training week with known values
-        var staticFood = new Food("Brown Rice",
+        var staticFood = new FoodServing("Brown Rice",
             new(ServingUnits: 100, ServingUnits.Gram, Cals: 111, P: 2.6M, F: 0.9M, CTotal: 23, CFiber: 1.8M));
         
-        var pFood = new Food("Chicken",
+        var pFood = new FoodServing("Chicken",
             new(ServingUnits: 100, ServingUnits.Gram, Cals: 165, P: 31, F: 3.6M, CTotal: 0, CFiber: 0));
-        var fFood = new Food("Olive Oil",
+        var fFood = new FoodServing("Olive Oil",
             new(ServingUnits: 14, ServingUnits.Gram, Cals: 124, P: 0, F: 14, CTotal: 0, CFiber: 0));
-        var cFood = new Food("Sweet Potato",
+        var cFood = new FoodServing("Sweet Potato",
             new(ServingUnits: 100, ServingUnits.Gram, Cals: 86, P: 1.6M, F: 0.1M, CTotal: 20, CFiber: 3));
         
-        // Create a food grouping with static helpings
-        var staticHelpings = new List<Helping> { new Helping(staticFood, Servings: 1.5M) };
+        // Create a food grouping with static servings
+        var staticServings = new List<FoodServing> { staticFood * 1.5M };
         var foodGrouping = new FoodGrouping(
             "Rice Bowl",
-            staticHelpings,
+            staticServings,
             pFood,
             fFood,
             cFood,
@@ -38,9 +38,9 @@ public class WeeklyMealsPrepPlanTests
         var mealPrepPlans = new List<MealPrepPlan>
         {
             new MealPrepPlan("XfitDay - Rice Bowl - 2 meals", 
-                meal1.Helpings.Select(h => h * 2)), // 2 Xfit days
+                meal1.Servings.Select(s => s * 2)), // 2 Xfit days
             new MealPrepPlan("RunningDay - Rice Bowl - 3 meals", 
-                meal2.Helpings.Select(h => h * 3)), // 3 Running days
+                meal2.Servings.Select(s => s * 3)), // 3 Running days
         };
         
         var weeklyPlan = new WeeklyMealsPrepPlan(mealPrepPlans);
@@ -50,38 +50,38 @@ public class WeeklyMealsPrepPlanTests
         
         // Assert
         // Find the brown rice in the total
-        var riceHelping = total.FirstOrDefault(h => h.Food.Name == "Brown Rice");
-        Assert.NotNull(riceHelping);
+        var riceServing = total.FirstOrDefault(s => s.Name == "Brown Rice");
+        Assert.NotNull(riceServing);
         
-        // Should be: 1.5 servings * (2 Xfit meals + 3 Running meals) = 1.5 * 5 = 7.5
-        Assert.Equal(7.5M, riceHelping.Servings);
+        // Should be: 1.5 * 100g * (2 Xfit meals + 3 Running meals) = 150g * 5 = 750g
+        Assert.Equal(750M, riceServing.NutritionalInformation.ServingUnits);
     }
     
     [Fact]
     public void WeeklyMealsPrepPlan_Total_Should_Combine_Like_Foods_Across_MealPrepPlans()
     {
         // Arrange
-        var food1 = new Food("Quinoa",
+        var food1 = new FoodServing("Quinoa",
             new(ServingUnits: 100, ServingUnits.Gram, Cals: 120, P: 4.1M, F: 1.9M, CTotal: 21, CFiber: 2.8M));
-        var food2 = new Food("Black Beans",
+        var food2 = new FoodServing("Black Beans",
             new(ServingUnits: 100, ServingUnits.Gram, Cals: 132, P: 8.9M, F: 0.5M, CTotal: 24, CFiber: 8.7M));
         
         // Create multiple meal prep plans with overlapping foods
         var mealPrepPlans = new List<MealPrepPlan>
         {
-            new MealPrepPlan("Plan 1", new List<Helping>
+            new MealPrepPlan("Plan 1", new List<FoodServing>
             {
-                new Helping(food1, Servings: 2),
-                new Helping(food2, Servings: 1.5M)
+                food1 * 2,
+                food2 * 1.5M
             }),
-            new MealPrepPlan("Plan 2", new List<Helping>
+            new MealPrepPlan("Plan 2", new List<FoodServing>
             {
-                new Helping(food1, Servings: 3),
-                new Helping(food2, Servings: 2.5M)
+                food1 * 3,
+                food2 * 2.5M
             }),
-            new MealPrepPlan("Plan 3", new List<Helping>
+            new MealPrepPlan("Plan 3", new List<FoodServing>
             {
-                new Helping(food1, Servings: 1.5M)
+                food1 * 1.5M
                 // No food2 in this plan
             })
         };
@@ -89,23 +89,23 @@ public class WeeklyMealsPrepPlanTests
         var weeklyPlan = new WeeklyMealsPrepPlan(mealPrepPlans);
         
         // Act
-        var total = weeklyPlan.Total.OrderBy(h => h.Food.Name).ToList();
+        var total = weeklyPlan.Total.OrderBy(s => s.Name).ToList();
         
         // Assert
         Assert.Equal(2, total.Count);
         
-        var beansHelping = total.First(h => h.Food.Name == "Black Beans");
-        Assert.Equal(4M, beansHelping.Servings); // 1.5 + 2.5
+        var beansServing = total.First(s => s.Name == "Black Beans");
+        Assert.Equal(400M, beansServing.NutritionalInformation.ServingUnits); // (1.5 + 2.5) * 100g
         
-        var quinoaHelping = total.First(h => h.Food.Name == "Quinoa");
-        Assert.Equal(6.5M, quinoaHelping.Servings); // 2 + 3 + 1.5
+        var quinoaServing = total.First(s => s.Name == "Quinoa");
+        Assert.Equal(650M, quinoaServing.NutritionalInformation.ServingUnits); // (2 + 3 + 1.5) * 100g
     }
     
     [Fact]
-    public void CreateMealPrepPlan_Should_Scale_StaticHelpings_By_DaysEatingPreparedMeals()
+    public void CreateMealPrepPlan_Should_Scale_StaticServings_By_DaysEatingPreparedMeals()
     {
         // This test verifies that when creating a weekly meal prep plan from a training week,
-        // all foods (including static helpings) are correctly aggregated across all daily meal plans.
+        // all foods (including static servings) are correctly aggregated across all daily meal plans.
         // For example, if a food appears in meals for 3 different days, the total should reflect
         // the sum of servings needed for all those days.
         
@@ -120,26 +120,25 @@ public class WeeklyMealsPrepPlanTests
         // The total should contain all foods aggregated across all meal prep plans
         Assert.NotEmpty(total);
         
-        // Verify that the total is the sum of all helpings from all meal prep plans
-        var allHelpingsFromPlans = mealPrepPlan.MealPrepPlans
-            .SelectMany(plan => plan.Helpings)
+        // Verify that the total is the sum of all servings from all meal prep plans
+        var allServingsFromPlans = mealPrepPlan.MealPrepPlans
+            .SelectMany(plan => plan.Servings)
             .ToList();
         
-        // Group by food and sum servings
-        var expectedTotals = allHelpingsFromPlans
-            .GroupBy(h => h.Food)
-            .Select(g => new Helping(g.Key, g.Sum(h => h.Servings)))
-            .OrderBy(h => h.Food.Name)
+        // Group by food name and sum servings (using same logic as CombineLikeServings)
+        var expectedTotals = allServingsFromPlans
+            .CombineLikeServings()
+            .OrderBy(s => s.Name)
             .ToList();
         
-        var actualTotals = total.OrderBy(h => h.Food.Name).ToList();
+        var actualTotals = total.OrderBy(s => s.Name).ToList();
         
         Assert.Equal(expectedTotals.Count, actualTotals.Count);
         
         for (int i = 0; i < expectedTotals.Count; i++)
         {
-            Assert.Equal(expectedTotals[i].Food.Name, actualTotals[i].Food.Name);
-            Assert.Equal(expectedTotals[i].Servings, actualTotals[i].Servings);
+            Assert.Equal(expectedTotals[i].Name, actualTotals[i].Name);
+            Assert.Equal(expectedTotals[i].NutritionalInformation.ServingUnits, actualTotals[i].NutritionalInformation.ServingUnits);
         }
     }
     
@@ -147,12 +146,12 @@ public class WeeklyMealsPrepPlanTests
     public void WeeklyMealsPrepPlan_ToString_Should_Include_Totals()
     {
         // Arrange
-        var food = new Food("Test Food",
+        var food = new FoodServing("Test Food",
             new(ServingUnits: 100, ServingUnits.Gram, Cals: 100, P: 10, F: 5, CTotal: 15, CFiber: 2));
         
         var mealPrepPlans = new List<MealPrepPlan>
         {
-            new MealPrepPlan("Test Plan", new List<Helping> { new Helping(food, Servings: 5) })
+            new MealPrepPlan("Test Plan", new List<FoodServing> { food * 5 })
         };
         
         var weeklyPlan = new WeeklyMealsPrepPlan(mealPrepPlans);
