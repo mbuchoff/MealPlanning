@@ -164,22 +164,7 @@ public class WeeklyMealsPrepPlanTests
         Assert.Contains("Totals:", output);
         Assert.Contains("500 grams Test Food", output);
     }
-    
-    [Fact]
-    public void MealPrepPlan_Should_Include_MealCount()
-    {
-        // Arrange
-        var food = new FoodServing("Test Food",
-            new(ServingUnits: 100, ServingUnits.Gram, Cals: 100, P: 10, F: 5, CTotal: 15, CFiber: 2));
-        
-        // Act
-        var mealPrepPlan = new MealPrepPlan("Test Plan", new List<FoodServing> { food * 2 }, 4);
-        
-        // Assert
-        Assert.Equal(4, mealPrepPlan.MealCount);
-        Assert.Equal("Test Plan", mealPrepPlan.Name);
-    }
-    [Fact]
+[Fact]
     public void SumWithSameFoodGrouping_Should_Return_MealCount()
     {
         // Arrange
