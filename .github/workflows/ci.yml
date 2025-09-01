@@ -1,0 +1,113 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, 'feature/**', 'refactor/**' ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+env:
+  DOTNET_VERSION: '9.0.x'
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+jobs:
+  build-and-test:
+    name: Build and Test
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+      fail-fast: false
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Full history for better analysis
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+    
+    - name: Cache NuGet packages
+      uses: actions/cache@v3
+      with:
+        path: ~/.nuget/packages
+        key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+        restore-keys: |
+          ${{ runner.os }}-nuget-
+    
+    - name: Restore dependencies
+      run: dotnet restore
+      
+    - name: Build
+      run: dotnet build --no-restore --configuration Release
+      
+    - name: Run unit tests
+      run: |
+        dotnet test --no-build --configuration Release \
+          --verbosity normal \
+          --logger "trx;LogFileName=test-results.trx" \
+          --logger "console;verbosity=normal" \
+          --collect:"XPlat Code Coverage" \
+          --results-directory ./TestResults
+      
+    - name: Upload test results
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: test-results-${{ matrix.os }}
+        path: TestResults/
+        retention-days: 30
+    
+    - name: Run executable smoke test
+      shell: bash
+      run: |
+        cd Executable
+        # Run the program with 'n' input to skip Todoist sync
+        echo "n" | timeout 10s dotnet run --no-build --configuration Release > output.txt 2>&1 || true
+        
+        # Verify expected output
+        if grep -q "grams brown rice" output.txt && \
+           grep -q "cups water" output.txt && \
+           grep -q "Ave per day:" output.txt; then
+          echo "✅ Smoke test passed - program produces expected output"
+        else
+          echo "❌ Smoke test failed - unexpected output"
+          echo "Program output:"
+          cat output.txt
+          exit 1
+        fi
+    
+  code-quality:
+    name: Code Quality Checks
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+    
+    - name: Restore dependencies
+      run: dotnet restore
+    
+    - name: Check formatting
+      run: |
+        dotnet format --verify-no-changes --verbosity diagnostic || {
+          echo "::warning::Code formatting issues detected. Run 'dotnet format' to fix."
+          exit 0  # Don't fail the build for formatting
+        }
+    
+    - name: Run code analysis
+      run: |
+        dotnet build --no-restore --configuration Release \
+          -warnaserror \
+          -p:TreatWarningsAsErrors=false \
+          -p:EnforceCodeStyleInBuild=true
