@@ -52,15 +52,12 @@ internal class TodoistService
             m.Name, description: null, dueString: "every tue", parentId: null, project.Id);
         Console.WriteLine($"Added task {m.Name}");
         
-        // Create subtasks for each meal quantity
-        var subtasks = new List<Task>();
+        // Create subtasks for each meal quantity - add sequentially to maintain order
         for (int mealCount = 1; mealCount <= m.MealCount; mealCount++)
         {
             var quantityLabel = mealCount == 1 ? "1 meal" : $"{mealCount} meals";
-            subtasks.Add(AddMealQuantitySubtask(parentTodoistTask, quantityLabel, m.Servings, mealCount, m.MealCount));
+            await AddMealQuantitySubtask(parentTodoistTask, quantityLabel, m.Servings, mealCount, m.MealCount);
         }
-        
-        await Task.WhenAll(subtasks);
     }
     
     private static async Task AddMealQuantitySubtask(
