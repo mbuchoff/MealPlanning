@@ -140,7 +140,7 @@ internal static class Foods
     private static Food WheatBerriesFood { get; } = new("wheat berries",
         [(45, ServingUnits.Gram), (0.25M, ServingUnits.Cup)],
         new BaseNutrition(Cals: 150, P: 7, F: 1, CTotal: 31, CFiber: 5),
-        Water: new(Base: 2, PerServing: 0.8M));
+        Water: new(Base: 2, PerServing: 0.6M));
     
     private static Food WheatBranFood { get; } = new("wheat bran",
         [(0.5M, ServingUnits.Cup)],
