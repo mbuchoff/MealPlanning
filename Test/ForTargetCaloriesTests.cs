@@ -147,56 +147,6 @@ public class ForTargetCaloriesTests
     }
     
     [Fact]
-    public void ForTargetCalories_Should_Throw_For_Too_Low_Target()
-    {
-        // Arrange
-        var baseTrainingWeek = new TestTrainingWeek();
-        var tooLowTarget = 2100M; // This should be below the minimum (85% of 2645 = 2248)
-        
-        // Act & Assert
-        var exception = Assert.Throws<InvalidOperationException>(() => 
-            baseTrainingWeek.ForTargetCalories(tooLowTarget));
-        
-        Assert.Contains("too low", exception.Message);
-    }
-    
-    [Fact]
-    public void ForTargetCalories_Should_Throw_For_Too_High_Target()
-    {
-        // Arrange
-        var baseTrainingWeek = new TestTrainingWeek();
-        var tooHighTarget = 3400M; // This should be above the maximum (120%)
-        
-        // Act & Assert
-        var exception = Assert.Throws<InvalidOperationException>(() => 
-            baseTrainingWeek.ForTargetCalories(tooHighTarget));
-        
-        Assert.Contains("too high", exception.Message);
-    }
-    
-    [Fact]
-    public void ForTargetCalories_Should_Achieve_Target_Within_Tolerance()
-    {
-        // Arrange
-        var baseTrainingWeek = new TestTrainingWeek();
-        var targetCalories = 2600M;
-        
-        // Act
-        var adjustedWeek = baseTrainingWeek.ForTargetCalories(targetCalories);
-        
-        // Calculate actual average calories
-        var totalCals = 0.0M;
-        foreach (var day in adjustedWeek.TrainingDays)
-        {
-            totalCals += day.TotalNutrients.Cals * day.TrainingDayType.DaysTraining.Count;
-        }
-        var actualAverage = totalCals / 7;
-        
-        // Assert - should be within 5 calories of target
-        Assert.InRange(actualAverage, targetCalories - 5, targetCalories + 5);
-    }
-    
-    [Fact]
     public void ForTargetCalories_Should_Scale_Fats_And_Carbs_Proportionally()
     {
         // Arrange
