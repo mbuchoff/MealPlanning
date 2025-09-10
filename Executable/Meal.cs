@@ -4,8 +4,31 @@ using SystemOfEquations.Extensions;
 
 namespace SystemOfEquations;
 
-public class Meal(string name, Macros macros, FoodGrouping foodGrouping)
+public class Meal
 {
+    public Meal(string name, Macros macros, FoodGrouping foodGrouping)
+    {
+        Name = name;
+        Macros = macros;
+        _foodGroupings = [foodGrouping];
+        ActualFoodGrouping = foodGrouping;
+    }
+    
+    public static Meal WithFallbacks(string name, Macros macros, params FoodGrouping[] foodGroupings)
+    {
+        return new Meal(name, macros, foodGroupings);
+    }
+    
+    private Meal(string name, Macros macros, params FoodGrouping[] foodGroupings)
+    {
+        Name = name;
+        Macros = macros;
+        _foodGroupings = foodGroupings ?? throw new ArgumentNullException(nameof(foodGroupings));
+        if (foodGroupings.Length == 0)
+            throw new ArgumentException("At least one FoodGrouping must be provided", nameof(foodGroupings));
+    }
+
+    private readonly FoodGrouping[] _foodGroupings;
     public override string ToString()
     {
         var sb = new StringBuilder();
@@ -22,8 +45,21 @@ public class Meal(string name, Macros macros, FoodGrouping foodGrouping)
         return sb.ToString();
     }
 
-    public string Name { get; } = name;
-    public FoodGrouping FoodGrouping { get; } = foodGrouping;
+    public string Name { get; private set; }
+    public FoodGrouping FoodGrouping
+    {
+        get
+        {
+            // Ensure ActualFoodGrouping is populated
+            if (ActualFoodGrouping == null && _foodGroupings != null && _foodGroupings.Length > 0)
+            {
+                // Force calculation if not yet done
+                _ = Servings;
+            }
+            return ActualFoodGrouping ?? throw new InvalidOperationException("FoodGrouping has not been determined yet");
+        }
+    }
+    public FoodGrouping? ActualFoodGrouping { get; private set; }
 
     private IEnumerable<FoodServing>? _servings = null;
     public IEnumerable<FoodServing> Servings
@@ -35,45 +71,66 @@ public class Meal(string name, Macros macros, FoodGrouping foodGrouping)
                 return _servings;
             }
 
-            var pMacros = FoodGrouping.PFood.NutritionalInformation.Macros;
-            var fMacros = FoodGrouping.FFood.NutritionalInformation.Macros;
-            var cMacros = FoodGrouping.CFood.NutritionalInformation.Macros;
-            var remainingMacros = Macros - FoodGrouping.StaticServings.Sum(s => s.NutritionalInformation.Macros);
+            Exception? lastException = null;
 
-            var solution = Equation.Solve(
-                new(pMacros.P, fMacros.P, cMacros.P, remainingMacros.P),
-                new(pMacros.F, fMacros.F, cMacros.F, remainingMacros.F),
-                new(pMacros.C, fMacros.C, cMacros.C, remainingMacros.C));
-
-            if (solution == null)
+            foreach (var foodGrouping in _foodGroupings)
             {
-                throw new Exception("No solution");
-            }
-            else
-            {
-                (var pFoodServings, var fFoodServings, var cFoodServings) = solution.Value;
-
-                _servings = FoodGrouping.StaticServings.Append(
-                [
-                    FoodGrouping.PFood * pFoodServings,
-                    FoodGrouping.FFood * fFoodServings,
-                    FoodGrouping.CFood * cFoodServings,
-                ]);
-
-                foreach (var serving in Servings)
+                try
                 {
-                    if (serving.NutritionalInformation.ServingUnits < 0 && !serving.IsConversion)
-                    {
-                        throw new Exception($"{Name} > {serving.NutritionalInformation.ServingUnits:F2} servings in {serving.Name}.");
-                    }
+                    var calculatedServings = TryCalculateServings(foodGrouping);
+                    _servings = calculatedServings;
+                    ActualFoodGrouping = foodGrouping;
+                    return _servings;
+                }
+                catch (Exception ex)
+                {
+                    lastException = ex;
+                    continue;
                 }
             }
 
-            return _servings;
+            throw lastException ?? new Exception("No FoodGroupings provided");
         }
     }
 
-    public Macros Macros { get; } = macros;
+    private IEnumerable<FoodServing> TryCalculateServings(FoodGrouping foodGrouping)
+    {
+        var pMacros = foodGrouping.PFood.NutritionalInformation.Macros;
+        var fMacros = foodGrouping.FFood.NutritionalInformation.Macros;
+        var cMacros = foodGrouping.CFood.NutritionalInformation.Macros;
+        var remainingMacros = Macros - foodGrouping.StaticServings.Sum(s => s.NutritionalInformation.Macros);
+
+        var solution = Equation.Solve(
+            new(pMacros.P, fMacros.P, cMacros.P, remainingMacros.P),
+            new(pMacros.F, fMacros.F, cMacros.F, remainingMacros.F),
+            new(pMacros.C, fMacros.C, cMacros.C, remainingMacros.C));
+
+        if (solution == null)
+        {
+            throw new Exception("No solution");
+        }
+
+        (var pFoodServings, var fFoodServings, var cFoodServings) = solution.Value;
+
+        var servings = foodGrouping.StaticServings.Append(
+        [
+            foodGrouping.PFood * pFoodServings,
+            foodGrouping.FFood * fFoodServings,
+            foodGrouping.CFood * cFoodServings,
+        ]);
+
+        foreach (var serving in servings)
+        {
+            if (serving.NutritionalInformation.ServingUnits < 0 && !serving.IsConversion)
+            {
+                throw new Exception($"{Name} > {serving.NutritionalInformation.ServingUnits:F2} servings in {serving.Name}.");
+            }
+        }
+
+        return servings;
+    }
+
+    public Macros Macros { get; private set; }
     public NutritionalInformation NutritionalInformation => Servings
         .Select(s => s.NutritionalInformation)
         .Sum(1, ServingUnits.Meal);

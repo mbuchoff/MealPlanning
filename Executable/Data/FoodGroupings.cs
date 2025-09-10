@@ -12,13 +12,22 @@ internal static class FoodGroupings
         Foods.Oats_1_Scoop,
         PreparationMethodEnum.PrepareAsNeeded);
 
-    public static FoodGrouping Ezekial(bool withEdamame = true) => new(
-        "Ezekial",
-        [Foods.AlmondMilk_1_Scoop * 2],
-        Foods.PumpkinSeeds_1_Scoop,
-        withEdamame ? Foods.Edamame_1_Scoop : Foods.ProteinToFatConversion,
-        Foods.Ezeliel_Cereal_Low_Sodium_1_Scoop,
-        PreparationMethodEnum.PrepareAsNeeded);
+    public static FoodGrouping[] Ezekial { get; } = [
+        new FoodGrouping(
+            "Ezekial",
+            [Foods.AlmondMilk_1_Scoop * 2],
+            Foods.PumpkinSeeds_1_Scoop,
+            Foods.Edamame_1_Scoop, // First try with edamame
+            Foods.Ezeliel_Cereal_Low_Sodium_1_Scoop,
+            PreparationMethodEnum.PrepareAsNeeded),
+        new FoodGrouping(
+            "Ezekial",
+            [Foods.AlmondMilk_1_Scoop * 2],
+            Foods.PumpkinSeeds_1_Scoop,
+            Foods.ProteinToFatConversion, // Then try without edamame
+            Foods.Ezeliel_Cereal_Low_Sodium_1_Scoop,
+            PreparationMethodEnum.PrepareAsNeeded)
+    ];
 
     public static FoodGrouping OatmealWithAlmondButter { get; } = new(
         "oatmeal with almond butter",
