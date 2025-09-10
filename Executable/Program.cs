@@ -1,11 +1,33 @@
-﻿using SystemOfEquations;
+using SystemOfEquations;
 using SystemOfEquations.Data.TrainingWeeks;
 using SystemOfEquations.Todoist;
 
-// 2800
-var percentIncrease = -13.5M;
-var trainingWeek = new MuscleGain2().PlusPercent(100 + percentIncrease);
-var phase = new Phase($"{trainingWeek.Name}, plus {percentIncrease}%", trainingWeek);
+// Set your target average daily calories here
+var targetDailyCalories = 2800M;
+
+// Automatically calculate the required adjustment
+// Note: The base MuscleGain2 is at 100% (no adjustment)
+var baseTrainingWeek = new MuscleGain2();
+var trainingWeek = baseTrainingWeek.ForTargetCalories(targetDailyCalories);
+
+// Calculate the actual percentage for display purposes
+var baseTotalCals = 0.0M;
+foreach (var day in baseTrainingWeek.TrainingDays)
+{
+    baseTotalCals += day.TotalNutrients.Cals * day.TrainingDayType.DaysTraining.Count;
+}
+var baseAverage = baseTotalCals / 7;
+
+var adjustedTotalCals = 0.0M;
+foreach (var day in trainingWeek.TrainingDays)
+{
+    adjustedTotalCals += day.TotalNutrients.Cals * day.TrainingDayType.DaysTraining.Count;
+}
+var adjustedAverage = adjustedTotalCals / 7;
+
+var actualPercentChange = ((adjustedAverage / baseAverage) - 1) * 100;
+
+var phase = new Phase($"{trainingWeek.Name}, adjusted to {targetDailyCalories:F0} cal/day ({actualPercentChange:+0.0;-0.0}%)", trainingWeek);
 
 Console.WriteLine(phase);
 Console.WriteLine(phase.MealPrepPlan);
