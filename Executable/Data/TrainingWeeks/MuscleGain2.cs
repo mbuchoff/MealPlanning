@@ -8,28 +8,11 @@ internal record MuscleGain2 : TrainingWeekBase
         "Muscle Gain 2",
         nonworkoutMeals:
         [
-            new("Waking", new(P: MUSCLE_GAIN_PROTEIN_PER_MEAL_ON_NONWORKOUT_DAY, F: 10, C: 60),
-                new("Blueberry oatmeal shake",
-                    [
-                        Foods.BlueBerries_1_Scoop * 3,
-                        Foods.AlmondMilk_2_Cup,
-                        Foods.Creatine_1_Scoop,
-                    ],
-                    Foods.PeaProtein_1_Scoop,
-                    Foods.FatToCarbConversion,
-                    Foods.Oats_1_Scoop,
-                    PreparationMethodEnum.PrepareAsNeeded)),
+            WakingBlueberryOatmealShake(),
             Meal.WithFallbacks("3-5 hours after last meal", new(P: MUSCLE_GAIN_PROTEIN_PER_MEAL_ON_NONWORKOUT_DAY, F: 20, C: 60), FoodGroupings.Ezekial),
             new("3-5 hours after last meal", new(P: MUSCLE_GAIN_PROTEIN_PER_MEAL_ON_NONWORKOUT_DAY, F: 20, C: 60), FoodGroupings.Tofu),
             new("3-5 hours after last meal", new(P: MUSCLE_GAIN_PROTEIN_PER_MEAL_ON_NONWORKOUT_DAY, F: 20, C: 60), FoodGroupings.Tofu),
-            new("Bedtime",
-                new Macros(P: MUSCLE_GAIN_PROTEIN_PER_MEAL_ON_NONWORKOUT_DAY, F: 25, C: 0),
-                new("Bedtime",
-                    [Foods.AlmondMilk_2_Cup],
-                    Foods.PeaProtein_1_Scoop,
-                    Foods.AlmondButter_1_Tbsp,
-                    Foods.FatToCarbConversion,
-                    PreparationMethodEnum.PrepareAsNeeded))
+            BedtimeProteinShake()
         ],
         runningMeals:
         [
@@ -72,4 +55,43 @@ internal record MuscleGain2 : TrainingWeekBase
         Foods.PumpkinSeeds_30_Grams,
         Foods.BrownRice_45_Grams,
         PreparationMethodEnum.PrepareInAdvance);
+
+    private static Meal WakingBlueberryOatmealShake() =>
+        Meal.WithFallbacks("Waking", new(P: MUSCLE_GAIN_PROTEIN_PER_MEAL_ON_NONWORKOUT_DAY, F: 10, C: 60),
+            new("Blueberry oatmeal shake",
+                [
+                    Foods.BlueBerries_1_Scoop * 3,
+                    Foods.AlmondMilk_2_Cup,
+                    Foods.Creatine_1_Scoop,
+                ],
+                Foods.PeaProtein_1_Scoop,
+                Foods.AlmondButter_1_Tbsp,
+                Foods.Oats_1_Scoop,
+                PreparationMethodEnum.PrepareAsNeeded),
+            new("Blueberry oatmeal shake",
+                [
+                    Foods.BlueBerries_1_Scoop * 3,
+                    Foods.AlmondMilk_2_Cup,
+                    Foods.Creatine_1_Scoop,
+                ],
+                Foods.PeaProtein_1_Scoop,
+                Foods.FatToCarbConversion,
+                Foods.Oats_1_Scoop,
+                PreparationMethodEnum.PrepareAsNeeded));
+
+    private static Meal BedtimeProteinShake() =>
+        Meal.WithFallbacks("Bedtime",
+            new Macros(P: MUSCLE_GAIN_PROTEIN_PER_MEAL_ON_NONWORKOUT_DAY, F: 25, C: 0),
+            new("Protein shake",
+                [Foods.AlmondMilk_2_Cup],
+                Foods.PeaProtein_1_Scoop,
+                Foods.AlmondButter_1_Tbsp,
+                Foods.BlueBerries_1_Scoop,
+                PreparationMethodEnum.PrepareAsNeeded),
+            new("Protein shake",
+                [Foods.AlmondMilk_2_Cup],
+                Foods.PeaProtein_1_Scoop,
+                Foods.AlmondButter_1_Tbsp,
+                Foods.FatToCarbConversion,
+                PreparationMethodEnum.PrepareAsNeeded));
 }
