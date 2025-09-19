@@ -25,7 +25,7 @@ public record FoodServing(
 
     public string ToString(decimal quantity) =>
         $"{NutritionalInformation.ServingUnit.ToString(quantity * NutritionalInformation.ServingUnits)} {Name}" +
-        $"{(Water == null ? "" : $", {(Water.Base + Water.PerServing * quantity):f1} cups water")}";
+        $"{(Water == null ? "" : $", {Water.Base + Water.PerServing * quantity:f1} cups water")}";
 
     public FoodServing Convert(ServingUnit newServingUnit, AmountWater? water = null)
     {
@@ -52,10 +52,22 @@ public record FoodServing(
     }
     
     public static FoodServing operator *(FoodServing fs, decimal multiplier) =>
-        new(fs.Name,
-            fs.NutritionalInformation * multiplier,
-            fs.Water == null ? null : new AmountWater(fs.Water.Base, fs.Water.PerServing * multiplier),
-            fs.IsConversion);
+        fs with {
+            NutritionalInformation = fs.NutritionalInformation * multiplier,
+            Water = fs.Water == null ? null : new AmountWater(fs.Water.Base, fs.Water.PerServing * multiplier)
+        };
     
     public override string ToString() => ToString(1);
+
+    // Virtual methods for polymorphic display handling
+    public virtual IEnumerable<string> ToOutputLines(string prefix = "")
+    {
+        yield return $"{prefix}{ToString()}";
+    }
+
+    public virtual IEnumerable<FoodServing> GetComponentsForDisplay()
+    {
+        // Base FoodServing returns itself
+        yield return this;
+    }
 }

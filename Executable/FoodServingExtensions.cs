@@ -26,11 +26,8 @@ internal static class FoodServingExtensions
                 totalF,
                 totalCTotal,
                 totalCFiber);
-            
-            return new FoodServing(
-                first.Name,
-                totalNutrition,
-                first.Water,
-                first.IsConversion);
+
+            // Use 'with' expression to preserve runtime type (FoodServing or CompositeFoodServing)
+            return first with { NutritionalInformation = totalNutrition };
         });
 }

@@ -18,10 +18,14 @@ internal class TodoistService
 
     private static async Task AddServingAsync(TodoistTask parentTodoistTask, FoodServing s)
     {
-        Console.WriteLine($"Adding subtask {parentTodoistTask.Content} > {s}...");
-        await AddTaskAsync(
-            s.ToString(), description: null, dueString: null, parentTodoistTask.Id, projectId: null);
-        Console.WriteLine($"Added subtask {parentTodoistTask.Content} > {s}");
+        // Use polymorphic GetComponentsForDisplay method - no type checking needed
+        foreach (var component in s.GetComponentsForDisplay())
+        {
+            Console.WriteLine($"Adding subtask {parentTodoistTask.Content} > {component}...");
+            await AddTaskAsync(
+                component.ToString(), description: null, dueString: null, parentTodoistTask.Id, projectId: null);
+            Console.WriteLine($"Added subtask {parentTodoistTask.Content} > {component}");
+        }
     }
 
     private static async Task AddServingsAsync(

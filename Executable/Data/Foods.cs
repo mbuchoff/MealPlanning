@@ -274,10 +274,23 @@ internal static class Foods
     public static FoodServing BlueBerries_1_Scoop => 
         BlueBerries.WithServing(1, ServingUnits.Scoop);
 
-    public static FoodServing Seitan_Sprouts_Yeast_1_Gram_Gluten_4x => new(
-        "Seitan Walmart Nutritional Yeast, 4x gluten",
-        NutritionalYeast_Sprouts_16_Grams.NutritionalInformation.Combine(Gluten_30_Grams.NutritionalInformation, 4),
-        Water: new(Base: 0, PerServing: 0.0366666666666667M));
+    public static FoodServing Seitan_Sprouts_Yeast_1_Gram_Gluten_4x => new CompositeFoodServing(
+        "Seitan (Nutritional Yeast + Gluten)",
+        // Combined nutrition: 4g nutritional yeast (1/4 of 16g serving) + 16g gluten (16/30 of 30g serving)
+        new NutritionalInformation(
+            ServingUnits: 1,
+            ServingUnit: ServingUnits.None,
+            Cals: 60M * 0.25M + 120M * (16M/30M),  // 15 + 64 = 79
+            P: 5M * 0.25M + 23M * (16M/30M),        // 1.25 + 12.27 = 13.52
+            F: 0.5M * 0.25M + 1M * (16M/30M),       // 0.125 + 0.53 = 0.655
+            CTotal: 5M * 0.25M + 4M * (16M/30M),    // 1.25 + 2.13 = 3.38
+            CFiber: 3M * 0.25M + 0M * (16M/30M)),   // 0.75 + 0 = 0.75
+        // Components
+        [
+            NutritionalYeastFood.WithServing(4, ServingUnits.Gram),
+            GlutenFood.WithServing(16, ServingUnits.Gram)
+        ],
+        water: new(Base: 0, PerServing: 0.0366666666666667M));
 
     public static FoodServing Whole_Grain_Pasta_56_Grams => 
         WholGrainPastaFood.WithServing(56, ServingUnits.Gram);
