@@ -1,3 +1,5 @@
+using SystemOfEquations.Data;
+
 namespace SystemOfEquations;
 
 public record CompositeFoodServing : FoodServing
@@ -12,6 +14,20 @@ public record CompositeFoodServing : FoodServing
         : base(name, combinedNutrition, water)
     {
         Components = components.ToList().AsReadOnly();
+    }
+
+    // Factory method that auto-calculates nutrition from components
+    public static CompositeFoodServing FromComponents(
+        string name,
+        IEnumerable<FoodServing> components,
+        AmountWater? water = null)
+    {
+        var componentsList = components.ToList();
+        var combinedNutrition = componentsList
+            .Select(c => c.NutritionalInformation)
+            .Sum(1, ServingUnits.None);
+
+        return new CompositeFoodServing(name, combinedNutrition, componentsList, water);
     }
 
     // Override ToString to output components

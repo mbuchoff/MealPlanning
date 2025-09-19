@@ -102,4 +102,73 @@ public class CompositeFoodServingTests
         Assert.IsAssignableFrom<IReadOnlyList<FoodServing>>(_composite.Components);
         Assert.Equal(2, _composite.Components.Count);
     }
+
+    [Fact]
+    public void FromComponents_CalculatesNutritionAutomatically()
+    {
+        // Arrange
+        var yeastComponent = new FoodServing("nutritional yeast",
+            new NutritionalInformation(4, ServingUnits.Gram, 15, 1.25M, 0.125M, 1.25M, 0.75M));
+        var glutenComponent = new FoodServing("gluten",
+            new NutritionalInformation(16, ServingUnits.Gram, 64, 12.27M, 0.53M, 2.13M, 0));
+
+        // Act
+        var composite = CompositeFoodServing.FromComponents(
+            "Auto-calculated Seitan",
+            [yeastComponent, glutenComponent],
+            new FoodServing.AmountWater(0, 0.00916M));
+
+        // Assert - nutrition should be sum of components
+        Assert.Equal(79, composite.NutritionalInformation.Cals);  // 15 + 64
+        Assert.Equal(13.52M, composite.NutritionalInformation.P);  // 1.25 + 12.27
+        Assert.Equal(0.655M, composite.NutritionalInformation.F);  // 0.125 + 0.53
+        Assert.Equal(3.38M, composite.NutritionalInformation.CTotal);  // 1.25 + 2.13
+        Assert.Equal(0.75M, composite.NutritionalInformation.CFiber);  // 0.75 + 0
+        Assert.Equal(1, composite.NutritionalInformation.ServingUnits);
+        Assert.Equal(ServingUnits.None, composite.NutritionalInformation.ServingUnit);
+    }
+
+    [Fact]
+    public void FromComponents_PreservesComponentsAndWater()
+    {
+        // Arrange
+        var yeastComponent = new FoodServing("nutritional yeast",
+            new NutritionalInformation(4, ServingUnits.Gram, 15, 1.25M, 0.125M, 1.25M, 0.75M));
+        var glutenComponent = new FoodServing("gluten",
+            new NutritionalInformation(16, ServingUnits.Gram, 64, 12.27M, 0.53M, 2.13M, 0));
+        var water = new FoodServing.AmountWater(0, 0.00916M);
+
+        // Act
+        var composite = CompositeFoodServing.FromComponents(
+            "Auto-calculated Seitan",
+            [yeastComponent, glutenComponent],
+            water);
+
+        // Assert
+        Assert.Equal(2, composite.Components.Count);
+        Assert.Equal(yeastComponent, composite.Components[0]);
+        Assert.Equal(glutenComponent, composite.Components[1]);
+        Assert.Equal(water, composite.Water);
+        Assert.Equal("Auto-calculated Seitan", composite.Name);
+    }
+
+    [Fact]
+    public void FromComponents_ToString_OutputsComponentsCorrectly()
+    {
+        // Arrange
+        var yeastComponent = new FoodServing("nutritional yeast",
+            new NutritionalInformation(4, ServingUnits.Gram, 15, 1.25M, 0.125M, 1.25M, 0.75M));
+        var glutenComponent = new FoodServing("gluten",
+            new NutritionalInformation(16, ServingUnits.Gram, 64, 12.27M, 0.53M, 2.13M, 0));
+
+        // Act
+        var composite = CompositeFoodServing.FromComponents(
+            "Auto-calculated Seitan",
+            [yeastComponent, glutenComponent]);
+        var output = composite.ToString();
+
+        // Assert
+        Assert.Contains("4 grams nutritional yeast", output);
+        Assert.Contains("16 grams gluten", output);
+    }
 }
