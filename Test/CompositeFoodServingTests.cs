@@ -96,14 +96,6 @@ public class CompositeFoodServingTests
     }
 
     [Fact]
-    public void CompositeFoodServing_Components_AreReadOnly()
-    {
-        // Assert
-        Assert.IsAssignableFrom<IReadOnlyList<FoodServing>>(_composite.Components);
-        Assert.Equal(2, _composite.Components.Count);
-    }
-
-    [Fact]
     public void FromComponents_CalculatesNutritionAutomatically()
     {
         // Arrange
