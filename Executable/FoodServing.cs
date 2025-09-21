@@ -50,12 +50,12 @@ public record FoodServing(
             water == null ? null : water * multiplier,
             IsConversion);
     }
-    
+
     public static FoodServing operator *(FoodServing fs, decimal multiplier) =>
         new(fs.Name,
             fs.NutritionalInformation * multiplier,
             fs.Water == null ? null : new AmountWater(fs.Water.Base, fs.Water.PerServing * multiplier),
             fs.IsConversion);
-    
+
     public override string ToString() => ToString(1);
 }
