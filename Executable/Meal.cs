@@ -13,12 +13,12 @@ public class Meal
         _foodGroupings = [foodGrouping];
         ActualFoodGrouping = foodGrouping;
     }
-    
+
     public static Meal WithFallbacks(string name, Macros macros, params FoodGrouping[] foodGroupings)
     {
         return new Meal(name, macros, foodGroupings);
     }
-    
+
     private Meal(string name, Macros macros, params FoodGrouping[] foodGroupings)
     {
         Name = name;
@@ -148,12 +148,12 @@ internal static class MealExtensions
         {
             var mealCount = mealGroup.Count() * daysPerWeek;
             var totalMacros = mealGroup.Sum(m => m.Macros);
-            
+
             // Create a new FoodGrouping with scaled static servings
             var scaledStaticServings = mealGroup.Key.StaticServings
                 .Select(s => s * mealCount)
                 .ToList();
-            
+
             var scaledFoodGrouping = new FoodGrouping(
                 mealGroup.Key.Name,
                 scaledStaticServings,
@@ -161,12 +161,12 @@ internal static class MealExtensions
                 mealGroup.Key.FFood,
                 mealGroup.Key.CFood,
                 mealGroup.Key.PreparationMethod);
-            
+
             var meal = new Meal(
                 mealGroup.Key.Name,
                 totalMacros,
                 scaledFoodGrouping);
-            
+
             return (meal, mealCount);
         });
         return summedMeals;

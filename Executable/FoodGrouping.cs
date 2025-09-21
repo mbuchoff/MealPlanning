@@ -34,12 +34,12 @@ public record FoodGrouping
     public PreparationMethodEnum PreparationMethod { get; }
 
     public override string ToString() => Name;
-    
+
     public static FoodGrouping operator +(FoodGrouping grouping, FoodServing food)
     {
         var newStaticServings = grouping.StaticServings.ToList();
         newStaticServings.Add(food);
-        
+
         return new FoodGrouping(
             grouping.Name,
             newStaticServings,
@@ -48,12 +48,12 @@ public record FoodGrouping
             grouping.CFood,
             grouping.PreparationMethod);
     }
-    
+
     public static FoodGrouping operator +(FoodGrouping grouping, (FoodServing food, decimal servings) item)
     {
         var newStaticServings = grouping.StaticServings.ToList();
         newStaticServings.Add(item.food * item.servings);
-        
+
         return new FoodGrouping(
             grouping.Name,
             newStaticServings,

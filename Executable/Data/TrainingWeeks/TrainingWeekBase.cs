@@ -36,16 +36,16 @@ internal abstract record TrainingWeekBase : TrainingWeek
             baseTotalCals += trainingDay.TotalNutrients.Cals * daysPerWeek;
         }
         var baseAverage = baseTotalCals / 7;
-        
+
         // Calculate the required percentage based on the ratio
         // Since protein stays constant, we need to estimate based on total calories
         var targetRatio = targetDailyCalories / baseAverage;
-        
+
         // The actual percentage we need is roughly the target ratio
         // But since protein doesn't scale, we need to adjust
         // Start with a good initial guess
         var percentNeeded = targetRatio * 100;
-        
+
         // Clamp to reasonable bounds (adjusted based on testing to avoid negative servings)
         if (percentNeeded < 85)
         {
@@ -55,24 +55,24 @@ internal abstract record TrainingWeekBase : TrainingWeek
         {
             throw new InvalidOperationException($"Target calories ({targetDailyCalories}) too high. Maximum is approximately {baseAverage * 1.20M:F0} calories.");
         }
-        
+
         // Now do a refined binary search around our estimate
         TrainingWeek bestWeek = this;
         var bestDifference = decimal.MaxValue;
-        
+
         decimal low = percentNeeded - 10;
         decimal high = percentNeeded + 10;
         decimal epsilon = 0.01M;
-        
+
         // Ensure bounds are still reasonable
         low = Math.Max(low, 85);
         high = Math.Min(high, 120);
-        
+
         while (high - low > epsilon)
         {
             var mid = (low + high) / 2;
             var testWeek = PlusPercent(mid);
-            
+
             // Calculate average daily calories for this test week
             var totalCals = 0.0M;
             foreach (var trainingDay in testWeek.TrainingDays)
@@ -81,20 +81,20 @@ internal abstract record TrainingWeekBase : TrainingWeek
                 totalCals += trainingDay.TotalNutrients.Cals * daysPerWeek;
             }
             var averageDailyCals = totalCals / 7;
-            
+
             var difference = Math.Abs(averageDailyCals - targetDailyCalories);
             if (difference < bestDifference)
             {
                 bestDifference = difference;
                 bestWeek = testWeek;
             }
-            
+
             // Stop if we're close enough
             if (difference < 0.1M)
             {
                 break;
             }
-            
+
             // Adjust search range
             if (averageDailyCals < targetDailyCalories)
             {
@@ -105,7 +105,7 @@ internal abstract record TrainingWeekBase : TrainingWeek
                 high = mid;
             }
         }
-        
+
         return bestWeek;
     }
 }
