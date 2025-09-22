@@ -20,7 +20,7 @@ internal record Phase(string Name, WeeklyMealsPrepPlan MealPrepPlan, TrainingWee
             var totalMacros = new Macros(0, 0, 0);
             var totalFiber = 0.0M;
 
-            foreach(var trainingDay in TrainingWeek.TrainingDays)
+            foreach (var trainingDay in TrainingWeek.TrainingDays)
             {
                 var daysPerWeek = trainingDay.TrainingDayType.DaysTraining.Count;
                 totalCals += trainingDay.TotalNutrients.Cals * daysPerWeek;
