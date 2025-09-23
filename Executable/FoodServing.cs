@@ -71,4 +71,17 @@ public record FoodServing(
         // Base FoodServing returns itself
         yield return this;
     }
+
+    // Virtual method to handle Todoist task creation
+    // Returns the created task ID if a parent task was created, null otherwise
+    public virtual async Task<string?> CreateTodoistSubtasksAsync(
+        string parentTaskId,
+        Func<string, string?, string?, string?, string?, Task<object>> addTaskFunc)
+    {
+        // Base FoodServing creates a single subtask
+        Console.WriteLine($"Adding subtask > {this}...");
+        await addTaskFunc(ToString(), null, null, parentTaskId, null);
+        Console.WriteLine($"Added subtask > {this}");
+        return null;
+    }
 }
