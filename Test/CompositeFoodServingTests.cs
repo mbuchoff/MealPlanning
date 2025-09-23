@@ -1,6 +1,8 @@
 using SystemOfEquations;
 using SystemOfEquations.Data;
 using Xunit;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Test;
 
@@ -162,5 +164,171 @@ public class CompositeFoodServingTests
         // Assert
         Assert.Contains("4 grams nutritional yeast", output);
         Assert.Contains("16 grams gluten", output);
+    }
+
+    [Fact]
+    public void GetComponentsForDisplay_WithWater_IncludesWaterAsComponent()
+    {
+        // Arrange
+        var water = new FoodServing.AmountWater(0, 0.0366666666666667M);
+        var composite = CompositeFoodServing.FromComponents(
+            "Seitan",
+            [_yeast, _gluten],
+            water);
+
+        // Act
+        var components = composite.GetComponentsForDisplay().ToList();
+
+        // Assert
+        Assert.Equal(3, components.Count); // yeast, gluten, and water
+        Assert.Contains(components, c => c.Name == "nutritional yeast");
+        Assert.Contains(components, c => c.Name == "gluten");
+        Assert.Contains(components, c => c.Name.Contains("water"));
+
+        // Verify water component has correct amount
+        var waterComponent = components.First(c => c.Name.Contains("water"));
+        Assert.Equal("0.0 cups water", waterComponent.Name);
+    }
+
+    [Fact]
+    public void GetComponentsForDisplay_WithWater_ScalesWaterCorrectly()
+    {
+        // Arrange
+        var water = new FoodServing.AmountWater(0, 0.0366666666666667M);
+        var composite = CompositeFoodServing.FromComponents(
+            "Seitan",
+            [_yeast, _gluten],
+            water);
+
+        // Act - scale by 4x
+        var scaled = composite * 4;
+
+        // Debug: Check the scaled object's water and servings
+        Assert.NotNull(scaled.Water);
+        Assert.Equal(0.1466666666666668M, scaled.Water.PerServing, 10);
+        Assert.Equal(4M, scaled.NutritionalInformation.ServingUnits);
+
+        var components = scaled.GetComponentsForDisplay().ToList();
+
+        // Assert
+        Assert.Equal(3, components.Count);
+
+        // Verify water component has scaled amount (0.0366666666666667 * 4 ≈ 0.147, rounds to 0.1)
+        var waterComponent = components.First(c => c.Name.Contains("water"));
+        // Water amount should be rounded to 0.1
+        Assert.Equal("0.1 cups water", waterComponent.Name);
+    }
+
+    [Fact]
+    public void GetComponentsForDisplay_NoWater_DoesNotIncludeWaterComponent()
+    {
+        // Arrange
+        var composite = CompositeFoodServing.FromComponents(
+            "Seitan",
+            [_yeast, _gluten],
+            water: null);
+
+        // Act
+        var components = composite.GetComponentsForDisplay().ToList();
+
+        // Assert
+        Assert.Equal(2, components.Count); // only yeast and gluten, no water
+        Assert.DoesNotContain(components, c => c.Name.Contains("water"));
+    }
+
+    [Fact]
+    public async Task CreateTodoistSubtasksAsync_CompositeFoodServing_CreatesHierarchicalStructure()
+    {
+        // Arrange
+        var createdTasks = new List<(string content, string? parentId)>();
+        var taskIdCounter = 0;
+
+        // Mock function that captures task creation calls
+        async Task<object> mockAddTask(string content, string? description, string? dueString, string? parentId, string? projectId)
+        {
+            var taskId = $"task_{++taskIdCounter}";
+            createdTasks.Add((content, parentId));
+
+            // Return anonymous object with Id property to simulate TodoistTask
+            await Task.CompletedTask;
+            return new { Id = taskId };
+        }
+
+        // Act
+        await _composite.CreateTodoistSubtasksAsync("parent_task_id", mockAddTask);
+
+        // Assert
+        Assert.Equal(4, createdTasks.Count); // Parent seitan task + 2 component tasks + water
+
+        // First task should be the composite (Seitan) with parent_task_id as parent
+        Assert.Equal("Seitan", createdTasks[0].content);
+        Assert.Equal("parent_task_id", createdTasks[0].parentId);
+
+        // Second task should be yeast as subtask of Seitan
+        Assert.Equal("4 grams nutritional yeast", createdTasks[1].content);
+        Assert.Equal("task_1", createdTasks[1].parentId); // Should be child of first created task
+
+        // Third task should be gluten as subtask of Seitan
+        Assert.Equal("16 grams gluten", createdTasks[2].content);
+        Assert.Equal("task_1", createdTasks[2].parentId); // Should be child of first created task
+
+        // Fourth task should be water as subtask of Seitan
+        // The water component outputs as "1.0  0.0 cups water" due to how FoodServing.ToString() works
+        Assert.Equal("1.0  0.0 cups water", createdTasks[3].content);
+        Assert.Equal("task_1", createdTasks[3].parentId); // Should be child of first created task
+    }
+
+    [Fact]
+    public async Task CreateTodoistSubtasksAsync_RegularFoodServing_CreatesSingleTask()
+    {
+        // Arrange
+        var createdTasks = new List<(string content, string? parentId)>();
+
+        async Task<object> mockAddTask(string content, string? description, string? dueString, string? parentId, string? projectId)
+        {
+            createdTasks.Add((content, parentId));
+            await Task.CompletedTask;
+            return new { Id = "task_1" };
+        }
+
+        // Act
+        await _yeast.CreateTodoistSubtasksAsync("parent_task_id", mockAddTask);
+
+        // Assert
+        Assert.Single(createdTasks);
+        Assert.Equal("4 grams nutritional yeast", createdTasks[0].content);
+        Assert.Equal("parent_task_id", createdTasks[0].parentId);
+    }
+
+    [Fact]
+    public async Task CreateTodoistSubtasksAsync_ScaledComposite_CreatesScaledTasks()
+    {
+        // Arrange
+        var scaledComposite = _composite * 2;
+        var createdTasks = new List<(string content, string? parentId)>();
+        var taskIdCounter = 0;
+
+        async Task<object> mockAddTask(string content, string? description, string? dueString, string? parentId, string? projectId)
+        {
+            var taskId = $"task_{++taskIdCounter}";
+            createdTasks.Add((content, parentId));
+            await Task.CompletedTask;
+            return new { Id = taskId };
+        }
+
+        // Act
+        await scaledComposite.CreateTodoistSubtasksAsync("parent_task_id", mockAddTask);
+
+        // Assert
+        Assert.Equal(4, createdTasks.Count); // Parent + 2 components + water
+
+        // Parent task should still be "Seitan" (name doesn't scale)
+        Assert.Equal("Seitan", createdTasks[0].content);
+
+        // Components should be scaled
+        Assert.Equal("8 grams nutritional yeast", createdTasks[1].content);
+        Assert.Equal("32 grams gluten", createdTasks[2].content);
+        // Water component outputs with "1.0" prefix due to FoodServing.ToString()
+        Assert.Equal("1.0  0.0 cups water", createdTasks[3].content);
     }
 }
