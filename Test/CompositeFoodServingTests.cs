@@ -163,4 +163,74 @@ public class CompositeFoodServingTests
         Assert.Contains("4 grams nutritional yeast", output);
         Assert.Contains("16 grams gluten", output);
     }
+
+    [Fact]
+    public void GetComponentsForDisplay_WithWater_IncludesWaterAsComponent()
+    {
+        // Arrange
+        var water = new FoodServing.AmountWater(0, 0.0366666666666667M);
+        var composite = CompositeFoodServing.FromComponents(
+            "Seitan",
+            [_yeast, _gluten],
+            water);
+
+        // Act
+        var components = composite.GetComponentsForDisplay().ToList();
+
+        // Assert
+        Assert.Equal(3, components.Count); // yeast, gluten, and water
+        Assert.Contains(components, c => c.Name == "nutritional yeast");
+        Assert.Contains(components, c => c.Name == "gluten");
+        Assert.Contains(components, c => c.Name.Contains("water"));
+
+        // Verify water component has correct amount
+        var waterComponent = components.First(c => c.Name.Contains("water"));
+        Assert.Equal("0.0 cups water", waterComponent.Name);
+    }
+
+    [Fact]
+    public void GetComponentsForDisplay_WithWater_ScalesWaterCorrectly()
+    {
+        // Arrange
+        var water = new FoodServing.AmountWater(0, 0.0366666666666667M);
+        var composite = CompositeFoodServing.FromComponents(
+            "Seitan",
+            [_yeast, _gluten],
+            water);
+
+        // Act - scale by 4x
+        var scaled = composite * 4;
+
+        // Debug: Check the scaled object's water and servings
+        Assert.NotNull(scaled.Water);
+        Assert.Equal(0.1466666666666668M, scaled.Water.PerServing, 10);
+        Assert.Equal(4M, scaled.NutritionalInformation.ServingUnits);
+
+        var components = scaled.GetComponentsForDisplay().ToList();
+
+        // Assert
+        Assert.Equal(3, components.Count);
+
+        // Verify water component has scaled amount (0.0366666666666667 * 4 ≈ 0.147, rounds to 0.1)
+        var waterComponent = components.First(c => c.Name.Contains("water"));
+        // Water amount should be rounded to 0.1
+        Assert.Equal("0.1 cups water", waterComponent.Name);
+    }
+
+    [Fact]
+    public void GetComponentsForDisplay_NoWater_DoesNotIncludeWaterComponent()
+    {
+        // Arrange
+        var composite = CompositeFoodServing.FromComponents(
+            "Seitan",
+            [_yeast, _gluten],
+            water: null);
+
+        // Act
+        var components = composite.GetComponentsForDisplay().ToList();
+
+        // Assert
+        Assert.Equal(2, components.Count); // only yeast and gluten, no water
+        Assert.DoesNotContain(components, c => c.Name.Contains("water"));
+    }
 }
