@@ -52,7 +52,8 @@ public record FoodServing(
     }
 
     public static FoodServing operator *(FoodServing fs, decimal multiplier) =>
-        fs with {
+        fs with
+        {
             NutritionalInformation = fs.NutritionalInformation * multiplier,
             Water = fs.Water == null ? null : new AmountWater(fs.Water.Base, fs.Water.PerServing * multiplier)
         };
