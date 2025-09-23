@@ -79,9 +79,9 @@ internal static class TodoistApi
             var configuration = new ConfigurationBuilder()
                 .AddUserSecrets<Program>()
                 .Build();
-            
+
             _apiKey = configuration["Todoist:ApiKey"];
-            
+
             if (string.IsNullOrEmpty(_apiKey))
             {
                 throw new InvalidOperationException(

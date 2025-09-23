@@ -20,12 +20,12 @@ public record Food(
     {
         // Find a matching or compatible serving equivalence
         var exactMatch = ServingEquivalences.FirstOrDefault(e => e.Unit == unit);
-        
+
         if (exactMatch != default)
         {
             // Calculate multiplier from the known equivalence
             var multiplier = amount / exactMatch.Amount;
-            
+
             // Create NutritionalInformation with the serving size and scaled nutrition
             var scaledNutrition = new NutritionalInformation(
                 amount, unit,
@@ -34,18 +34,18 @@ public record Food(
                 Nutrition.F * multiplier,
                 Nutrition.CTotal * multiplier,
                 Nutrition.CFiber * multiplier);
-            
+
             // Water calculation: Base stays constant, only PerServing is multiplied
-            var scaledWater = Water == null ? null : 
+            var scaledWater = Water == null ? null :
                 new FoodServing.AmountWater(Water.Base, Water.PerServing * multiplier);
-            
+
             return new FoodServing(Name, scaledNutrition, scaledWater, IsConversion);
         }
-        
+
         // Try to convert between compatible units (e.g., tbsp to cup)
         var compatible = ServingEquivalences.FirstOrDefault(
             e => e.Unit.UnitConversion.CentralUnit == unit.UnitConversion.CentralUnit);
-        
+
         if (compatible != default)
         {
             // First create a food serving with the known equivalence
@@ -53,7 +53,7 @@ public record Food(
             // Then convert to the desired unit
             return baseServing.Convert(unit);
         }
-        
+
         throw new InvalidOperationException(
             $"Cannot create {amount} {unit} of {Name} - no compatible serving definition found. " +
             $"Available equivalences: {string.Join(", ", ServingEquivalences.Select(e => $"{e.Amount} {e.Unit}"))}");

@@ -4,7 +4,7 @@ on:
   push:
     branches: [ main, 'feature/**', 'refactor/**' ]
   pull_request:
-    branches: [ main ]
+    # Run on all pull requests
   workflow_dispatch:
 
 env:
@@ -42,12 +42,12 @@ jobs:
     - name: Check formatting
       run: |
         dotnet format --verify-no-changes --verbosity diagnostic || {
-          echo "::warning::Code formatting issues detected. Run 'dotnet format' to fix."
-          exit 0  # Don't fail the build for formatting
+          echo "::error::Code formatting issues detected. Run 'dotnet format' to fix."
+          exit 1  # Fail the build for formatting issues
         }
     
     - name: Build
-      run: dotnet build --no-restore --configuration Release -warnaserror
+      run: dotnet build --no-restore --configuration Release
       
     - name: Run unit tests
       run: |

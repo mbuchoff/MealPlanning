@@ -7,7 +7,7 @@ public record Macros(decimal P, decimal F, decimal C)
     public static Macros operator +(Macros m1, Macros m2) => new(m1.P + m2.P, m1.F + m2.F, m1.C + m2.C);
     public static Macros operator *(Macros m, decimal d) => new(m.P * d, m.F * d, m.C * d);
     public static Macros operator *(decimal d, Macros m) => (m * d);
-    public static Macros operator /(Macros m, decimal d) => (m * (1/d));
+    public static Macros operator /(Macros m, decimal d) => (m * (1 / d));
 
     public Macros CloneWithTweakedMacros(decimal pMultiplier, decimal fMultiplier, decimal cMultiplier) =>
         new(P * pMultiplier, F * fMultiplier, C * cMultiplier);

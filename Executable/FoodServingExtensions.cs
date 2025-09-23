@@ -9,7 +9,7 @@ internal static class FoodServingExtensions
             // Sum all the nutritional information for foods with the same name
             var first = foodGrouping.First();
             var servingsList = foodGrouping.ToList();
-            
+
             // Calculate total servings and nutrition
             var totalServingUnits = servingsList.Sum(s => s.NutritionalInformation.ServingUnits);
             var totalCals = servingsList.Sum(s => s.NutritionalInformation.Cals);
@@ -17,7 +17,7 @@ internal static class FoodServingExtensions
             var totalF = servingsList.Sum(s => s.NutritionalInformation.F);
             var totalCTotal = servingsList.Sum(s => s.NutritionalInformation.CTotal);
             var totalCFiber = servingsList.Sum(s => s.NutritionalInformation.CFiber);
-            
+
             var totalNutrition = new NutritionalInformation(
                 totalServingUnits,
                 first.NutritionalInformation.ServingUnit,

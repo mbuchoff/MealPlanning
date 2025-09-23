@@ -19,7 +19,7 @@ internal record TrainingDay
         {
             sb.AppendLine(meal.ToString());
         }
-        
+
         return sb.ToString();
     }
 

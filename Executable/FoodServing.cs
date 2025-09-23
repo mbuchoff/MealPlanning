@@ -50,13 +50,13 @@ public record FoodServing(
             water == null ? null : water * multiplier,
             IsConversion);
     }
-    
+
     public static FoodServing operator *(FoodServing fs, decimal multiplier) =>
         fs with {
             NutritionalInformation = fs.NutritionalInformation * multiplier,
             Water = fs.Water == null ? null : new AmountWater(fs.Water.Base, fs.Water.PerServing * multiplier)
         };
-    
+
     public override string ToString() => ToString(1);
 
     // Virtual methods for polymorphic display handling

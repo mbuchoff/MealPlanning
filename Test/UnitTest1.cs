@@ -56,10 +56,10 @@ public class UnitTest1
 
         // Create a FoodGrouping that will succeed
         var workingFoodGrouping = new FoodGrouping(
-            "working", 
-            pFood, 
-            fFood, 
-            cFood, 
+            "working",
+            pFood,
+            fFood,
+            cFood,
             FoodGrouping.PreparationMethodEnum.PrepareAsNeeded);
 
         // Target macros that should work with second FoodGrouping but not first
@@ -71,7 +71,7 @@ public class UnitTest1
         // Verify that servings were calculated correctly (this triggers the calculation)
         var servings = meal.Servings.ToList();
         Assert.Equal(3, servings.Count);
-        
+
         // Verify that the meal used the working FoodGrouping (second one)
         Assert.Equal(workingFoodGrouping, meal.ActualFoodGrouping);
     }
@@ -88,7 +88,7 @@ public class UnitTest1
             FoodGrouping.PreparationMethodEnum.PrepareAsNeeded);
 
         var impossibleFoodGrouping2 = new FoodGrouping(
-            "impossible2", 
+            "impossible2",
             fFood,  // Only provides fat (no protein)
             fFood,  // Only provides fat
             fFood,  // Only provides fat (no carbs)
