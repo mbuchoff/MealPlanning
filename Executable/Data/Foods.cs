@@ -280,7 +280,7 @@ internal static class Foods
             NutritionalYeastFood.WithServing(4, ServingUnits.Gram),
             GlutenFood.WithServing(16, ServingUnits.Gram)
         ],
-        water: new(Base: 0, PerServing: 0.0366666666666667M));
+        water: new(Base: 0, PerServing: 0.1466666666666668M));
 
     public static FoodServing Whole_Grain_Pasta_56_Grams =>
         WholGrainPastaFood.WithServing(56, ServingUnits.Gram);

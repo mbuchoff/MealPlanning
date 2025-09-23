@@ -84,10 +84,10 @@ public record CompositeFoodServing : FoodServing
             // Water.PerServing is already scaled when the composite is multiplied
             // So we just use it directly with quantity=1 (since this is for display of the current serving)
             var waterAmount = Water.Base + Water.PerServing;
-            // Create a water serving with 1 serving unit of Cup, where the serving represents the water amount
+            // Create a water serving using Cup as the unit, with waterAmount as the serving size
             var waterServing = new FoodServing(
-                $"{waterAmount:f1} cups water",
-                new NutritionalInformation(1, ServingUnits.None, 0, 0, 0, 0, 0),
+                "water",
+                new NutritionalInformation(waterAmount, ServingUnits.Cup, 0, 0, 0, 0, 0),
                 null,
                 false);
             yield return waterServing;

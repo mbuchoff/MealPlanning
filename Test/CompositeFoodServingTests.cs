@@ -187,7 +187,7 @@ public class CompositeFoodServingTests
 
         // Verify water component has correct amount
         var waterComponent = components.First(c => c.Name.Contains("water"));
-        Assert.Equal("0.0 cups water", waterComponent.Name);
+        Assert.Equal("water", waterComponent.Name);
     }
 
     [Fact]
@@ -215,8 +215,8 @@ public class CompositeFoodServingTests
 
         // Verify water component has scaled amount (0.0366666666666667 * 4 ≈ 0.147, rounds to 0.1)
         var waterComponent = components.First(c => c.Name.Contains("water"));
-        // Water amount should be rounded to 0.1
-        Assert.Equal("0.1 cups water", waterComponent.Name);
+        // Water component name should just be "water", the amount is in ServingUnits
+        Assert.Equal("water", waterComponent.Name);
     }
 
     [Fact]
@@ -273,8 +273,8 @@ public class CompositeFoodServingTests
         Assert.Equal("task_1", createdTasks[2].parentId); // Should be child of first created task
 
         // Fourth task should be water as subtask of Seitan
-        // The water component outputs as "1.0  0.0 cups water" due to how FoodServing.ToString() works
-        Assert.Equal("1.0  0.0 cups water", createdTasks[3].content);
+        // The water component now outputs properly formatted
+        Assert.Equal("0.0 cups water", createdTasks[3].content);
         Assert.Equal("task_1", createdTasks[3].parentId); // Should be child of first created task
     }
 
@@ -328,7 +328,7 @@ public class CompositeFoodServingTests
         // Components should be scaled
         Assert.Equal("8 grams nutritional yeast", createdTasks[1].content);
         Assert.Equal("32 grams gluten", createdTasks[2].content);
-        // Water component outputs with "1.0" prefix due to FoodServing.ToString()
-        Assert.Equal("1.0  0.0 cups water", createdTasks[3].content);
+        // Water component now outputs properly formatted
+        Assert.Equal("0.0 cups water", createdTasks[3].content);
     }
 }
