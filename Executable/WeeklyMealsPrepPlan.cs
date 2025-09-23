@@ -4,8 +4,12 @@ internal record WeeklyMealsPrepPlan(IEnumerable<MealPrepPlan> MealPrepPlans)
 {
     public override string ToString()
     {
-        var servingsStr = string.Join("\n", MealPrepPlans.SelectMany(m => m.Servings.Select(s => $"{m.Name}: {s}")));
-        var totalStr = string.Join("\n", Total);
+        // Use polymorphic ToOutputLines method - no type checking needed
+        var servingsStr = string.Join("\n", MealPrepPlans.SelectMany(m =>
+            m.Servings.SelectMany(s => s.ToOutputLines($"{m.Name}: "))));
+
+        var totalStr = string.Join("\n", Total.SelectMany(s => s.ToOutputLines()));
+
         return $"{servingsStr}\n\nTotals:\n{totalStr}";
     }
 
