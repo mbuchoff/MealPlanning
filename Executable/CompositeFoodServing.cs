@@ -30,6 +30,29 @@ public record CompositeFoodServing : FoodServing
         return new CompositeFoodServing(name, combinedNutrition, componentsList, water);
     }
 
+    // Factory method that creates a composite with mixed scalable and static components
+    public static CompositeFoodServing FromComponentsWithStatic(
+        string name,
+        IEnumerable<FoodServing> scalableComponents,
+        IEnumerable<FoodServing> staticComponents,
+        AmountWater? water = null)
+    {
+        var scalableList = scalableComponents.ToList();
+        var staticList = staticComponents.Select(c => new StaticFoodServing(c)).ToList();
+
+        // Combine all components
+        var allComponents = new List<FoodServing>();
+        allComponents.AddRange(scalableList);
+        allComponents.AddRange(staticList);
+
+        // Calculate combined nutrition from all components
+        var combinedNutrition = allComponents
+            .Select(c => c.NutritionalInformation)
+            .Sum(1, ServingUnits.None);
+
+        return new CompositeFoodServing(name, combinedNutrition, allComponents, water);
+    }
+
     // Override ToString to output components
     public override string ToString()
     {
@@ -37,8 +60,8 @@ public record CompositeFoodServing : FoodServing
         var scale = NutritionalInformation.ServingUnits;
         if (scale != 1)
         {
-            // Output scaled components
-            return string.Join("\n", Components.Select(c => (c * scale).ToString()));
+            // Output scaled components using polymorphic ApplyScale method
+            return string.Join("\n", Components.Select(c => c.ApplyScale(scale).ToString()));
         }
         // Output components as-is for unscaled
         return string.Join("\n", Components.Select(c => c.ToString()));
@@ -49,10 +72,10 @@ public record CompositeFoodServing : FoodServing
     {
         var scale = NutritionalInformation.ServingUnits;
 
-        // Output scaled components
+        // Output scaled components using polymorphic ApplyScale method
         foreach (var component in Components)
         {
-            yield return $"{prefix}{component * scale}";
+            yield return $"{prefix}{component.ApplyScale(scale)}";
         }
 
         // If there's water, add it as an output line
@@ -72,10 +95,10 @@ public record CompositeFoodServing : FoodServing
     {
         var scale = NutritionalInformation.ServingUnits;
 
-        // Return scaled components
-        foreach (var component in Components.Select(c => c * scale))
+        // Return scaled components using polymorphic ApplyScale method
+        foreach (var component in Components)
         {
-            yield return component;
+            yield return component.ApplyScale(scale);
         }
 
         // If there's water, add it as a virtual component

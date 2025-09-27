@@ -34,6 +34,10 @@ internal static class Foods
         [(2.5M, ServingUnits.Tablespoon)],
         new BaseNutrition(Cals: 150, P: 5, F: 9, CTotal: 13, CFiber: 10));
 
+    private static Food ChickenFlavoredMissDashFood { get; } = new("Chicken Flavored Miss Dash",
+        [(1, ServingUnits.Tablespoon)],
+        new BaseNutrition(Cals: 0, P: 0, F: 0, CTotal: 0, CFiber: 0));
+
     private static Food CreatineFood { get; } = new("creatine",
         [(1, ServingUnits.Scoop)],
         new BaseNutrition(Cals: 0, P: 0, F: 0, CTotal: 0, CFiber: 0));
@@ -274,11 +278,14 @@ internal static class Foods
     public static FoodServing BlueBerries_1_Scoop =>
         BlueBerries.WithServing(1, ServingUnits.Scoop);
 
-    public static FoodServing Seitan_Sprouts_Yeast_1_Gram_Gluten_4x => CompositeFoodServing.FromComponents(
-        "Seitan (Nutritional Yeast + Gluten)",
-        [
+    public static FoodServing Seitan_Sprouts_Yeast_1_Gram_Gluten_4x => CompositeFoodServing.FromComponentsWithStatic(
+        "Seitan (Nutritional Yeast + Gluten + Chicken Flavored Miss Dash)",
+        scalableComponents: [
             NutritionalYeastFood.WithServing(4, ServingUnits.Gram),
             GlutenFood.WithServing(16, ServingUnits.Gram)
+        ],
+        staticComponents: [
+            ChickenFlavoredMissDashFood.WithServing(1, ServingUnits.Tablespoon)
         ],
         water: new(Base: 0, PerServing: 0.1466666666666668M));
 
