@@ -54,7 +54,8 @@ public record CompositeFoodServing : FoodServing
     private static IEnumerable<FoodServing> CombineLikeComponents(IEnumerable<FoodServing> components)
     {
         return components
-            .GroupBy(c => new {
+            .GroupBy(c => new
+            {
                 c.Name,
                 BaseUnit = c.NutritionalInformation.ServingUnit
             })
@@ -68,8 +69,10 @@ public record CompositeFoodServing : FoodServing
         var totalUnits = group.Sum(c => c.NutritionalInformation.ServingUnits);
         var firstComponent = group.First();
 
-        return firstComponent with {
-            NutritionalInformation = firstComponent.NutritionalInformation with {
+        return firstComponent with
+        {
+            NutritionalInformation = firstComponent.NutritionalInformation with
+            {
                 ServingUnits = totalUnits
             }
         };

@@ -230,7 +230,8 @@ public class WaterMigrationTests
     // Helper methods for tests
     private static FoodServing CreateWaterServing(decimal cups)
     {
-        return Foods.Water_1_Cup with {
+        return Foods.Water_1_Cup with
+        {
             NutritionalInformation = Foods.Water_1_Cup.NutritionalInformation with { ServingUnits = cups }
         };
     }
