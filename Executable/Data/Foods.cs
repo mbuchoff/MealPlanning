@@ -25,10 +25,9 @@ internal static class Foods
         [(1, ServingUnits.Cup), (140, ServingUnits.Gram)],
         new BaseNutrition(Cals: 70, P: 0, F: 1, CTotal: 17, CFiber: 4));
 
-    private static Food BrownRiceFood { get; } = new("brown rice",
+    private static Food BrownRiceBaseFood { get; } = new("brown rice",
         [(45, ServingUnits.Gram), (0.25M, ServingUnits.Cup)],
-        new BaseNutrition(Cals: 170, P: 4, F: 1.5M, CTotal: 35, CFiber: 2),
-        Water: new(Base: 1.5M, PerServing: 0.5M));
+        new BaseNutrition(Cals: 170, P: 4, F: 1.5M, CTotal: 35, CFiber: 2));
 
     private static Food ChiaSeedsFood { get; } = new("chia seeds",
         [(2.5M, ServingUnits.Tablespoon)],
@@ -78,10 +77,9 @@ internal static class Foods
         [(30, ServingUnits.Gram), (0.25M, ServingUnits.Cup)],
         new BaseNutrition(Cals: 170, P: 9, F: 15, CTotal: 3, CFiber: 2));
 
-    private static Food FarroFood { get; } = new("farro",
+    private static Food FarroBaseFood { get; } = new("farro",
         [(52, ServingUnits.Gram), (0.25M, ServingUnits.Cup)],
-        new BaseNutrition(Cals: 190, P: 6, F: 1, CTotal: 38, CFiber: 5),
-        Water: new(Base: 0, PerServing: 1.333333333332M));
+        new BaseNutrition(Cals: 190, P: 6, F: 1, CTotal: 38, CFiber: 5));
 
     // Conversion foods
     private static Food FatToCarbConversionFood { get; } = new("fat to carb conversion",
@@ -112,12 +110,11 @@ internal static class Foods
         [(1M / 3, ServingUnits.Cup), (33, ServingUnits.Gram)],
         new BaseNutrition(Cals: 110, P: 24, F: 1.5M, CTotal: 1, CFiber: 0));
 
-    private static Food PearledBarleyFood { get; } = new("pearled barley",
+    private static Food PearledBarleyBaseFood { get; } = new("pearled barley",
         [(45, ServingUnits.Gram), (0.25M, ServingUnits.Cup)],
-        new BaseNutrition(Cals: 160, P: 4, F: 0.5M, CTotal: 35, CFiber: 7),
-        Water: new(Base: 1.5M, PerServing: 0.6M));
+        new BaseNutrition(Cals: 160, P: 4, F: 0.5M, CTotal: 35, CFiber: 7));
 
-    private static Food QuinoaFood { get; } = new("quinoa",
+    private static Food QuinoaBaseFood { get; } = new("quinoa",
         [(45, ServingUnits.Gram), (0.25M, ServingUnits.Cup)],
         new BaseNutrition(Cals: 170, P: 6, F: 2.5M, CTotal: 29, CFiber: 3));
 
@@ -133,7 +130,7 @@ internal static class Foods
         [(30, ServingUnits.Gram), (0.25M, ServingUnits.Cup)],
         new BaseNutrition(Cals: 180, P: 6, F: 15, CTotal: 6, CFiber: 3));
 
-    private static Food ToastedWheatfulsFood { get; } = new("toasted wheatfuls",
+    private static Food ToastedWheatfulsBaseFood { get; } = new("toasted wheatfuls",
         [(50, ServingUnits.Gram)],
         new BaseNutrition(Cals: 200, P: 7, F: 1.5M, CTotal: 48, CFiber: 8));
 
@@ -141,14 +138,17 @@ internal static class Foods
         [(91, ServingUnits.Gram)],
         new BaseNutrition(Cals: 130, P: 14, F: 7, CTotal: 2, CFiber: 2));
 
-    private static Food WheatBerriesFood { get; } = new("wheat berries",
+    private static Food WheatBerriesBaseFood { get; } = new("wheat berries",
         [(45, ServingUnits.Gram), (0.25M, ServingUnits.Cup)],
-        new BaseNutrition(Cals: 150, P: 7, F: 1, CTotal: 31, CFiber: 5),
-        Water: new(Base: 2, PerServing: 0.6M));
+        new BaseNutrition(Cals: 150, P: 7, F: 1, CTotal: 31, CFiber: 5));
 
     private static Food WheatBranFood { get; } = new("wheat bran",
         [(0.5M, ServingUnits.Cup)],
         new BaseNutrition(Cals: 63, P: 4.5M, F: 1.3M, CTotal: 18.5M, CFiber: 12.5M));
+
+    private static Food WaterFood { get; } = new("water",
+        [(1, ServingUnits.Cup)],
+        new BaseNutrition(Cals: 0, P: 0, F: 0, CTotal: 0, CFiber: 0));
 
     private static Food WholGrainPastaFood { get; } = new("Pasta",
         [(56, ServingUnits.Gram)],
@@ -175,8 +175,22 @@ internal static class Foods
     public static FoodServing BlueBerries_1_Cup =>
         BlueBerries.WithServing(1, ServingUnits.Cup);
 
-    public static FoodServing BrownRice_45_Grams =>
-        BrownRiceFood.WithServing(45, ServingUnits.Gram);
+    public static FoodServing BrownRice_45_Grams => CompositeFoodServing.FromComponentsWithStatic(
+        "brown rice",
+        scalableComponents: [
+            BrownRiceBaseFood.WithServing(45, ServingUnits.Gram),
+            WaterFood.WithServing(0.5M, ServingUnits.Cup) // Per-serving water
+        ],
+        staticComponents: [
+            new StaticFoodServing(WaterFood.WithServing(1.5M, ServingUnits.Cup)) // Base water
+        ]);
+
+    public static FoodServing Farro_52_Grams => CompositeFoodServing.FromComponents(
+        "farro",
+        [
+            FarroBaseFood.WithServing(52, ServingUnits.Gram),
+            WaterFood.WithServing(1.333333333332M, ServingUnits.Cup) // Only scalable water
+        ]);
 
     public static FoodServing ChiaSeeds_2_5_Tbsp =>
         ChiaSeedsFood.WithServing(2.5M, ServingUnits.Tablespoon);
@@ -214,9 +228,6 @@ internal static class Foods
     public static FoodServing PumpkinSeeds_30_Grams =>
         PumpkinSeedsFood.WithServing(30, ServingUnits.Gram);
 
-    // https://www.walmart.com/ip/Bob-s-Red-Mill-Organic-Farro-24-oz-Pkg/762388784?from=/search
-    public static FoodServing Farro_52_Gram =>
-        FarroFood.WithServing(52, ServingUnits.Gram);
 
     public static FoodServing FatToCarbConversion =>
         FatToCarbConversionFood.WithServing(1, ServingUnits.Gram);
@@ -241,12 +252,26 @@ internal static class Foods
         PeaProteinFood.WithServing(1M / 3, ServingUnits.Cup);
 
     // https://shop.sprouts.com/product/7827/pearled-barley
-    public static FoodServing PearledBarley_45_Grams =>
-        PearledBarleyFood.WithServing(45, ServingUnits.Gram);
+    public static FoodServing PearledBarley_45_Grams => CompositeFoodServing.FromComponentsWithStatic(
+        "pearled barley",
+        scalableComponents: [
+            PearledBarleyBaseFood.WithServing(45, ServingUnits.Gram),
+            WaterFood.WithServing(0.6M, ServingUnits.Cup) // Per-serving water
+        ],
+        staticComponents: [
+            new StaticFoodServing(WaterFood.WithServing(1.5M, ServingUnits.Cup)) // Base water
+        ]);
 
     // https://shop.sprouts.com/store/sprouts/products/17847854-organic-tri-color-quinoa-bulk-1-lb
-    public static FoodServing Quinoa_45_Grams =>
-        QuinoaFood.WithServing(45, ServingUnits.Gram);
+    public static FoodServing Quinoa_45_Grams => CompositeFoodServing.FromComponentsWithStatic(
+        "quinoa",
+        scalableComponents: [
+            QuinoaBaseFood.WithServing(45, ServingUnits.Gram),
+            WaterFood.WithServing(0.6M, ServingUnits.Cup) // Per-serving water
+        ],
+        staticComponents: [
+            new StaticFoodServing(WaterFood.WithServing(1.5M, ServingUnits.Cup)) // Base water
+        ]);
 
     // https://shop.sprouts.com/product/7654/organic-dark-red-kidney-beans
     public static FoodServing RedKidneyBeans_1_4_Cup =>
@@ -260,15 +285,29 @@ internal static class Foods
     public static FoodServing SunflowerSeeds_30_Grams =>
         SunflowerSeedsFood.WithServing(30, ServingUnits.Gram);
 
-    public static FoodServing ToastedWheatfuls =>
-        ToastedWheatfulsFood.WithServing(50, ServingUnits.Gram);
+    public static FoodServing ToastedWheatfuls => CompositeFoodServing.FromComponentsWithStatic(
+        "toasted wheatfuls",
+        scalableComponents: [
+            ToastedWheatfulsBaseFood.WithServing(50, ServingUnits.Gram),
+            WaterFood.WithServing(0.6M, ServingUnits.Cup) // Per-serving water
+        ],
+        staticComponents: [
+            new StaticFoodServing(WaterFood.WithServing(2M, ServingUnits.Cup)) // Base water
+        ]);
 
     public static FoodServing Tofu_91_Grams =>
         TofuFood.WithServing(91, ServingUnits.Gram);
 
     // https://shop.sprouts.com/product/22564/hard-spring-wheat-berries
-    public static FoodServing WheatBerries_45_Grams =>
-        WheatBerriesFood.WithServing(45, ServingUnits.Gram);
+    public static FoodServing WheatBerries_45_Grams => CompositeFoodServing.FromComponentsWithStatic(
+        "wheat berries",
+        scalableComponents: [
+            WheatBerriesBaseFood.WithServing(45, ServingUnits.Gram),
+            WaterFood.WithServing(0.6M, ServingUnits.Cup) // Per-serving water
+        ],
+        staticComponents: [
+            new StaticFoodServing(WaterFood.WithServing(2M, ServingUnits.Cup)) // Base water
+        ]);
 
     // https://shop.sprouts.com/product/7847/wheat-bran
     // https://www.healthline.com/nutrition/wheat-bran#nutrition
@@ -282,12 +321,12 @@ internal static class Foods
         "Seitan (Nutritional Yeast + Gluten + Chicken Flavored Miss Dash)",
         scalableComponents: [
             NutritionalYeastFood.WithServing(4, ServingUnits.Gram),
-            GlutenFood.WithServing(16, ServingUnits.Gram)
+            GlutenFood.WithServing(16, ServingUnits.Gram),
+            WaterFood.WithServing(0.1466666666666668M, ServingUnits.Cup) // Water per serving
         ],
         staticComponents: [
             ChickenFlavoredMissDashFood.WithServing(1, ServingUnits.Tablespoon)
-        ],
-        water: new(Base: 0, PerServing: 0.1466666666666668M));
+        ]);
 
     public static FoodServing Whole_Grain_Pasta_56_Grams =>
         WholGrainPastaFood.WithServing(56, ServingUnits.Gram);
@@ -309,4 +348,7 @@ internal static class Foods
         WheatBranFood.WithServing(1, ServingUnits.Scoop);
     public static FoodServing PeaProtein_1_Tbsp =>
         PeaProteinFood.WithServing(1, ServingUnits.Tablespoon);
+
+    public static FoodServing Water_1_Cup =>
+        WaterFood.WithServing(1, ServingUnits.Cup);
 }

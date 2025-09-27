@@ -125,9 +125,10 @@ public class WeeklyMealsPrepPlanTests
             .SelectMany(plan => plan.Servings)
             .ToList();
 
-        // Group by food name and sum servings (using same logic as CombineLikeServings)
+        // Group by food name and sum servings (using same logic as Total property)
         var expectedTotals = allServingsFromPlans
-            .CombineLikeServings()
+            .SelectMany(s => s.GetComponentsForDisplay()) // Expand composites to components
+            .CombineLikeServings() // Then combine like components
             .OrderBy(s => s.Name)
             .ToList();
 

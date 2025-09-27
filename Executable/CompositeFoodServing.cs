@@ -9,9 +9,8 @@ public record CompositeFoodServing : FoodServing
     public CompositeFoodServing(
         string name,
         NutritionalInformation combinedNutrition,
-        IEnumerable<FoodServing> components,
-        AmountWater? water = null)
-        : base(name, combinedNutrition, water)
+        IEnumerable<FoodServing> components)
+        : base(name, combinedNutrition)
     {
         Components = components.ToList().AsReadOnly();
     }
@@ -19,23 +18,21 @@ public record CompositeFoodServing : FoodServing
     // Factory method that auto-calculates nutrition from components
     public static CompositeFoodServing FromComponents(
         string name,
-        IEnumerable<FoodServing> components,
-        AmountWater? water = null)
+        IEnumerable<FoodServing> components)
     {
         var componentsList = components.ToList();
         var combinedNutrition = componentsList
             .Select(c => c.NutritionalInformation)
             .Sum(1, ServingUnits.None);
 
-        return new CompositeFoodServing(name, combinedNutrition, componentsList, water);
+        return new CompositeFoodServing(name, combinedNutrition, componentsList);
     }
 
     // Factory method that creates a composite with mixed scalable and static components
     public static CompositeFoodServing FromComponentsWithStatic(
         string name,
         IEnumerable<FoodServing> scalableComponents,
-        IEnumerable<FoodServing> staticComponents,
-        AmountWater? water = null)
+        IEnumerable<FoodServing> staticComponents)
     {
         var scalableList = scalableComponents.ToList();
         var staticList = staticComponents.Select(c => new StaticFoodServing(c)).ToList();
@@ -50,10 +47,38 @@ public record CompositeFoodServing : FoodServing
             .Select(c => c.NutritionalInformation)
             .Sum(1, ServingUnits.None);
 
-        return new CompositeFoodServing(name, combinedNutrition, allComponents, water);
+        return new CompositeFoodServing(name, combinedNutrition, allComponents);
     }
 
-    // Override ToString to output components
+    // Combines components with the same name and base unit
+    private static IEnumerable<FoodServing> CombineLikeComponents(IEnumerable<FoodServing> components)
+    {
+        return components
+            .GroupBy(c => new
+            {
+                c.Name,
+                BaseUnit = c.NutritionalInformation.ServingUnit
+            })
+            .Select(group => group.Count() == 1
+                ? group.First()
+                : CombineComponents(group));
+    }
+
+    private static FoodServing CombineComponents(IGrouping<dynamic, FoodServing> group)
+    {
+        var totalUnits = group.Sum(c => c.NutritionalInformation.ServingUnits);
+        var firstComponent = group.First();
+
+        return firstComponent with
+        {
+            NutritionalInformation = firstComponent.NutritionalInformation with
+            {
+                ServingUnits = totalUnits
+            }
+        };
+    }
+
+    // Override ToString to output components with combination
     public override string ToString()
     {
         // Check if we've been scaled (servings != 1)
@@ -61,10 +86,14 @@ public record CompositeFoodServing : FoodServing
         if (scale != 1)
         {
             // Output scaled components using polymorphic ApplyScale method
-            return string.Join("\n", Components.Select(c => c.ApplyScale(scale).ToString()));
+            var scaledComponents = Components.Select(c => c.ApplyScale(scale));
+            var combinedComponents = CombineLikeComponents(scaledComponents);
+            return string.Join("\n", combinedComponents.Select(c => c.ToString()));
         }
-        // Output components as-is for unscaled
-        return string.Join("\n", Components.Select(c => c.ToString()));
+
+        // Output components as-is for unscaled, but still combine them
+        var unscaledCombinedComponents = CombineLikeComponents(Components);
+        return string.Join("\n", unscaledCombinedComponents.Select(c => c.ToString()));
     }
 
     // Override to return component lines instead of composite line
@@ -72,21 +101,14 @@ public record CompositeFoodServing : FoodServing
     {
         var scale = NutritionalInformation.ServingUnits;
 
-        // Output scaled components using polymorphic ApplyScale method
-        foreach (var component in Components)
-        {
-            yield return $"{prefix}{component.ApplyScale(scale)}";
-        }
+        // Get scaled components using polymorphic ApplyScale method
+        var scaledComponents = Components.Select(c => c.ApplyScale(scale));
 
-        // If there's water, add it as an output line
-        if (Water != null)
+        // Combine like components and output
+        var combinedComponents = CombineLikeComponents(scaledComponents);
+        foreach (var component in combinedComponents)
         {
-            // Water.PerServing is already scaled when the composite is multiplied
-            var waterAmount = Water.Base + Water.PerServing;
-            if (waterAmount > 0.01M) // Only show if meaningful amount
-            {
-                yield return $"{prefix}{waterAmount:f1} cups water";
-            }
+            yield return $"{prefix}{component}";
         }
     }
 
@@ -95,25 +117,14 @@ public record CompositeFoodServing : FoodServing
     {
         var scale = NutritionalInformation.ServingUnits;
 
-        // Return scaled components using polymorphic ApplyScale method
-        foreach (var component in Components)
-        {
-            yield return component.ApplyScale(scale);
-        }
+        // Get scaled components using polymorphic ApplyScale method
+        var scaledComponents = Components.Select(c => c.ApplyScale(scale));
 
-        // If there's water, add it as a virtual component
-        if (Water != null)
+        // Combine like components
+        var combinedComponents = CombineLikeComponents(scaledComponents);
+        foreach (var component in combinedComponents)
         {
-            // Water.PerServing is already scaled when the composite is multiplied
-            // So we just use it directly with quantity=1 (since this is for display of the current serving)
-            var waterAmount = Water.Base + Water.PerServing;
-            // Create a water serving using Cup as the unit, with waterAmount as the serving size
-            var waterServing = new FoodServing(
-                "water",
-                new NutritionalInformation(waterAmount, ServingUnits.Cup, 0, 0, 0, 0, 0),
-                null,
-                false);
-            yield return waterServing;
+            yield return component;
         }
     }
 

@@ -13,5 +13,8 @@ internal record WeeklyMealsPrepPlan(IEnumerable<MealPrepPlan> MealPrepPlans)
         return $"{servingsStr}\n\nTotals:\n{totalStr}";
     }
 
-    public IEnumerable<FoodServing> Total => MealPrepPlans.SelectMany(m => m.Servings).CombineLikeServings();
+    public IEnumerable<FoodServing> Total => MealPrepPlans
+        .SelectMany(m => m.Servings)
+        .SelectMany(s => s.GetComponentsForDisplay()) // Expand composites to components
+        .CombineLikeServings(); // Then combine like components
 }

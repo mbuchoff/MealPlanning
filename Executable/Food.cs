@@ -10,7 +10,6 @@ public record Food(
     string Name,
     (decimal Amount, ServingUnit Unit)[] ServingEquivalences,
     BaseNutrition Nutrition,
-    FoodServing.AmountWater? Water = null,
     bool IsConversion = false)
 {
     /// <summary>
@@ -35,11 +34,7 @@ public record Food(
                 Nutrition.CTotal * multiplier,
                 Nutrition.CFiber * multiplier);
 
-            // Water calculation: Base stays constant, only PerServing is multiplied
-            var scaledWater = Water == null ? null :
-                new FoodServing.AmountWater(Water.Base, Water.PerServing * multiplier);
-
-            return new FoodServing(Name, scaledNutrition, scaledWater, IsConversion);
+            return new FoodServing(Name, scaledNutrition, IsConversion);
         }
 
         // Try to convert between compatible units (e.g., tbsp to cup)
