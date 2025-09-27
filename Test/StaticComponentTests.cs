@@ -211,21 +211,4 @@ public class StaticComponentTests
         Assert.Contains("0.5 tbsps black pepper", output); // Not scaled
     }
 
-    [Fact]
-    public void StaticFoodServing_WithWater_PreservesWaterAmount()
-    {
-        // Arrange
-        var waterServing = new FoodServing("bouillon",
-            new NutritionalInformation(1, ServingUnits.Tablespoon, 10, 0.5M, 0.5M, 1, 0),
-            new FoodServing.AmountWater(1, 0));
-        var staticWater = new StaticFoodServing(waterServing);
-
-        // Act
-        var scaled = staticWater * 3;
-
-        // Assert
-        Assert.NotNull(scaled.Water);
-        Assert.Equal(1, scaled.Water.Base);
-        Assert.Equal(0, scaled.Water.PerServing);
-    }
 }

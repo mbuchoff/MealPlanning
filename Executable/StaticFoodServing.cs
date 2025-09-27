@@ -12,7 +12,7 @@ public record StaticFoodServing : FoodServing
     public FoodServing OriginalServing { get; }
 
     public StaticFoodServing(FoodServing originalServing)
-        : base(originalServing.Name, originalServing.NutritionalInformation, originalServing.Water, originalServing.IsConversion)
+        : base(originalServing.Name, originalServing.NutritionalInformation, originalServing.IsConversion)
     {
         OriginalServing = originalServing;
     }

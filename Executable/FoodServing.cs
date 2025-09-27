@@ -3,16 +3,8 @@
 public record FoodServing(
     string Name,
     NutritionalInformation NutritionalInformation,
-    FoodServing.AmountWater? Water = null,
     bool IsConversion = false)
 {
-    public record AmountWater(decimal Base, decimal PerServing)
-    {
-        // When scaling water, Base stays constant (it's the initial water needed),
-        // only PerServing is multiplied by the number of servings
-        public static AmountWater operator *(AmountWater amountWater, decimal d) =>
-            new(amountWater.Base, amountWater.PerServing * d);
-    }
 
     public FoodServing Copy(ServingUnit newServingUnit, decimal newServings) =>
         new(Name,
@@ -24,10 +16,9 @@ public record FoodServing(
                 NutritionalInformation.CFiber));
 
     public string ToString(decimal quantity) =>
-        $"{NutritionalInformation.ServingUnit.ToString(quantity * NutritionalInformation.ServingUnits)} {Name}" +
-        $"{(Water == null ? "" : $", {Water.Base + Water.PerServing * quantity:f1} cups water")}";
+        $"{NutritionalInformation.ServingUnit.ToString(quantity * NutritionalInformation.ServingUnits)} {Name}";
 
-    public FoodServing Convert(ServingUnit newServingUnit, AmountWater? water = null)
+    public FoodServing Convert(ServingUnit newServingUnit)
     {
         var servingUnit = NutritionalInformation.ServingUnit;
 
@@ -47,15 +38,13 @@ public record FoodServing(
             NutritionalInformation.F * multiplier,
             NutritionalInformation.CTotal * multiplier,
             NutritionalInformation.CFiber * multiplier),
-            water == null ? null : water * multiplier,
             IsConversion);
     }
 
     public static FoodServing operator *(FoodServing fs, decimal multiplier) =>
         fs with
         {
-            NutritionalInformation = fs.NutritionalInformation * multiplier,
-            Water = fs.Water == null ? null : new AmountWater(fs.Water.Base, fs.Water.PerServing * multiplier)
+            NutritionalInformation = fs.NutritionalInformation * multiplier
         };
 
     public override string ToString() => ToString(1);
