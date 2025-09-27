@@ -61,6 +61,13 @@ public record FoodServing(
         yield return this;
     }
 
+    // Virtual method to handle scaling for composite display
+    // Base implementation applies the multiplier normally
+    public virtual FoodServing ApplyScale(decimal scale)
+    {
+        return this * scale;
+    }
+
     // Virtual method to handle Todoist task creation
     // Returns the created task ID if a parent task was created, null otherwise
     public virtual async Task<string?> CreateTodoistSubtasksAsync(

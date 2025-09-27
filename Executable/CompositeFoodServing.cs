@@ -82,20 +82,8 @@ public record CompositeFoodServing : FoodServing
         var scale = NutritionalInformation.ServingUnits;
         if (scale != 1)
         {
-            // Get scaled components, preserving static components unchanged
-            var scaledComponents = Components.Select(c =>
-            {
-                if (c is StaticFoodServing staticComponent)
-                {
-                    return staticComponent; // Use unchanged static component
-                }
-                else
-                {
-                    return c * scale; // Scale regular components
-                }
-            });
-
-            // Combine like components and output
+            // Output scaled components using polymorphic ApplyScale method
+            var scaledComponents = Components.Select(c => c.ApplyScale(scale));
             var combinedComponents = CombineLikeComponents(scaledComponents);
             return string.Join("\n", combinedComponents.Select(c => c.ToString()));
         }
@@ -110,18 +98,8 @@ public record CompositeFoodServing : FoodServing
     {
         var scale = NutritionalInformation.ServingUnits;
 
-        // Get scaled components, preserving static components unchanged
-        var scaledComponents = Components.Select(c =>
-        {
-            if (c is StaticFoodServing staticComponent)
-            {
-                return staticComponent; // Use unchanged static component
-            }
-            else
-            {
-                return c * scale; // Scale regular components
-            }
-        });
+        // Get scaled components using polymorphic ApplyScale method
+        var scaledComponents = Components.Select(c => c.ApplyScale(scale));
 
         // Combine like components and output
         var combinedComponents = CombineLikeComponents(scaledComponents);
@@ -136,18 +114,8 @@ public record CompositeFoodServing : FoodServing
     {
         var scale = NutritionalInformation.ServingUnits;
 
-        // Get scaled components, preserving static components unchanged
-        var scaledComponents = Components.Select(c =>
-        {
-            if (c is StaticFoodServing staticComponent)
-            {
-                return staticComponent; // Return unchanged
-            }
-            else
-            {
-                return c * scale; // Scale regular components
-            }
-        });
+        // Get scaled components using polymorphic ApplyScale method
+        var scaledComponents = Components.Select(c => c.ApplyScale(scale));
 
         // Combine like components
         var combinedComponents = CombineLikeComponents(scaledComponents);
