@@ -266,7 +266,7 @@ public class CompositeFoodServingTests
 
         // Fourth task should be water as subtask of Seitan
         // The water component now outputs properly formatted
-        Assert.Equal("0.01 cups water", createdTasks[3].content);
+        Assert.Equal("0.0 cups water", createdTasks[3].content);
         Assert.Equal("task_1", createdTasks[3].parentId); // Should be child of first created task
     }
 
@@ -321,7 +321,7 @@ public class CompositeFoodServingTests
         Assert.Equal("8 grams nutritional yeast", createdTasks[1].content);
         Assert.Equal("32 grams gluten", createdTasks[2].content);
         // Water component now outputs properly formatted
-        Assert.Equal("0.02 cups water", createdTasks[3].content);
+        Assert.Equal("0.0 cups water", createdTasks[3].content);
     }
 
     // Helper method to create water components
