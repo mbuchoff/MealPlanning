@@ -60,18 +60,8 @@ public record CompositeFoodServing : FoodServing
         var scale = NutritionalInformation.ServingUnits;
         if (scale != 1)
         {
-            // Output scaled components, preserving static components unchanged
-            return string.Join("\n", Components.Select(c =>
-            {
-                if (c is StaticFoodServing staticComponent)
-                {
-                    return staticComponent.ToString(); // Use unchanged static component
-                }
-                else
-                {
-                    return (c * scale).ToString(); // Scale regular components
-                }
-            }));
+            // Output scaled components using polymorphic ApplyScale method
+            return string.Join("\n", Components.Select(c => c.ApplyScale(scale).ToString()));
         }
         // Output components as-is for unscaled
         return string.Join("\n", Components.Select(c => c.ToString()));
@@ -82,18 +72,10 @@ public record CompositeFoodServing : FoodServing
     {
         var scale = NutritionalInformation.ServingUnits;
 
-        // Output scaled components, but preserve static components unchanged
+        // Output scaled components using polymorphic ApplyScale method
         foreach (var component in Components)
         {
-            // Check if this is a static component - if so, don't scale it
-            if (component is StaticFoodServing staticComponent)
-            {
-                yield return $"{prefix}{staticComponent}"; // Use unchanged static component
-            }
-            else
-            {
-                yield return $"{prefix}{component * scale}"; // Scale regular components
-            }
+            yield return $"{prefix}{component.ApplyScale(scale)}";
         }
 
         // If there's water, add it as an output line
@@ -113,18 +95,10 @@ public record CompositeFoodServing : FoodServing
     {
         var scale = NutritionalInformation.ServingUnits;
 
-        // Return scaled components, but preserve static components unchanged
+        // Return scaled components using polymorphic ApplyScale method
         foreach (var component in Components)
         {
-            // Check if this is a static component - if so, don't scale it
-            if (component is StaticFoodServing staticComponent)
-            {
-                yield return staticComponent; // Return unchanged
-            }
-            else
-            {
-                yield return component * scale; // Scale regular components
-            }
+            yield return component.ApplyScale(scale);
         }
 
         // If there's water, add it as a virtual component

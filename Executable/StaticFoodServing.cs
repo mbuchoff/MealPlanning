@@ -25,6 +25,12 @@ public record StaticFoodServing : FoodServing
         staticServing; // Return unchanged - this is what makes it "static"
 
     /// <summary>
+    /// Override ApplyScale to return unchanged instance.
+    /// This provides polymorphic scaling behavior without type checking.
+    /// </summary>
+    public override FoodServing ApplyScale(decimal scale) => this;
+
+    /// <summary>
     /// Override ToString to use the original serving's formatting
     /// </summary>
     public override string ToString() => OriginalServing.ToString();
