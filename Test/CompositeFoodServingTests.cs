@@ -3,6 +3,7 @@ using SystemOfEquations.Data;
 using Xunit;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace Test;
 
@@ -19,11 +20,10 @@ public class CompositeFoodServingTests
         _gluten = new FoodServing("gluten",
             new NutritionalInformation(16, ServingUnits.Gram, 64, 12.27M, 0.53M, 2.13M, 0));
 
-        _composite = new CompositeFoodServing(
+        var waterComponent = CreateWaterServing(0.00916M);
+        _composite = CompositeFoodServing.FromComponents(
             "Seitan",
-            new NutritionalInformation(1, ServingUnits.None, 79, 13.52M, 0.655M, 3.38M, 0.75M),
-            [_yeast, _gluten],
-            new FoodServing.AmountWater(0, 0.00916M));
+            [_yeast, _gluten, waterComponent]);
     }
 
     [Fact]
@@ -35,8 +35,9 @@ public class CompositeFoodServingTests
         // Assert
         Assert.Contains("4 grams nutritional yeast", output);
         Assert.Contains("16 grams gluten", output);
+        Assert.Contains("water", output);
         var lines = output.Split('\n');
-        Assert.Equal(2, lines.Length); // Should output exactly 2 lines for 2 components
+        Assert.Equal(3, lines.Length); // Should output exactly 3 lines for 3 components
     }
 
     [Fact]
@@ -66,28 +67,21 @@ public class CompositeFoodServingTests
     }
 
     [Fact]
-    public void CompositeFoodServing_Water_StaysWithComposite()
+    public void CompositeFoodServing_Water_IncludedAsComponent()
     {
-        // Assert that water is on composite but not components
-        Assert.NotNull(_composite.Water);
-        Assert.Equal(0.00916M, _composite.Water.PerServing);
+        // Assert that water is included as a component
+        var components = _composite.GetComponentsForDisplay().ToList();
+        var waterComponent = components.FirstOrDefault(c => c.Name == "water");
 
-        // Components should not have water
-        foreach (var component in _composite.Components)
-        {
-            Assert.Null(component.Water); // Components should not have water
-        }
+        Assert.NotNull(waterComponent);
+        Assert.Equal(0.00916M, waterComponent.NutritionalInformation.ServingUnits);
     }
 
     [Fact]
     public void CompositeFoodServing_WithScaledServingUnits_OutputsCorrectly()
     {
-        // Arrange - simulate what happens when CombineLikeServings creates a scaled composite
-        var scaledComposite = new CompositeFoodServing(
-            "Seitan",
-            new NutritionalInformation(6.7M, ServingUnits.None, 529.3M, 90.584M, 4.3885M, 22.646M, 5.025M),
-            [_yeast, _gluten],
-            new FoodServing.AmountWater(0, 0.061372M));
+        // Arrange - scale the composite by 6.7x
+        var scaledComposite = _composite * 6.7M;
 
         // Act
         var output = scaledComposite.ToString();
@@ -95,6 +89,7 @@ public class CompositeFoodServingTests
         // Assert - should output 6.7x scaled components (27 and 107 due to rounding)
         Assert.Contains("27 grams nutritional yeast", output);
         Assert.Contains("107 grams gluten", output);
+        Assert.Contains("water", output);
     }
 
     [Fact]
@@ -107,10 +102,10 @@ public class CompositeFoodServingTests
             new NutritionalInformation(16, ServingUnits.Gram, 64, 12.27M, 0.53M, 2.13M, 0));
 
         // Act
+        var waterComponent = CreateWaterServing(0.00916M);
         var composite = CompositeFoodServing.FromComponents(
             "Auto-calculated Seitan",
-            [yeastComponent, glutenComponent],
-            new FoodServing.AmountWater(0, 0.00916M));
+            [yeastComponent, glutenComponent, waterComponent]);
 
         // Assert - nutrition should be sum of components
         Assert.Equal(79, composite.NutritionalInformation.Cals);  // 15 + 64
@@ -130,19 +125,18 @@ public class CompositeFoodServingTests
             new NutritionalInformation(4, ServingUnits.Gram, 15, 1.25M, 0.125M, 1.25M, 0.75M));
         var glutenComponent = new FoodServing("gluten",
             new NutritionalInformation(16, ServingUnits.Gram, 64, 12.27M, 0.53M, 2.13M, 0));
-        var water = new FoodServing.AmountWater(0, 0.00916M);
+        var waterComponent = CreateWaterServing(0.00916M);
 
         // Act
         var composite = CompositeFoodServing.FromComponents(
             "Auto-calculated Seitan",
-            [yeastComponent, glutenComponent],
-            water);
+            [yeastComponent, glutenComponent, waterComponent]);
 
         // Assert
-        Assert.Equal(2, composite.Components.Count);
+        Assert.Equal(3, composite.Components.Count);
         Assert.Equal(yeastComponent, composite.Components[0]);
         Assert.Equal(glutenComponent, composite.Components[1]);
-        Assert.Equal(water, composite.Water);
+        Assert.Equal(waterComponent, composite.Components[2]);
         Assert.Equal("Auto-calculated Seitan", composite.Name);
     }
 
@@ -170,11 +164,10 @@ public class CompositeFoodServingTests
     public void GetComponentsForDisplay_WithWater_IncludesWaterAsComponent()
     {
         // Arrange
-        var water = new FoodServing.AmountWater(0, 0.0366666666666667M);
+        var waterComponent = CreateWaterServing(0.0366666666666667M);
         var composite = CompositeFoodServing.FromComponents(
             "Seitan",
-            [_yeast, _gluten],
-            water);
+            [_yeast, _gluten, waterComponent]);
 
         // Act
         var components = composite.GetComponentsForDisplay().ToList();
@@ -186,26 +179,26 @@ public class CompositeFoodServingTests
         Assert.Contains(components, c => c.Name.Contains("water"));
 
         // Verify water component has correct amount
-        var waterComponent = components.First(c => c.Name.Contains("water"));
-        Assert.Equal("water", waterComponent.Name);
+        var waterComp = components.First(c => c.Name.Contains("water"));
+        Assert.Equal("water", waterComp.Name);
     }
 
     [Fact]
     public void GetComponentsForDisplay_WithWater_ScalesWaterCorrectly()
     {
         // Arrange
-        var water = new FoodServing.AmountWater(0, 0.0366666666666667M);
+        var waterComponent = CreateWaterServing(0.0366666666666667M);
         var composite = CompositeFoodServing.FromComponents(
             "Seitan",
-            [_yeast, _gluten],
-            water);
+            [_yeast, _gluten, waterComponent]);
 
         // Act - scale by 4x
         var scaled = composite * 4;
 
-        // Debug: Check the scaled object's water and servings
-        Assert.NotNull(scaled.Water);
-        Assert.Equal(0.1466666666666668M, scaled.Water.PerServing, 10);
+        // Debug: Check the scaled object's water component
+        var waterComponents = scaled.GetComponentsForDisplay().Where(c => c.Name == "water").ToList();
+        Assert.Single(waterComponents);
+        Assert.Equal(0.1466666666666668M, waterComponents[0].NutritionalInformation.ServingUnits, 10);
         Assert.Equal(4M, scaled.NutritionalInformation.ServingUnits);
 
         var components = scaled.GetComponentsForDisplay().ToList();
@@ -214,9 +207,9 @@ public class CompositeFoodServingTests
         Assert.Equal(3, components.Count);
 
         // Verify water component has scaled amount (0.0366666666666667 * 4 ≈ 0.147, rounds to 0.1)
-        var waterComponent = components.First(c => c.Name.Contains("water"));
+        var scaledWaterComponent = components.First(c => c.Name.Contains("water"));
         // Water component name should just be "water", the amount is in ServingUnits
-        Assert.Equal("water", waterComponent.Name);
+        Assert.Equal("water", scaledWaterComponent.Name);
     }
 
     [Fact]
@@ -225,8 +218,7 @@ public class CompositeFoodServingTests
         // Arrange
         var composite = CompositeFoodServing.FromComponents(
             "Seitan",
-            [_yeast, _gluten],
-            water: null);
+            [_yeast, _gluten]);
 
         // Act
         var components = composite.GetComponentsForDisplay().ToList();
@@ -274,7 +266,7 @@ public class CompositeFoodServingTests
 
         // Fourth task should be water as subtask of Seitan
         // The water component now outputs properly formatted
-        Assert.Equal("0.0 cups water", createdTasks[3].content);
+        Assert.Equal("0.01 cups water", createdTasks[3].content);
         Assert.Equal("task_1", createdTasks[3].parentId); // Should be child of first created task
     }
 
@@ -329,6 +321,15 @@ public class CompositeFoodServingTests
         Assert.Equal("8 grams nutritional yeast", createdTasks[1].content);
         Assert.Equal("32 grams gluten", createdTasks[2].content);
         // Water component now outputs properly formatted
-        Assert.Equal("0.0 cups water", createdTasks[3].content);
+        Assert.Equal("0.02 cups water", createdTasks[3].content);
+    }
+
+    // Helper method to create water components
+    private static FoodServing CreateWaterServing(decimal cups)
+    {
+        return Foods.Water_1_Cup with
+        {
+            NutritionalInformation = Foods.Water_1_Cup.NutritionalInformation with { ServingUnits = cups }
+        };
     }
 }
