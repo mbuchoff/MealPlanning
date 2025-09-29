@@ -3,7 +3,7 @@ using SystemOfEquations.Data.TrainingWeeks;
 using SystemOfEquations.Todoist;
 
 // Set your target average daily calories here
-var targetDailyCalories = 3000M;
+var targetDailyCalories = 3100M;
 
 // Automatically calculate the required adjustment
 // Note: The base MuscleGain2 is at 100% (no adjustment)
