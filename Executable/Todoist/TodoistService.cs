@@ -75,7 +75,13 @@ internal class TodoistService
 
         // Scale servings based on meal count ratio
         decimal scaleFactor = (decimal)mealCount / totalMealCount;
-        var scaledServings = baseServings.Select(s => s * scaleFactor);
+        var scaledServings = baseServings.Select(s => s * scaleFactor).ToList();
+
+        // Generate and add nutritional comment
+        var comment = TodoistServiceHelper.GenerateNutritionalComment(scaledServings);
+        Console.WriteLine($"Adding comment for {parentTask.Content} > {quantityLabel}...");
+        await AddCommentAsync(quantityTask.Id, comment);
+        Console.WriteLine($"Added comment for {parentTask.Content} > {quantityLabel}");
 
         await Task.WhenAll(scaledServings.Select(s => AddServingAsync(quantityTask, s)));
     }
