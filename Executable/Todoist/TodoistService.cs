@@ -133,9 +133,7 @@ internal class TodoistService
                     Console.WriteLine($"Added subtask {content} > {s}");
                 }));
 
-            var comment = string.Join("\n\n",
-                new[] { x.Meal.NutritionalInformation.ToNutrientsString() }.Concat(
-                x.Meal.Servings.Select(s => $"{s.Name}\n{s.NutritionalInformation.ToNutrientsString()}")));
+            var comment = TodoistServiceHelper.GenerateNutritionalComment(x.Meal.Servings);
             Console.WriteLine($"Adding comment for {content}...");
             systemTasks.Add(AddCommentAsync(parentTodoistTask.Id, comment));
             Console.WriteLine($"Added comment for {content}");
