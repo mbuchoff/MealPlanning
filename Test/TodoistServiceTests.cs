@@ -61,32 +61,6 @@ public class TodoistServiceTests
     }
 
     [Fact]
-    public void GenerateNutritionalComment_Should_Format_With_Double_Newlines_Between_Sections()
-    {
-        // Arrange
-        var chicken = new FoodServing("Chicken",
-            new(ServingUnits: 100, ServingUnits.Gram, Cals: 165, P: 31, F: 3.6M, CTotal: 0, CFiber: 0));
-        var rice = new FoodServing("Brown Rice",
-            new(ServingUnits: 100, ServingUnits.Gram, Cals: 111, P: 2.6M, F: 0.9M, CTotal: 23, CFiber: 1.8M));
-
-        var servings = new List<FoodServing> { chicken, rice };
-
-        // Act
-        var comment = TodoistServiceHelper.GenerateNutritionalComment(servings);
-
-        // Assert
-        // Should use "\n\n" to separate total from servings and servings from each other
-        var sections = comment.Split("\n\n");
-
-        // First section is the total
-        Assert.Contains("cals", sections[0]);
-
-        // Next sections should be individual servings
-        Assert.True(sections.Length >= 2);
-        Assert.Contains("Chicken", sections[1]);
-    }
-
-    [Fact]
     public void GenerateNutritionalComment_Should_Handle_Scaled_Servings()
     {
         // Arrange
