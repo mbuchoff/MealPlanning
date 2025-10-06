@@ -39,8 +39,10 @@ internal class TodoistService
             description: null,
             dueString: dueString,
             parentId: null,
-            project.Id);
+            project.Id,
+            isCollapsed: true);
         Console.WriteLine($"Added task {content}...");
+        await UpdateTaskCollapsedAsync(parentTodoistTask.Id, collapsed: true);
         await Task.WhenAll(servings.Select(s => AddServingAsync(parentTodoistTask, s)).ToList());
     }
 
@@ -50,8 +52,9 @@ internal class TodoistService
 
         Console.WriteLine($"Adding task {m.Name}...");
         var parentTodoistTask = await AddTaskAsync(
-            m.Name, description: null, dueString: "every tue", parentId: null, project.Id);
+            m.Name, description: null, dueString: "every tue", parentId: null, project.Id, isCollapsed: true);
         Console.WriteLine($"Added task {m.Name}");
+        await UpdateTaskCollapsedAsync(parentTodoistTask.Id, collapsed: true);
 
         // Create subtasks for each meal quantity - add sequentially to maintain order
         for (int mealCount = 1; mealCount <= m.MealCount; mealCount++)
@@ -70,8 +73,9 @@ internal class TodoistService
     {
         Console.WriteLine($"Adding subtask {parentTask.Content} > {quantityLabel}...");
         var quantityTask = await AddTaskAsync(
-            quantityLabel, description: null, dueString: null, parentTask.Id, projectId: null);
+            quantityLabel, description: null, dueString: null, parentTask.Id, projectId: null, isCollapsed: true);
         Console.WriteLine($"Added subtask {parentTask.Content} > {quantityLabel}");
+        await UpdateTaskCollapsedAsync(quantityTask.Id, collapsed: true);
 
         // Scale servings based on meal count ratio
         decimal scaleFactor = (decimal)mealCount / totalMealCount;
@@ -120,8 +124,9 @@ internal class TodoistService
             Console.WriteLine($"Adding task {content}...");
             var parentTodoistTask = await AddTaskAsync(
                 content, $"Synced on {DateTime.Now}",
-                x.DueString, parentId: null, eatingProject.Id);
+                x.DueString, parentId: null, eatingProject.Id, isCollapsed: true);
             Console.WriteLine($"Added task {content}");
+            await UpdateTaskCollapsedAsync(parentTodoistTask.Id, collapsed: true);
 
             // Add child tasks in parallel
             systemTasks.AddRange(x.Meal.Servings.Where(s => !s.IsConversion)

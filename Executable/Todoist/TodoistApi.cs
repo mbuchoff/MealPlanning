@@ -13,8 +13,30 @@ internal static class TodoistApi
         result.EnsureSuccessStatusCode();
     }
 
+    public static async Task UpdateTaskCollapsedAsync(string taskId, bool collapsed)
+    {
+        using var httpClient = await CreateHttpClientAsync();
+        var result = await httpClient.PostAsJsonAsync("https://api.todoist.com/sync/v9/sync", new
+        {
+            Commands = new[]
+            {
+                new
+                {
+                    Type = "item_update",
+                    Uuid = Guid.NewGuid().ToString(),
+                    Args = new
+                    {
+                        Id = taskId,
+                        Collapsed = collapsed
+                    }
+                }
+            }
+        });
+        result.EnsureSuccessStatusCode();
+    }
+
     public static async Task<TodoistTask> AddTaskAsync(
-        string content, string? description, string? dueString, string? parentId, string? projectId)
+        string content, string? description, string? dueString, string? parentId, string? projectId, bool isCollapsed = false)
     {
         using var httpClient = await CreateHttpClientAsync();
         var result = await httpClient.PostAsJsonAsync("https://api.todoist.com/rest/v2/tasks", new
@@ -24,6 +46,7 @@ internal static class TodoistApi
             Parent_id = parentId,
             Project_id = projectId,
             Due_string = dueString,
+            Is_collapsed = isCollapsed,
         });
         result.EnsureSuccessStatusCode();
         var todoistTask = await result.Content.ReadFromJsonAsync<TodoistTask>();
