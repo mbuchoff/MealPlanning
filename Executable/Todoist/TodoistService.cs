@@ -79,9 +79,7 @@ internal class TodoistService
 
     private static async Task AddServingAsync(TodoistTask parentTodoistTask, FoodServing s, ProgressTracker progress)
     {
-        // Use polymorphic CreateTodoistSubtasksAsync method - no type checking needed
-        // Cast AddTaskAsync to return object to work with public API
-        await s.CreateTodoistSubtasksAsync(parentTodoistTask.Id,
+        await TodoistServiceHelper.CreateTodoistSubtasksAsync(s, parentTodoistTask.Id,
             async (content, description, dueString, parentId, projectId) =>
             {
                 var task = await AddTaskAsync(content, description, dueString, parentId, projectId);

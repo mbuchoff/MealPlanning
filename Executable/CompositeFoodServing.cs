@@ -128,27 +128,5 @@ public record CompositeFoodServing : FoodServing
         }
     }
 
-    // Override to create parent task for composite and subtasks for components
-    public override async Task<string?> CreateTodoistSubtasksAsync(
-        string parentTaskId,
-        Func<string, string?, string?, string?, string?, Task<object>> addTaskFunc)
-    {
-        // Create a parent task for the composite food
-        var compositeTask = await addTaskFunc(Name, null, null, parentTaskId, null);
-
-        // Extract task ID from the returned object
-        var taskId = compositeTask.GetType().GetProperty("Id")?.GetValue(compositeTask)?.ToString();
-        if (taskId == null)
-            throw new InvalidOperationException("Could not get task ID from created task");
-
-        // Add each component as a subtask of the composite
-        foreach (var component in GetComponentsForDisplay())
-        {
-            await component.CreateTodoistSubtasksAsync(taskId, addTaskFunc);
-        }
-
-        return taskId;
-    }
-
     // Note: Multiplication is handled in base FoodServing class to preserve type
 }

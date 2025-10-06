@@ -50,14 +50,4 @@ public record StaticFoodServing : FoodServing
     {
         return OriginalServing.GetComponentsForDisplay();
     }
-
-    /// <summary>
-    /// Override CreateTodoistSubtasksAsync to delegate to the original serving
-    /// </summary>
-    public override async Task<string?> CreateTodoistSubtasksAsync(
-        string parentTaskId,
-        Func<string, string?, string?, string?, string?, Task<object>> addTaskFunc)
-    {
-        return await OriginalServing.CreateTodoistSubtasksAsync(parentTaskId, addTaskFunc);
-    }
 }
