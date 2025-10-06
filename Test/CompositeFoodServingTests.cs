@@ -1,5 +1,6 @@
 using SystemOfEquations;
 using SystemOfEquations.Data;
+using SystemOfEquations.Todoist;
 using Xunit;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -247,7 +248,7 @@ public class CompositeFoodServingTests
         }
 
         // Act
-        await _composite.CreateTodoistSubtasksAsync("parent_task_id", mockAddTask);
+        await TodoistServiceHelper.CreateTodoistSubtasksAsync(_composite, "parent_task_id", mockAddTask);
 
         // Assert
         Assert.Equal(4, createdTasks.Count); // Parent seitan task + 2 component tasks + water
@@ -284,7 +285,7 @@ public class CompositeFoodServingTests
         }
 
         // Act
-        await _yeast.CreateTodoistSubtasksAsync("parent_task_id", mockAddTask);
+        await TodoistServiceHelper.CreateTodoistSubtasksAsync(_yeast, "parent_task_id", mockAddTask);
 
         // Assert
         Assert.Single(createdTasks);
@@ -309,7 +310,7 @@ public class CompositeFoodServingTests
         }
 
         // Act
-        await scaledComposite.CreateTodoistSubtasksAsync("parent_task_id", mockAddTask);
+        await TodoistServiceHelper.CreateTodoistSubtasksAsync(scaledComposite, "parent_task_id", mockAddTask);
 
         // Assert
         Assert.Equal(4, createdTasks.Count); // Parent + 2 components + water
