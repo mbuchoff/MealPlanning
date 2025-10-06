@@ -26,24 +26,12 @@ internal static class TodoistServiceHelper
     /// Counts how many Todoist task operations a serving will create.
     /// Handles CompositeFoodServing by counting parent + all components recursively.
     /// </summary>
-    public static int CountTodoistOperations(FoodServing serving)
+    public static int CountTodoistOperations(FoodServing serving) => serving switch
     {
-        // Check if it's a CompositeFoodServing
-        if (serving is CompositeFoodServing composite)
-        {
-            // 1 for the composite parent task + all component operations
-            return 1 + composite.GetComponentsForDisplay().Sum(CountTodoistOperations);
-        }
-
-        // Check if it's a StaticFoodServing - delegate to original
-        if (serving is StaticFoodServing staticServing)
-        {
-            return CountTodoistOperations(staticServing.OriginalServing);
-        }
-
-        // Base FoodServing creates 1 task
-        return 1;
-    }
+        CompositeFoodServing composite => 1 + composite.GetComponentsForDisplay().Sum(CountTodoistOperations),
+        StaticFoodServing staticServing => CountTodoistOperations(staticServing.OriginalServing),
+        _ => 1
+    };
 
     /// <summary>
     /// Creates Todoist subtasks for a serving.
