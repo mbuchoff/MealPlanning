@@ -146,4 +146,102 @@ public class TodoistServiceTests
         // Seitan calories: 1850 * 0.4 = 740
         Assert.Contains("740 cals", comment);
     }
+
+    [Fact]
+    public void CountTodoistOperations_FoodServing_Should_Return_One()
+    {
+        // Arrange
+        var serving = new FoodServing("Chicken",
+            new(ServingUnits: 100, ServingUnits.Gram, Cals: 165, P: 31, F: 3.6M, CTotal: 0, CFiber: 0));
+
+        // Act
+        var count = serving.CountTodoistOperations();
+
+        // Assert
+        Assert.Equal(1, count);
+    }
+
+    [Fact]
+    public void CountTodoistOperations_CompositeFoodServing_Should_Count_Parent_And_Components()
+    {
+        // Arrange
+        var chicken = new FoodServing("Chicken",
+            new(ServingUnits: 100, ServingUnits.Gram, Cals: 165, P: 31, F: 3.6M, CTotal: 0, CFiber: 0));
+        var rice = new FoodServing("Rice",
+            new(ServingUnits: 100, ServingUnits.Gram, Cals: 111, P: 2.6M, F: 0.9M, CTotal: 23, CFiber: 1.8M));
+        var veggies = new FoodServing("Veggies",
+            new(ServingUnits: 100, ServingUnits.Gram, Cals: 50, P: 2, F: 0.5M, CTotal: 10, CFiber: 3));
+
+        var composite = CompositeFoodServing.FromComponents("Meal", new[] { chicken, rice, veggies });
+
+        // Act
+        var count = composite.CountTodoistOperations();
+
+        // Assert
+        // Should be 1 (parent) + 3 (components) = 4
+        Assert.Equal(4, count);
+    }
+
+    [Fact]
+    public void CountTodoistOperations_NestedComposite_Should_Count_Recursively()
+    {
+        // Arrange
+        var chicken = new FoodServing("Chicken",
+            new(ServingUnits: 100, ServingUnits.Gram, Cals: 165, P: 31, F: 3.6M, CTotal: 0, CFiber: 0));
+        var rice = new FoodServing("Rice",
+            new(ServingUnits: 100, ServingUnits.Gram, Cals: 111, P: 2.6M, F: 0.9M, CTotal: 23, CFiber: 1.8M));
+
+        // Create inner composite with 2 components
+        var innerComposite = CompositeFoodServing.FromComponents("Base Meal", new[] { chicken, rice });
+        // innerComposite should count as: 1 (parent) + 2 (components) = 3
+
+        var veggies = new FoodServing("Veggies",
+            new(ServingUnits: 100, ServingUnits.Gram, Cals: 50, P: 2, F: 0.5M, CTotal: 10, CFiber: 3));
+
+        // Create outer composite containing the inner composite and veggies
+        var outerComposite = CompositeFoodServing.FromComponents("Full Meal", new FoodServing[] { innerComposite, veggies });
+
+        // Act
+        var count = outerComposite.CountTodoistOperations();
+
+        // Assert
+        // Should be: 1 (outer parent) + 3 (inner composite) + 1 (veggies) = 5
+        Assert.Equal(5, count);
+    }
+
+    [Fact]
+    public void CountTodoistOperations_StaticFoodServing_Should_Delegate_To_Original()
+    {
+        // Arrange
+        var chicken = new FoodServing("Chicken",
+            new(ServingUnits: 100, ServingUnits.Gram, Cals: 165, P: 31, F: 3.6M, CTotal: 0, CFiber: 0));
+        var staticChicken = new StaticFoodServing(chicken);
+
+        // Act
+        var count = staticChicken.CountTodoistOperations();
+
+        // Assert
+        // Should delegate to the original serving, which returns 1
+        Assert.Equal(1, count);
+    }
+
+    [Fact]
+    public void CountTodoistOperations_StaticComposite_Should_Count_Nested_Operations()
+    {
+        // Arrange
+        var chicken = new FoodServing("Chicken",
+            new(ServingUnits: 100, ServingUnits.Gram, Cals: 165, P: 31, F: 3.6M, CTotal: 0, CFiber: 0));
+        var rice = new FoodServing("Rice",
+            new(ServingUnits: 100, ServingUnits.Gram, Cals: 111, P: 2.6M, F: 0.9M, CTotal: 23, CFiber: 1.8M));
+
+        var composite = CompositeFoodServing.FromComponents("Meal", new[] { chicken, rice });
+        var staticComposite = new StaticFoodServing(composite);
+
+        // Act
+        var count = staticComposite.CountTodoistOperations();
+
+        // Assert
+        // Should delegate to the composite: 1 (parent) + 2 (components) = 3
+        Assert.Equal(3, count);
+    }
 }

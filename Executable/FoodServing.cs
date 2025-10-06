@@ -75,9 +75,14 @@ public record FoodServing(
         Func<string, string?, string?, string?, string?, Task<object>> addTaskFunc)
     {
         // Base FoodServing creates a single subtask
-        Console.WriteLine($"Adding subtask > {this}...");
         await addTaskFunc(ToString(), null, null, parentTaskId, null);
-        Console.WriteLine($"Added subtask > {this}");
         return null;
+    }
+
+    // Virtual method to count how many Todoist tasks this serving will create
+    public virtual int CountTodoistOperations()
+    {
+        // Base FoodServing creates 1 task
+        return 1;
     }
 }
