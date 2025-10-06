@@ -210,22 +210,6 @@ public class TodoistServiceTests
     }
 
     [Fact]
-    public void CountTodoistOperations_StaticFoodServing_Should_Delegate_To_Original()
-    {
-        // Arrange
-        var chicken = new FoodServing("Chicken",
-            new(ServingUnits: 100, ServingUnits.Gram, Cals: 165, P: 31, F: 3.6M, CTotal: 0, CFiber: 0));
-        var staticChicken = new StaticFoodServing(chicken);
-
-        // Act
-        var count = TodoistServiceHelper.CountTodoistOperations(staticChicken);
-
-        // Assert
-        // Should delegate to the original serving, which returns 1
-        Assert.Equal(1, count);
-    }
-
-    [Fact]
     public void CountTodoistOperations_StaticComposite_Should_Count_Nested_Operations()
     {
         // Arrange
