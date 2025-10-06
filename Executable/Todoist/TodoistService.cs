@@ -47,14 +47,14 @@ internal class TodoistService
             // Servings for each quantity - use CountTodoistOperations to handle composites
             foreach (var serving in mealPrepPlan.Servings)
             {
-                operations += mealPrepPlan.MealCount * serving.CountTodoistOperations();
+                operations += mealPrepPlan.MealCount * TodoistServiceHelper.CountTodoistOperations(serving);
             }
         }
 
         // Totals
         operations++; // Main task
         operations++; // Collapse
-        operations += phase.MealPrepPlan.Total.Sum(s => s.CountTodoistOperations()); // All serving operations
+        operations += phase.MealPrepPlan.Total.Sum(s => TodoistServiceHelper.CountTodoistOperations(s)); // All serving operations
 
         // Eating meals
         var eatingMeals = new[]
@@ -70,7 +70,7 @@ internal class TodoistService
         {
             operations++; // Main task
             operations++; // Collapse
-            operations += meal.Servings.Where(s => !s.IsConversion).Sum(s => s.CountTodoistOperations()); // All serving operations
+            operations += meal.Servings.Where(s => !s.IsConversion).Sum(s => TodoistServiceHelper.CountTodoistOperations(s)); // All serving operations
             operations++; // Comment
         }
 

@@ -78,11 +78,4 @@ public record FoodServing(
         await addTaskFunc(ToString(), null, null, parentTaskId, null);
         return null;
     }
-
-    // Virtual method to count how many Todoist tasks this serving will create
-    public virtual int CountTodoistOperations()
-    {
-        // Base FoodServing creates 1 task
-        return 1;
-    }
 }

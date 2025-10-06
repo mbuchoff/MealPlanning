@@ -150,12 +150,5 @@ public record CompositeFoodServing : FoodServing
         return taskId;
     }
 
-    // Override to count parent task + all component tasks recursively
-    public override int CountTodoistOperations()
-    {
-        // 1 for the composite parent task + all component operations
-        return 1 + GetComponentsForDisplay().Sum(c => c.CountTodoistOperations());
-    }
-
     // Note: Multiplication is handled in base FoodServing class to preserve type
 }

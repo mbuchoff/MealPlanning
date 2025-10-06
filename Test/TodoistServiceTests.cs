@@ -155,7 +155,7 @@ public class TodoistServiceTests
             new(ServingUnits: 100, ServingUnits.Gram, Cals: 165, P: 31, F: 3.6M, CTotal: 0, CFiber: 0));
 
         // Act
-        var count = serving.CountTodoistOperations();
+        var count = TodoistServiceHelper.CountTodoistOperations(serving);
 
         // Assert
         Assert.Equal(1, count);
@@ -175,7 +175,7 @@ public class TodoistServiceTests
         var composite = CompositeFoodServing.FromComponents("Meal", new[] { chicken, rice, veggies });
 
         // Act
-        var count = composite.CountTodoistOperations();
+        var count = TodoistServiceHelper.CountTodoistOperations(composite);
 
         // Assert
         // Should be 1 (parent) + 3 (components) = 4
@@ -202,7 +202,7 @@ public class TodoistServiceTests
         var outerComposite = CompositeFoodServing.FromComponents("Full Meal", new FoodServing[] { innerComposite, veggies });
 
         // Act
-        var count = outerComposite.CountTodoistOperations();
+        var count = TodoistServiceHelper.CountTodoistOperations(outerComposite);
 
         // Assert
         // Should be: 1 (outer parent) + 3 (inner composite) + 1 (veggies) = 5
@@ -218,7 +218,7 @@ public class TodoistServiceTests
         var staticChicken = new StaticFoodServing(chicken);
 
         // Act
-        var count = staticChicken.CountTodoistOperations();
+        var count = TodoistServiceHelper.CountTodoistOperations(staticChicken);
 
         // Assert
         // Should delegate to the original serving, which returns 1
@@ -238,7 +238,7 @@ public class TodoistServiceTests
         var staticComposite = new StaticFoodServing(composite);
 
         // Act
-        var count = staticComposite.CountTodoistOperations();
+        var count = TodoistServiceHelper.CountTodoistOperations(staticComposite);
 
         // Assert
         // Should delegate to the composite: 1 (parent) + 2 (components) = 3

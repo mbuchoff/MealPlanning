@@ -60,12 +60,4 @@ public record StaticFoodServing : FoodServing
     {
         return await OriginalServing.CreateTodoistSubtasksAsync(parentTaskId, addTaskFunc);
     }
-
-    /// <summary>
-    /// Override CountTodoistOperations to delegate to the original serving
-    /// </summary>
-    public override int CountTodoistOperations()
-    {
-        return OriginalServing.CountTodoistOperations();
-    }
 }
