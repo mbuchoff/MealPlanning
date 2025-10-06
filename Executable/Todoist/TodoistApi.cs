@@ -36,7 +36,7 @@ internal static class TodoistApi
     }
 
     public static async Task<TodoistTask> AddTaskAsync(
-        string content, string? description, string? dueString, string? parentId, string? projectId, bool isCollapsed = false)
+        string content, string? description, string? dueString, string? parentId, string? projectId, bool isCollapsed = false, int? order = null)
     {
         using var httpClient = await CreateHttpClientAsync();
         var result = await httpClient.PostAsJsonAsync("https://api.todoist.com/rest/v2/tasks", new
@@ -47,6 +47,7 @@ internal static class TodoistApi
             Project_id = projectId,
             Due_string = dueString,
             Is_collapsed = isCollapsed,
+            Order = order,
         });
         result.EnsureSuccessStatusCode();
         var todoistTask = await result.Content.ReadFromJsonAsync<TodoistTask>();
