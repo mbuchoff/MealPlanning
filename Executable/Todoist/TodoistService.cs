@@ -93,7 +93,8 @@ internal class TodoistService
         string content,
         string? dueString,
         IEnumerable<FoodServing> servings,
-        ProgressTracker progress)
+        ProgressTracker progress,
+        int? order = null)
     {
         var project = await projectTask;
 
@@ -103,7 +104,8 @@ internal class TodoistService
             dueString: dueString,
             parentId: null,
             project.Id,
-            isCollapsed: true);
+            isCollapsed: true,
+            order: order);
         progress.IncrementProgress();
 
         await UpdateTaskCollapsedAsync(parentTodoistTask.Id, collapsed: true);
@@ -112,12 +114,12 @@ internal class TodoistService
         await Task.WhenAll(servings.Select(s => AddServingAsync(parentTodoistTask, s, progress)).ToList());
     }
 
-    private static async Task AddMealPrepPlan(Task<Project> projectTask, MealPrepPlan m, ProgressTracker progress)
+    private static async Task AddMealPrepPlan(Task<Project> projectTask, MealPrepPlan m, int order, ProgressTracker progress)
     {
         var project = await projectTask;
 
         var parentTodoistTask = await AddTaskAsync(
-            m.Name, description: null, dueString: "every tue", parentId: null, project.Id, isCollapsed: true);
+            m.Name, description: null, dueString: "every tue", parentId: null, project.Id, isCollapsed: true, order: order);
         progress.IncrementProgress();
 
         await UpdateTaskCollapsedAsync(parentTodoistTask.Id, collapsed: true);
@@ -150,12 +152,11 @@ internal class TodoistService
         decimal scaleFactor = (decimal)mealCount / totalMealCount;
         var scaledServings = baseServings.Select(s => s * scaleFactor).ToList();
 
-        // Generate and add nutritional comment
+        // Generate and add nutritional comment in parallel with servings
         var comment = TodoistServiceHelper.GenerateNutritionalComment(scaledServings);
-        await AddCommentAsync(quantityTask.Id, comment);
-        progress.IncrementProgress();
-
-        await Task.WhenAll(scaledServings.Select(s => AddServingAsync(quantityTask, s, progress)));
+        await Task.WhenAll(
+            scaledServings.Select(s => AddServingAsync(quantityTask, s, progress))
+                .Append(AddCommentAsync(quantityTask.Id, comment).ContinueWith(_ => progress.IncrementProgress())));
     }
 
     private static async Task AddPhaseAsync(
@@ -163,17 +164,18 @@ internal class TodoistService
     {
         List<Task> systemTasks =
         [
-            .. phase.MealPrepPlan.MealPrepPlans.Select(m =>
-                AddMealPrepPlan(cookingProjectTask, m, progress)),
+            .. phase.MealPrepPlan.MealPrepPlans.Select((m, index) =>
+                AddMealPrepPlan(cookingProjectTask, m, order: index + 1, progress)),
                     AddServingsAsync(
                             cookingProjectTask,
                             content: "Totals",
                             dueString: "every tues",
                             phase.MealPrepPlan.Total,
-                            progress),
+                            progress,
+                            order: phase.MealPrepPlan.MealPrepPlans.Count() + 1),
         ];
 
-        foreach (var x in new[]
+        var eatingMealsToAdd = new[]
         {
             phase.TrainingWeek.XFitDay,
             phase.TrainingWeek.RunningDay,
@@ -184,32 +186,35 @@ internal class TodoistService
             Idx = mealIdx,
             trainingDay.TrainingDayType,
             Meal = meal,
-        })).Where(x => x.Meal.FoodGrouping.PreparationMethod == FoodGrouping.PreparationMethodEnum.PrepareAsNeeded))
+        })).Where(x => x.Meal.FoodGrouping.PreparationMethod == FoodGrouping.PreparationMethodEnum.PrepareAsNeeded)
+        .Select((x, globalIdx) => new { x.DueString, x.Idx, x.TrainingDayType, x.Meal, Order = globalIdx + 1 })
+        .ToList();
+
+        systemTasks.AddRange(eatingMealsToAdd.Select(async x =>
         {
             var content = $"{x.Idx + 1} - {x.TrainingDayType} - {x.Meal.Name}";
 
-            // Parent tasks need to be added in order so that they appear in order, so don't run them in parallel
             var eatingProject = await eatingProjectTask;
             var parentTodoistTask = await AddTaskAsync(
                 content, $"Synced on {DateTime.Now}",
-                x.DueString, parentId: null, eatingProject.Id, isCollapsed: true);
+                x.DueString, parentId: null, eatingProject.Id, isCollapsed: true, order: x.Order);
             progress.IncrementProgress();
 
             await UpdateTaskCollapsedAsync(parentTodoistTask.Id, collapsed: true);
             progress.IncrementProgress();
 
-            // Add child tasks in parallel
-            systemTasks.AddRange(x.Meal.Servings.Where(s => !s.IsConversion)
-                .Select(async s =>
-                {
-                    await AddTaskAsync(
-                        s.ToString(), description: null, dueString: null, parentTodoistTask.Id, projectId: null);
-                    progress.IncrementProgress();
-                }));
-
+            // Add child tasks and comment in parallel
             var comment = TodoistServiceHelper.GenerateNutritionalComment(x.Meal.Servings);
-            systemTasks.Add(AddCommentAsync(parentTodoistTask.Id, comment).ContinueWith(_ => progress.IncrementProgress()));
-        }
+            await Task.WhenAll(
+                x.Meal.Servings.Where(s => !s.IsConversion)
+                    .Select(async s =>
+                    {
+                        await AddTaskAsync(
+                            s.ToString(), description: null, dueString: null, parentTodoistTask.Id, projectId: null);
+                        progress.IncrementProgress();
+                    })
+                    .Append(AddCommentAsync(parentTodoistTask.Id, comment).ContinueWith(_ => progress.IncrementProgress())));
+        }));
 
         await Task.WhenAll(systemTasks);
     }
