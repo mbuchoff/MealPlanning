@@ -35,7 +35,7 @@ internal static class TodoistServiceHelper
 
     /// <summary>
     /// Creates Todoist subtasks for a serving.
-    /// Handles CompositeFoodServing by creating parent + component hierarchy.
+    /// Uses GetComponentsForDisplay to determine if serving has components.
     /// Returns the created task ID if a parent task was created, null otherwise.
     /// </summary>
     public static async Task<string?> CreateTodoistSubtasksAsync(
@@ -43,34 +43,29 @@ internal static class TodoistServiceHelper
         string parentTaskId,
         Func<string, string?, string?, string?, string?, Task<object>> addTaskFunc)
     {
-        // Check if it's a CompositeFoodServing
-        if (serving is CompositeFoodServing composite)
+        var components = serving.GetComponentsForDisplay().ToList();
+
+        // Base FoodServing returns itself - create single task
+        if (components.Count == 1 && ReferenceEquals(components[0], serving))
         {
-            // Create a parent task for the composite food
-            var compositeTask = await addTaskFunc(composite.Name, null, null, parentTaskId, null);
-
-            // Extract task ID from the returned object
-            var taskId = compositeTask.GetType().GetProperty("Id")?.GetValue(compositeTask)?.ToString();
-            if (taskId == null)
-                throw new InvalidOperationException("Could not get task ID from created task");
-
-            // Add each component as a subtask of the composite
-            foreach (var component in composite.GetComponentsForDisplay())
-            {
-                await CreateTodoistSubtasksAsync(component, taskId, addTaskFunc);
-            }
-
-            return taskId;
+            await addTaskFunc(serving.ToString(), null, null, parentTaskId, null);
+            return null;
         }
 
-        // Check if it's a StaticFoodServing - delegate to original
-        if (serving is StaticFoodServing staticServing)
+        // CompositeFoodServing returns components - create parent + component hierarchy
+        var compositeTask = await addTaskFunc(serving.Name, null, null, parentTaskId, null);
+
+        // Extract task ID from the returned object
+        var taskId = compositeTask.GetType().GetProperty("Id")?.GetValue(compositeTask)?.ToString();
+        if (taskId == null)
+            throw new InvalidOperationException("Could not get task ID from created task");
+
+        // Add each component as a subtask of the composite
+        foreach (var component in components)
         {
-            return await CreateTodoistSubtasksAsync(staticServing.OriginalServing, parentTaskId, addTaskFunc);
+            await CreateTodoistSubtasksAsync(component, taskId, addTaskFunc);
         }
 
-        // Base FoodServing creates a single subtask
-        await addTaskFunc(serving.ToString(), null, null, parentTaskId, null);
-        return null;
+        return taskId;
     }
 }
