@@ -52,6 +52,13 @@ internal static class TodoistServiceHelper
             return null;
         }
 
+        // Single component different from parent - skip parent, process component directly
+        if (components.Count == 1)
+        {
+            await CreateTodoistSubtasksAsync(components[0], parentTaskId, addTaskFunc);
+            return null;
+        }
+
         // CompositeFoodServing returns components - create parent + component hierarchy
         var compositeTask = await addTaskFunc(serving.Name, null, null, parentTaskId, null);
 
