@@ -50,7 +50,7 @@ internal static class Foods
         new BaseNutrition(Cals: 190, P: 8, F: 1, CTotal: 38, CFiber: 7));
 
     private static Food EzekielEnglishMuffinFood { get; } = new("Ezekiel english muffin",
-        [(1, ServingUnits.None)],
+        [(0.5M, ServingUnits.None)],
         new BaseNutrition(Cals: 90, P: 6, F: 0.5M, CTotal: 17, CFiber: 3));
 
     private static Food NutritionalYeastFood { get; } = new("nutritional yeast from Sprouts",
