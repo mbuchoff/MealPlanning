@@ -44,9 +44,12 @@ internal static class TodoistServiceHelper
         }
 
         // Create comment with header(s), then individual servings
+        // Filter out zero-calorie foods (like water, creatine) from individual breakdown
         var comment = string.Join("\n\n",
             headerSections.Concat(
-            nonConversionServings.Select(s => $"{s.Name}\n{s.NutritionalInformation.ToNutrientsString()}")));
+            nonConversionServings
+                .Where(s => s.NutritionalInformation.Cals >= 1)
+                .Select(s => $"{s.Name}\n{s.NutritionalInformation.ToNutrientsString()}")));
 
         return comment;
     }

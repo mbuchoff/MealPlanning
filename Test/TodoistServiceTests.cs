@@ -331,4 +331,37 @@ public class TodoistServiceTests
         // Should delegate to the composite: 1 (parent) + 2 (components) = 3
         Assert.Equal(3, count);
     }
+
+    [Fact]
+    public void GenerateNutritionalComment_Should_Exclude_Zero_Nutrient_Foods_From_Individual_Breakdown()
+    {
+        // Arrange
+        var chicken = new FoodServing("Chicken",
+            new(ServingUnits: 100, ServingUnits.Gram, Cals: 165, P: 31, F: 3.6M, CTotal: 0, CFiber: 0));
+        var creatine = new FoodServing("Creatine",
+            new(ServingUnits: 5, ServingUnits.Gram, Cals: 0, P: 0, F: 0, CTotal: 0, CFiber: 0));
+        var water = new FoodServing("Water",
+            new(ServingUnits: 1, ServingUnits.Cup, Cals: 0, P: 0, F: 0, CTotal: 0, CFiber: 0));
+
+        var servings = new List<FoodServing> { chicken, creatine, water };
+
+        // Act
+        var comment = TodoistServiceHelper.GenerateNutritionalComment(servings);
+
+        // Assert
+        // Total should include chicken's macros only (zero-nutrient foods don't affect totals)
+        Assert.Contains("165 cals", comment);
+        Assert.Contains("31 P", comment);
+
+        // Chicken should be in the individual breakdown
+        Assert.Contains("Chicken", comment);
+
+        // Zero-nutrient foods should NOT be in the individual breakdown
+        Assert.DoesNotContain("Creatine", comment);
+        Assert.DoesNotContain("Water", comment);
+
+        // Should have 2 sections: total + 1 individual serving (chicken only)
+        var sections = comment.Split("\n\n");
+        Assert.Equal(2, sections.Length);
+    }
 }
