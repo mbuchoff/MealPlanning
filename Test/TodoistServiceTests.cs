@@ -84,7 +84,7 @@ public class TodoistServiceTests
     }
 
     [Fact]
-    public void GenerateNutritionalComment_Should_Exclude_Conversion_Servings()
+    public void GenerateNutritionalComment_Should_Exclude_Conversion_Servings_From_Individual_Breakdown()
     {
         // Arrange
         var realServing = new FoodServing("Chicken",
@@ -105,11 +105,45 @@ public class TodoistServiceTests
         Assert.Contains("Chicken", comment);
 
         // Should NOT include the conversion serving by name in individual breakdown
-        // (though its nutrition contributes to total)
         var sections = comment.Split("\n\n");
 
         // Should only have total + 1 individual serving (not 2)
         Assert.Equal(2, sections.Length); // Total + 1 serving
+    }
+
+    [Fact]
+    public void GenerateNutritionalComment_Should_Exclude_Conversion_Servings_From_Macro_Totals()
+    {
+        // Arrange
+        var realServing = new FoodServing("Chicken",
+            new(ServingUnits: 100, ServingUnits.Gram, Cals: 165, P: 31, F: 3.6M, CTotal: 0, CFiber: 0),
+            IsConversion: false);
+
+        // Conversion food that shifts macros: P: -5, C: +5 (Protein to Carb conversion)
+        var conversionServing = new FoodServing("Protein to Carb Conversion",
+            new(ServingUnits: 5, ServingUnits.Gram, Cals: 0, P: -5, F: 0, CTotal: 5, CFiber: 0),
+            IsConversion: true);
+
+        var servings = new List<FoodServing> { realServing, conversionServing };
+
+        // Act
+        var comment = TodoistServiceHelper.GenerateNutritionalComment(servings);
+
+        // Assert
+        // Total macros should ONLY include the real serving, NOT the conversion
+        // Real serving: 165 cals, 31 P, 3.6 F, 0 C
+        // Conversion should NOT be added: -5 P, +5 C
+        // Expected total: "165 cals, 31 P (...%), 4 F (...%), 0 C (...%), 0g fiber"
+
+        // Get the first line (total) from the comment
+        var totalLine = comment.Split("\n\n")[0];
+
+        Assert.Contains("165 cals", totalLine);
+        Assert.Contains("31 P", totalLine); // Should be 31, not 26 (31-5)
+        Assert.Contains("4 F", totalLine);
+
+        // When C is 0, Macros.ToString() shows "0 C (0.0%)"
+        Assert.Contains("0 C", totalLine); // Should be 0, not 5
     }
 
     [Fact]
