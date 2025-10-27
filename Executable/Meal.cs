@@ -29,6 +29,9 @@ public class Meal
     }
 
     private readonly FoodGrouping[] _foodGroupings;
+
+    public FoodGrouping[] FoodGroupings => _foodGroupings;
+
     public override string ToString()
     {
         var sb = new StringBuilder();
@@ -135,40 +138,71 @@ public class Meal
         .Select(s => s.NutritionalInformation)
         .Sum(1, ServingUnits.Meal);
 
-    public Meal CloneWithTweakedMacros(decimal pPercent, decimal fPercent, decimal cPercent) =>
-        new(Name, Macros.CloneWithTweakedMacros(pPercent, fPercent, cPercent), FoodGrouping);
+    public Meal CloneWithTweakedMacros(decimal pPercent, decimal fPercent, decimal cPercent)
+    {
+        var tweakedMacros = Macros.CloneWithTweakedMacros(pPercent, fPercent, cPercent);
+        // Preserve ALL fallback options, not just the one that was used
+        return WithFallbacks(Name, tweakedMacros, FoodGroupings);
+    }
 }
 
 internal static class MealExtensions
 {
     public static IEnumerable<(Meal Meal, int MealCount)> SumWithSameFoodGrouping(this IEnumerable<Meal> meals, int daysPerWeek)
     {
-        var mealGroups = meals.GroupBy(m => m.FoodGrouping);
+        // Group by the complete set of fallback FoodGroupings, not just the one that was used
+        var mealGroups = meals.GroupBy(m => m.FoodGroupings, new FoodGroupingArrayComparer());
         var summedMeals = mealGroups.Select(mealGroup =>
         {
             var mealCount = mealGroup.Count() * daysPerWeek;
             var totalMacros = mealGroup.Sum(m => m.Macros);
 
-            // Create a new FoodGrouping with scaled static servings
-            var scaledStaticServings = mealGroup.Key.StaticServings
-                .Select(s => s * mealCount)
-                .ToList();
+            // Scale ALL fallback FoodGroupings, not just the one that was used
+            var scaledFoodGroupings = mealGroup.Key.Select(fg =>
+            {
+                var scaledStaticServings = fg.StaticServings
+                    .Select(s => s * mealCount)
+                    .ToList();
 
-            var scaledFoodGrouping = new FoodGrouping(
-                mealGroup.Key.Name,
-                scaledStaticServings,
-                mealGroup.Key.PFood,
-                mealGroup.Key.FFood,
-                mealGroup.Key.CFood,
-                mealGroup.Key.PreparationMethod);
+                return new FoodGrouping(
+                    fg.Name,
+                    scaledStaticServings,
+                    fg.PFood,
+                    fg.FFood,
+                    fg.CFood,
+                    fg.PreparationMethod);
+            }).ToArray();
 
-            var meal = new Meal(
-                mealGroup.Key.Name,
-                totalMacros,
-                scaledFoodGrouping);
+            // Create meal with ALL scaled fallback options preserved
+            var meal = Meal.WithFallbacks(scaledFoodGroupings[0].Name, totalMacros, scaledFoodGroupings);
 
             return (meal, mealCount);
         });
         return summedMeals;
+    }
+
+    private class FoodGroupingArrayComparer : IEqualityComparer<FoodGrouping[]>
+    {
+        public bool Equals(FoodGrouping[]? x, FoodGrouping[]? y)
+        {
+            if (ReferenceEquals(x, y)) return true;
+            if (x == null || y == null) return false;
+            if (x.Length != y.Length) return false;
+
+            // Compare each FoodGrouping in the arrays
+            for (int i = 0; i < x.Length; i++)
+            {
+                // Use reference equality since FoodGroupings should be the same instances
+                if (!ReferenceEquals(x[i], y[i])) return false;
+            }
+            return true;
+        }
+
+        public int GetHashCode(FoodGrouping[] obj)
+        {
+            if (obj == null) return 0;
+            // Use hash code of first element for simplicity
+            return obj.Length > 0 ? obj[0].GetHashCode() : 0;
+        }
     }
 }

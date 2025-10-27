@@ -31,8 +31,8 @@ internal record MuscleGain2 : TrainingWeekBase
                 new Macros(P: MUSCLE_GAIN_PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 20, C: 80),
                 Oatmeal + Foods.Creatine_1_Scoop),
             new("1/2 shake during workout, 1/2 right after", new(P: MUSCLE_GAIN_PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 0, C:35), FoodGroupings.WorkoutShake),
-            new("40 minutes after workout", new(P: MUSCLE_GAIN_PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 10, C: 120), WheatBerriesAndRice),
-            new("2-4 hours after last meal", new(P: MUSCLE_GAIN_PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 20, C: 100), WheatBerriesAndRice),
+            Meal.WithFallbacks("40 minutes after workout", new(P: MUSCLE_GAIN_PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 10, C: 120), WheatBerriesAndRice),
+            Meal.WithFallbacks("2-4 hours after last meal", new(P: MUSCLE_GAIN_PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 20, C: 100), WheatBerriesAndRice),
             Meal.WithFallbacks("3-5 hours after last meal", new(P: MUSCLE_GAIN_PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 20, C: 50), FoodGroupings.Ezekial),
             new("Bedtime", new(P: MUSCLE_GAIN_PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 25, C: 35), FoodGroupings.EnglishMuffinsAndPasta(englishMuffins: 0)),
         ])
@@ -48,13 +48,14 @@ internal record MuscleGain2 : TrainingWeekBase
         Foods.Oats_1_Scoop,
         PreparationMethodEnum.PrepareAsNeeded);
 
-    private static readonly FoodGrouping WheatBerriesAndRice = new(
-        "wheat berries and rice",
-        [Foods.Ezekiel_English_Muffin * 0],
-        Foods.WheatBerries_45_Grams,
-        Foods.PumpkinSeeds_30_Grams,
-        Foods.BrownRice_45_Grams,
-        PreparationMethodEnum.PrepareInAdvance);
+    private static FoodGrouping[] WheatBerriesAndRice { get; } =
+        new[] { Foods.BrownRice_45_Grams, Foods.ProteinToCarbConversion }.Select(cFood => new FoodGrouping(
+            "wheat berries",
+            [Foods.Ezekiel_English_Muffin * 1],
+            Foods.WheatBerries_45_Grams,
+            Foods.PumpkinSeeds_30_Grams,
+            cFood,
+            PreparationMethodEnum.PrepareInAdvance)).ToArray();
 
     private static readonly FoodGrouping[] WakingBlueberryOatmealShakeFoodGroupings =
         [.. new[] { Foods.AlmondButter_1_Tbsp, Foods.FatToCarbConversion }.Select(fFood =>
