@@ -6,17 +6,27 @@ internal static class TodoistServiceHelper
 {
     public static string GenerateNutritionalComment(IEnumerable<FoodServing> servings)
     {
-        // Filter out conversion servings from totals and individual breakdown
-        var nonConversionServings = servings.Where(s => !s.IsConversion).ToList();
+        var servingsList = servings.ToList();
 
-        // Calculate total nutritional information from non-conversion servings only
-        var totalNutritionalInfo = nonConversionServings
+        // Filter out conversion servings from individual breakdown
+        var nonConversionServings = servingsList.Where(s => !s.IsConversion).ToList();
+
+        // Calculate ACTUAL total (non-conversion servings only)
+        var actualTotal = nonConversionServings
             .Select(s => s.NutritionalInformation)
             .Sum(1, ServingUnits.Meal);
 
-        // Create comment with total first, then individual servings
+        // Calculate INTENDED total (all servings including conversions)
+        var intendedTotal = servingsList
+            .Select(s => s.NutritionalInformation)
+            .Sum(1, ServingUnits.Meal);
+
+        // Create comment with ACTUAL, INTENDED, then individual servings
         var comment = string.Join("\n\n",
-            new[] { totalNutritionalInfo.ToNutrientsString() }.Concat(
+            new[] {
+                $"ACTUAL:\n{actualTotal.ToNutrientsString()}",
+                $"INTENDED:\n{intendedTotal.ToNutrientsString()}"
+            }.Concat(
             nonConversionServings.Select(s => $"{s.Name}\n{s.NutritionalInformation.ToNutrientsString()}")));
 
         return comment;

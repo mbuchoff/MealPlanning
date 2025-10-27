@@ -107,8 +107,8 @@ public class TodoistServiceTests
         // Should NOT include the conversion serving by name in individual breakdown
         var sections = comment.Split("\n\n");
 
-        // Should only have total + 1 individual serving (not 2)
-        Assert.Equal(2, sections.Length); // Total + 1 serving
+        // Should have ACTUAL + INTENDED + 1 individual serving = 3 sections
+        Assert.Equal(3, sections.Length);
     }
 
     [Fact]
@@ -130,20 +130,21 @@ public class TodoistServiceTests
         var comment = TodoistServiceHelper.GenerateNutritionalComment(servings);
 
         // Assert
-        // Total macros should ONLY include the real serving, NOT the conversion
+        // ACTUAL macros should ONLY include the real serving, NOT the conversion
         // Real serving: 165 cals, 31 P, 3.6 F, 0 C
         // Conversion should NOT be added: -5 P, +5 C
-        // Expected total: "165 cals, 31 P (...%), 4 F (...%), 0 C (...%), 0g fiber"
+        // Expected ACTUAL: "ACTUAL:\n165 cals, 31 P (...%), 4 F (...%), 0 C (...%), 0g fiber"
 
-        // Get the first line (total) from the comment
-        var totalLine = comment.Split("\n\n")[0];
+        // Get the first section (ACTUAL) from the comment
+        var actualSection = comment.Split("\n\n")[0];
 
-        Assert.Contains("165 cals", totalLine);
-        Assert.Contains("31 P", totalLine); // Should be 31, not 26 (31-5)
-        Assert.Contains("4 F", totalLine);
+        Assert.Contains("ACTUAL:", actualSection);
+        Assert.Contains("165 cals", actualSection);
+        Assert.Contains("31 P", actualSection); // Should be 31, not 26 (31-5)
+        Assert.Contains("4 F", actualSection);
 
         // When C is 0, Macros.ToString() shows "0 C (0.0%)"
-        Assert.Contains("0 C", totalLine); // Should be 0, not 5
+        Assert.Contains("0 C", actualSection); // Should be 0, not 5
     }
 
     [Fact]
@@ -179,6 +180,50 @@ public class TodoistServiceTests
 
         // Seitan calories: 1850 * 0.4 = 740
         Assert.Contains("740 cals", comment);
+    }
+
+    [Fact]
+    public void GenerateNutritionalComment_Should_Include_Intended_Macros_With_Conversion_Foods()
+    {
+        // Arrange
+        var realServing = new FoodServing("Chicken",
+            new(ServingUnits: 100, ServingUnits.Gram, Cals: 165, P: 31, F: 3.6M, CTotal: 0, CFiber: 0),
+            IsConversion: false);
+
+        // Conversion food that shifts macros: P: -5, C: +5 (Protein to Carb conversion)
+        var conversionServing = new FoodServing("Protein to Carb Conversion",
+            new(ServingUnits: 5, ServingUnits.Gram, Cals: 0, P: -5, F: 0, CTotal: 5, CFiber: 0),
+            IsConversion: true);
+
+        var servings = new List<FoodServing> { realServing, conversionServing };
+
+        // Act
+        var comment = TodoistServiceHelper.GenerateNutritionalComment(servings);
+
+        // Assert
+        var sections = comment.Split("\n\n");
+
+        // Should have ACTUAL, INTENDED, and 1 individual serving (3 sections)
+        Assert.Equal(3, sections.Length);
+
+        // First section should be ACTUAL with chicken macros only (no conversion)
+        var actualSection = sections[0];
+        Assert.Contains("ACTUAL:", actualSection);
+        Assert.Contains("165 cals", actualSection); // Chicken only
+        Assert.Contains("31 P", actualSection); // Chicken P, not 26 (31-5)
+        Assert.Contains("0 C", actualSection); // Chicken C, not 5
+
+        // Second section should be INTENDED with chicken + conversion macros
+        var intendedSection = sections[1];
+        Assert.Contains("INTENDED:", intendedSection);
+        Assert.Contains("165 cals", intendedSection); // Cals unchanged (conversion has 0 cals)
+        Assert.Contains("26 P", intendedSection); // Chicken P (31) + conversion P (-5) = 26
+        Assert.Contains("5 C", intendedSection); // Chicken C (0) + conversion C (5) = 5
+
+        // Third section should be the individual serving (chicken only, no conversion)
+        var individualSection = sections[2];
+        Assert.Contains("Chicken", individualSection);
+        Assert.DoesNotContain("Conversion", individualSection);
     }
 
     [Fact]
