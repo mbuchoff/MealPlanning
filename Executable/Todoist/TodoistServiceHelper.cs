@@ -6,11 +6,11 @@ internal static class TodoistServiceHelper
 {
     public static string GenerateNutritionalComment(IEnumerable<FoodServing> servings)
     {
-        // Filter out conversion servings for individual breakdown
+        // Filter out conversion servings from totals and individual breakdown
         var nonConversionServings = servings.Where(s => !s.IsConversion).ToList();
 
-        // Calculate total nutritional information from all servings (including conversions)
-        var totalNutritionalInfo = servings
+        // Calculate total nutritional information from non-conversion servings only
+        var totalNutritionalInfo = nonConversionServings
             .Select(s => s.NutritionalInformation)
             .Sum(1, ServingUnits.Meal);
 
