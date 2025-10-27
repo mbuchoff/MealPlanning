@@ -16,17 +16,36 @@ internal static class TodoistServiceHelper
             .Select(s => s.NutritionalInformation)
             .Sum(1, ServingUnits.Meal);
 
-        // Calculate INTENDED total (all servings including conversions)
-        var intendedTotal = servingsList
-            .Select(s => s.NutritionalInformation)
-            .Sum(1, ServingUnits.Meal);
+        // Check if there are any conversion foods
+        var hasConversionFoods = servingsList.Any(s => s.IsConversion);
 
-        // Create comment with ACTUAL, INTENDED, then individual servings
-        var comment = string.Join("\n\n",
-            new[] {
+        // Build header sections based on whether conversion foods exist
+        List<string> headerSections;
+        if (hasConversionFoods)
+        {
+            // Calculate INTENDED total (all servings including conversions)
+            var intendedTotal = servingsList
+                .Select(s => s.NutritionalInformation)
+                .Sum(1, ServingUnits.Meal);
+
+            headerSections = new List<string>
+            {
                 $"ACTUAL:\n{actualTotal.ToNutrientsString()}",
                 $"INTENDED:\n{intendedTotal.ToNutrientsString()}"
-            }.Concat(
+            };
+        }
+        else
+        {
+            // No conversion foods - show unlabeled total
+            headerSections = new List<string>
+            {
+                actualTotal.ToNutrientsString()
+            };
+        }
+
+        // Create comment with header(s), then individual servings
+        var comment = string.Join("\n\n",
+            headerSections.Concat(
             nonConversionServings.Select(s => $"{s.Name}\n{s.NutritionalInformation.ToNutrientsString()}")));
 
         return comment;

@@ -183,6 +183,30 @@ public class TodoistServiceTests
     }
 
     [Fact]
+    public void GenerateNutritionalComment_Should_Not_Show_Labels_When_No_Conversion_Foods()
+    {
+        // Arrange
+        var chicken = new FoodServing("Chicken",
+            new(ServingUnits: 100, ServingUnits.Gram, Cals: 165, P: 31, F: 3.6M, CTotal: 0, CFiber: 0));
+        var rice = new FoodServing("Brown Rice",
+            new(ServingUnits: 100, ServingUnits.Gram, Cals: 111, P: 2.6M, F: 0.9M, CTotal: 23, CFiber: 1.8M));
+
+        var servings = new List<FoodServing> { chicken * 2, rice * 1.5M };
+
+        // Act
+        var comment = TodoistServiceHelper.GenerateNutritionalComment(servings);
+
+        // Assert
+        // Should NOT contain ACTUAL or INTENDED labels when no conversion foods
+        Assert.DoesNotContain("ACTUAL:", comment);
+        Assert.DoesNotContain("INTENDED:", comment);
+
+        // Should still have total + 2 individual servings
+        var sections = comment.Split("\n\n");
+        Assert.Equal(3, sections.Length); // Total + 2 servings
+    }
+
+    [Fact]
     public void GenerateNutritionalComment_Should_Include_Intended_Macros_With_Conversion_Foods()
     {
         // Arrange
