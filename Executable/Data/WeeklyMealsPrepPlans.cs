@@ -25,6 +25,7 @@ internal class WeeklyMealsPrepPlans
         }).SelectMany(x => x.MealsWithCounts.Select(mc => new MealPrepPlan(
             $"{x.TrainingDayType} - {mc.Meal.Name}",
             mc.Meal.Servings
+                .Where(s => !s.IsConversion)
                 .Where(s => !_foodsExcludedFromMealPrepPlan.Any(excluded => excluded.Name == s.Name)),
             mc.MealCount))));
 

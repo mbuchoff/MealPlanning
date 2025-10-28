@@ -328,4 +328,53 @@ public class WeeklyMealsPrepPlanTests
         // - F: 90/6 = 15g ✓ (average of 10 and 20)
         // - C: 660/6 = 110g ✓ (average of 120 and 100)
     }
+
+    [Fact]
+    public void CreateMealPrepPlan_Should_Exclude_Conversion_Foods()
+    {
+        // Conversion foods are mathematical adjustments used to hit target macros
+        // They should NOT appear in meal prep plans since they're not actual foods to buy/cook
+
+        // Arrange - Create a meal with a conversion food (similar to WheatBerriesAndRice)
+        var pFood = new FoodServing("Brown Rice",
+            new(ServingUnits: 45, ServingUnits.Gram, Cals: 170, P: 4, F: 1.5M, CTotal: 35, CFiber: 2));
+        var fFood = new FoodServing("Pumpkin Seeds",
+            new(ServingUnits: 30, ServingUnits.Gram, Cals: 170, P: 9, F: 15, CTotal: 3, CFiber: 2));
+        var conversionFood = new FoodServing("Protein To Carb Conversion",
+            new(ServingUnits: 1, ServingUnits.Gram, Cals: 0, P: -1, F: 0, CTotal: 1, CFiber: 0),
+            IsConversion: true);
+
+        var foodGrouping = new FoodGrouping(
+            "test meal",
+            [],
+            pFood,
+            fFood,
+            conversionFood, // Conversion food as cFood
+            FoodGrouping.PreparationMethodEnum.PrepareInAdvance);
+
+        var meal = new Meal("Test Meal", new Macros(P: 28, F: 10, C: 120), foodGrouping);
+
+        // Create a minimal training week with just this meal
+        var trainingWeek = new TrainingWeek(
+            "Test Week",
+            nonworkoutMeals: [],
+            runningMeals: [],
+            xfitMeals: [meal]);
+
+        // Act - Create meal prep plan
+        var mealPrepPlan = WeeklyMealsPrepPlans.CreateMealPrepPlan(trainingWeek);
+
+        // Assert - Conversion foods should be excluded from all meal prep plans
+        var allServings = mealPrepPlan.MealPrepPlans
+            .SelectMany(plan => plan.Servings)
+            .ToList();
+
+        // Should NOT contain any conversion foods
+        Assert.DoesNotContain(allServings, s => s.IsConversion);
+        Assert.DoesNotContain(allServings, s => s.Name.Contains("conversion", StringComparison.OrdinalIgnoreCase));
+
+        // Should still contain the real foods
+        Assert.Contains(allServings, s => s.Name == "Brown Rice");
+        Assert.Contains(allServings, s => s.Name == "Pumpkin Seeds");
+    }
 }
