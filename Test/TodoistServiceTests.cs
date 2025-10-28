@@ -107,8 +107,8 @@ public class TodoistServiceTests
         // Should NOT include the conversion serving by name in individual breakdown
         var sections = comment.Split("\n\n");
 
-        // Should only have total + 1 individual serving (not 2)
-        Assert.Equal(2, sections.Length); // Total + 1 serving
+        // Should have ACTUAL + INTENDED + 1 individual serving = 3 sections
+        Assert.Equal(3, sections.Length);
     }
 
     [Fact]
@@ -130,20 +130,21 @@ public class TodoistServiceTests
         var comment = TodoistServiceHelper.GenerateNutritionalComment(servings);
 
         // Assert
-        // Total macros should ONLY include the real serving, NOT the conversion
+        // ACTUAL macros should ONLY include the real serving, NOT the conversion
         // Real serving: 165 cals, 31 P, 3.6 F, 0 C
         // Conversion should NOT be added: -5 P, +5 C
-        // Expected total: "165 cals, 31 P (...%), 4 F (...%), 0 C (...%), 0g fiber"
+        // Expected ACTUAL: "ACTUAL:\n165 cals, 31 P (...%), 4 F (...%), 0 C (...%), 0g fiber"
 
-        // Get the first line (total) from the comment
-        var totalLine = comment.Split("\n\n")[0];
+        // Get the first section (ACTUAL) from the comment
+        var actualSection = comment.Split("\n\n")[0];
 
-        Assert.Contains("165 cals", totalLine);
-        Assert.Contains("31 P", totalLine); // Should be 31, not 26 (31-5)
-        Assert.Contains("4 F", totalLine);
+        Assert.Contains("ACTUAL:", actualSection);
+        Assert.Contains("165 cals", actualSection);
+        Assert.Contains("31 P", actualSection); // Should be 31, not 26 (31-5)
+        Assert.Contains("4 F", actualSection);
 
         // When C is 0, Macros.ToString() shows "0 C (0.0%)"
-        Assert.Contains("0 C", totalLine); // Should be 0, not 5
+        Assert.Contains("0 C", actualSection); // Should be 0, not 5
     }
 
     [Fact]
@@ -179,6 +180,74 @@ public class TodoistServiceTests
 
         // Seitan calories: 1850 * 0.4 = 740
         Assert.Contains("740 cals", comment);
+    }
+
+    [Fact]
+    public void GenerateNutritionalComment_Should_Not_Show_Labels_When_No_Conversion_Foods()
+    {
+        // Arrange
+        var chicken = new FoodServing("Chicken",
+            new(ServingUnits: 100, ServingUnits.Gram, Cals: 165, P: 31, F: 3.6M, CTotal: 0, CFiber: 0));
+        var rice = new FoodServing("Brown Rice",
+            new(ServingUnits: 100, ServingUnits.Gram, Cals: 111, P: 2.6M, F: 0.9M, CTotal: 23, CFiber: 1.8M));
+
+        var servings = new List<FoodServing> { chicken * 2, rice * 1.5M };
+
+        // Act
+        var comment = TodoistServiceHelper.GenerateNutritionalComment(servings);
+
+        // Assert
+        // Should NOT contain ACTUAL or INTENDED labels when no conversion foods
+        Assert.DoesNotContain("ACTUAL:", comment);
+        Assert.DoesNotContain("INTENDED:", comment);
+
+        // Should still have total + 2 individual servings
+        var sections = comment.Split("\n\n");
+        Assert.Equal(3, sections.Length); // Total + 2 servings
+    }
+
+    [Fact]
+    public void GenerateNutritionalComment_Should_Include_Intended_Macros_With_Conversion_Foods()
+    {
+        // Arrange
+        var realServing = new FoodServing("Chicken",
+            new(ServingUnits: 100, ServingUnits.Gram, Cals: 165, P: 31, F: 3.6M, CTotal: 0, CFiber: 0),
+            IsConversion: false);
+
+        // Conversion food that shifts macros: P: -5, C: +5 (Protein to Carb conversion)
+        var conversionServing = new FoodServing("Protein to Carb Conversion",
+            new(ServingUnits: 5, ServingUnits.Gram, Cals: 0, P: -5, F: 0, CTotal: 5, CFiber: 0),
+            IsConversion: true);
+
+        var servings = new List<FoodServing> { realServing, conversionServing };
+
+        // Act
+        var comment = TodoistServiceHelper.GenerateNutritionalComment(servings);
+
+        // Assert
+        var sections = comment.Split("\n\n");
+
+        // Should have ACTUAL, INTENDED, and 1 individual serving (3 sections)
+        Assert.Equal(3, sections.Length);
+
+        // First section should be ACTUAL with chicken macros only (no conversion)
+        var actualSection = sections[0];
+        Assert.Contains("ACTUAL:", actualSection);
+        Assert.Contains("165 cals", actualSection); // Chicken only
+        Assert.Contains("31 P", actualSection); // Chicken P, not 26 (31-5)
+        Assert.Contains("0 C", actualSection); // Chicken C, not 5
+
+        // Second section should be INTENDED with chicken + conversion macros
+        var intendedSection = sections[1];
+        Assert.Contains("INTENDED:", intendedSection);
+        Assert.Contains("165 cals", intendedSection); // Cals unchanged (conversion has 0 cals)
+        Assert.Contains("26 P", intendedSection); // Chicken P (31) + conversion P (-5) = 26
+        Assert.Contains("5 C", intendedSection); // Chicken C (0) + conversion C (5) = 5
+
+        // Third section should be the individual serving (chicken only, no conversion)
+        var individualSection = sections[2];
+        Assert.Contains("Chicken", individualSection);
+        Assert.DoesNotContain("Conversion", individualSection);
     }
 
     [Fact]
@@ -261,5 +330,38 @@ public class TodoistServiceTests
         // Assert
         // Should delegate to the composite: 1 (parent) + 2 (components) = 3
         Assert.Equal(3, count);
+    }
+
+    [Fact]
+    public void GenerateNutritionalComment_Should_Exclude_Zero_Nutrient_Foods_From_Individual_Breakdown()
+    {
+        // Arrange
+        var chicken = new FoodServing("Chicken",
+            new(ServingUnits: 100, ServingUnits.Gram, Cals: 165, P: 31, F: 3.6M, CTotal: 0, CFiber: 0));
+        var creatine = new FoodServing("Creatine",
+            new(ServingUnits: 5, ServingUnits.Gram, Cals: 0, P: 0, F: 0, CTotal: 0, CFiber: 0));
+        var water = new FoodServing("Water",
+            new(ServingUnits: 1, ServingUnits.Cup, Cals: 0, P: 0, F: 0, CTotal: 0, CFiber: 0));
+
+        var servings = new List<FoodServing> { chicken, creatine, water };
+
+        // Act
+        var comment = TodoistServiceHelper.GenerateNutritionalComment(servings);
+
+        // Assert
+        // Total should include chicken's macros only (zero-nutrient foods don't affect totals)
+        Assert.Contains("165 cals", comment);
+        Assert.Contains("31 P", comment);
+
+        // Chicken should be in the individual breakdown
+        Assert.Contains("Chicken", comment);
+
+        // Zero-nutrient foods should NOT be in the individual breakdown
+        Assert.DoesNotContain("Creatine", comment);
+        Assert.DoesNotContain("Water", comment);
+
+        // Should have 2 sections: total + 1 individual serving (chicken only)
+        var sections = comment.Split("\n\n");
+        Assert.Equal(2, sections.Length);
     }
 }

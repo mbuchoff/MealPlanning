@@ -6,18 +6,50 @@ internal static class TodoistServiceHelper
 {
     public static string GenerateNutritionalComment(IEnumerable<FoodServing> servings)
     {
-        // Filter out conversion servings from totals and individual breakdown
-        var nonConversionServings = servings.Where(s => !s.IsConversion).ToList();
+        var servingsList = servings.ToList();
 
-        // Calculate total nutritional information from non-conversion servings only
-        var totalNutritionalInfo = nonConversionServings
+        // Filter out conversion servings from individual breakdown
+        var nonConversionServings = servingsList.Where(s => !s.IsConversion).ToList();
+
+        // Calculate ACTUAL total (non-conversion servings only)
+        var actualTotal = nonConversionServings
             .Select(s => s.NutritionalInformation)
             .Sum(1, ServingUnits.Meal);
 
-        // Create comment with total first, then individual servings
+        // Check if there are any conversion foods
+        var hasConversionFoods = servingsList.Any(s => s.IsConversion);
+
+        // Build header sections based on whether conversion foods exist
+        List<string> headerSections;
+        if (hasConversionFoods)
+        {
+            // Calculate INTENDED total (all servings including conversions)
+            var intendedTotal = servingsList
+                .Select(s => s.NutritionalInformation)
+                .Sum(1, ServingUnits.Meal);
+
+            headerSections = new List<string>
+            {
+                $"ACTUAL:\n{actualTotal.ToNutrientsString()}",
+                $"INTENDED:\n{intendedTotal.ToNutrientsString()}"
+            };
+        }
+        else
+        {
+            // No conversion foods - show unlabeled total
+            headerSections = new List<string>
+            {
+                actualTotal.ToNutrientsString()
+            };
+        }
+
+        // Create comment with header(s), then individual servings
+        // Filter out zero-calorie foods (like water, creatine) from individual breakdown
         var comment = string.Join("\n\n",
-            new[] { totalNutritionalInfo.ToNutrientsString() }.Concat(
-            nonConversionServings.Select(s => $"{s.Name}\n{s.NutritionalInformation.ToNutrientsString()}")));
+            headerSections.Concat(
+            nonConversionServings
+                .Where(s => s.NutritionalInformation.Cals >= 1)
+                .Select(s => $"{s.Name}\n{s.NutritionalInformation.ToNutrientsString()}")));
 
         return comment;
     }
