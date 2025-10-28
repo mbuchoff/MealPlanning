@@ -263,4 +263,118 @@ public class WeeklyMealsPrepPlanTests
         Assert.NotNull(finalMuffinServing);
         Assert.Equal(6, finalMuffinServing.NutritionalInformation.ServingUnits); // Should still be 6, not 18
     }
+
+    [Fact]
+    public void SumWithSameFoodGrouping_Should_Scale_Macros_By_DaysPerWeek()
+    {
+        // This test verifies that when summing meals across multiple days per week,
+        // the macros are correctly multiplied by daysPerWeek to represent the full week.
+        //
+        // Problem: totalMacros was being calculated as mealGroup.Sum(m => m.Macros) which only
+        // sums for ONE DAY, but mealCount = mealGroup.Count() × daysPerWeek represents the FULL WEEK.
+        //
+        // Expected behavior for INTENDED macros calculation in Todoist:
+        // When showing "1 meal" out of "6 total meals", each meal should have macros that equal
+        // the original intended macros (e.g., P:28g), not divided by daysPerWeek.
+
+        // Arrange - Create two meals per day with specific intended macros
+        var pFood = new FoodServing("Brown Rice",
+            new(ServingUnits: 45, ServingUnits.Gram, Cals: 170, P: 4, F: 1.5M, CTotal: 35, CFiber: 2));
+        var fFood = new FoodServing("Pumpkin Seeds",
+            new(ServingUnits: 30, ServingUnits.Gram, Cals: 170, P: 9, F: 15, CTotal: 3, CFiber: 2));
+        var cFood = new FoodServing("Protein To Carb Conversion",
+            new(ServingUnits: 1, ServingUnits.Gram, Cals: 0, P: -1, F: 0, CTotal: 1, CFiber: 0),
+            IsConversion: true);
+
+        var foodGrouping = new FoodGrouping(
+            "wheat berries",
+            [],
+            pFood,
+            fFood,
+            cFood,
+            FoodGrouping.PreparationMethodEnum.PrepareInAdvance);
+
+        // Create 2 meals per day with different intended macros (similar to Crossfit wheat berries meals)
+        // Meal 1: P:28, F:10, C:120 (40 minutes after workout)
+        // Meal 2: P:28, F:20, C:100 (2-4 hours after last meal)
+        var meal1 = new Meal("40 minutes after workout", new Macros(P: 28, F: 10, C: 120), foodGrouping);
+        var meal2 = new Meal("2-4 hours after last meal", new Macros(P: 28, F: 20, C: 100), foodGrouping);
+
+        var mealsPerDay = new[] { meal1, meal2 };
+        var daysPerWeek = 3; // Simulate 3 Crossfit days
+
+        // Act - Sum meals for the week
+        var result = mealsPerDay.SumWithSameFoodGrouping(daysPerWeek).ToList();
+
+        // Assert
+        Assert.Single(result);
+        var (summedMeal, mealCount) = result.First();
+
+        // Meal count should be: 2 meals/day × 3 days = 6 meals
+        Assert.Equal(6, mealCount);
+
+        // The summed meal's macros should represent the FULL WEEK (not just one day)
+        // Expected total for week:
+        // P: (28 + 28) × 3 days = 168g
+        // F: (10 + 20) × 3 days = 90g
+        // C: (120 + 100) × 3 days = 660g
+        Assert.Equal(168, summedMeal.Macros.P);
+        Assert.Equal(90, summedMeal.Macros.F);
+        Assert.Equal(660, summedMeal.Macros.C);
+
+        // This is critical for Todoist INTENDED macros calculation:
+        // When Todoist scales for "1 meal" using scaleFactor = 1/6:
+        // - P: 168/6 = 28g ✓ (matches original intended macros)
+        // - F: 90/6 = 15g ✓ (average of 10 and 20)
+        // - C: 660/6 = 110g ✓ (average of 120 and 100)
+    }
+
+    [Fact]
+    public void CreateMealPrepPlan_Should_Exclude_Conversion_Foods()
+    {
+        // Conversion foods are mathematical adjustments used to hit target macros
+        // They should NOT appear in meal prep plans since they're not actual foods to buy/cook
+
+        // Arrange - Create a meal with a conversion food (similar to WheatBerriesAndRice)
+        var pFood = new FoodServing("Brown Rice",
+            new(ServingUnits: 45, ServingUnits.Gram, Cals: 170, P: 4, F: 1.5M, CTotal: 35, CFiber: 2));
+        var fFood = new FoodServing("Pumpkin Seeds",
+            new(ServingUnits: 30, ServingUnits.Gram, Cals: 170, P: 9, F: 15, CTotal: 3, CFiber: 2));
+        var conversionFood = new FoodServing("Protein To Carb Conversion",
+            new(ServingUnits: 1, ServingUnits.Gram, Cals: 0, P: -1, F: 0, CTotal: 1, CFiber: 0),
+            IsConversion: true);
+
+        var foodGrouping = new FoodGrouping(
+            "test meal",
+            [],
+            pFood,
+            fFood,
+            conversionFood, // Conversion food as cFood
+            FoodGrouping.PreparationMethodEnum.PrepareInAdvance);
+
+        var meal = new Meal("Test Meal", new Macros(P: 28, F: 10, C: 120), foodGrouping);
+
+        // Create a minimal training week with just this meal
+        var trainingWeek = new TrainingWeek(
+            "Test Week",
+            nonworkoutMeals: [],
+            runningMeals: [],
+            xfitMeals: [meal]);
+
+        // Act - Create meal prep plan
+        var mealPrepPlan = WeeklyMealsPrepPlans.CreateMealPrepPlan(trainingWeek);
+
+        // Assert - Conversion foods should be excluded from all meal prep plans
+        var allServings = mealPrepPlan.MealPrepPlans
+            .SelectMany(plan => plan.Servings)
+            .ToList();
+
+        // Should NOT contain any conversion foods
+        Assert.DoesNotContain(allServings, s => s.IsConversion);
+        Assert.DoesNotContain(allServings, s => s.Name.Contains("conversion", StringComparison.OrdinalIgnoreCase));
+
+        // Should still contain the real foods
+        Assert.Contains(allServings, s => s.Name == "Brown Rice");
+        Assert.Contains(allServings, s => s.Name == "Pumpkin Seeds");
+    }
 }
