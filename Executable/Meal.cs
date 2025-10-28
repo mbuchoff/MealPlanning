@@ -155,7 +155,7 @@ internal static class MealExtensions
         var summedMeals = mealGroups.Select(mealGroup =>
         {
             var mealCount = mealGroup.Count() * daysPerWeek;
-            var totalMacros = mealGroup.Sum(m => m.Macros);
+            var totalMacros = mealGroup.Sum(m => m.Macros) * daysPerWeek;
 
             // Scale ALL fallback FoodGroupings, not just the one that was used
             var scaledFoodGroupings = mealGroup.Key.Select(fg =>
