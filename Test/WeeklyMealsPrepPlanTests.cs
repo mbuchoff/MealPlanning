@@ -192,4 +192,75 @@ public class WeeklyMealsPrepPlanTests
         Assert.Equal(4, mealCount); // 2 meals * 2 days = 4
         Assert.Equal("Test Grouping", meal.Name);
     }
+
+    [Fact]
+    public void CreateMealPrepPlan_Should_Not_Double_Scale_StaticServings()
+    {
+        // This test verifies the fix for the bug where static servings were being
+        // multiplied by DaysEatingPreparedMeals twice:
+        // 1. Once in SumWithSameFoodGrouping (via mealCount = mealGroup.Count() * daysPerWeek)
+        // 2. Once in WeeklyMealsPrepPlans.cs when creating MealPrepPlan
+        //
+        // Expected: Static servings should only appear once per meal instance
+        // Example: If there are 2 "wheat berries" meals per Crossfit day and 3 Crossfit days per week,
+        // and each meal has 1 english muffin as a static serving, then the weekly total should be 6 muffins,
+        // not 18 (which would be 6 * 3 from double multiplication).
+
+        // Arrange
+        var englishMuffin = new FoodServing("Ezekiel english muffin",
+            new(ServingUnits: 1, ServingUnits.None, Cals: 180, P: 12, F: 1, CTotal: 34, CFiber: 6));
+
+        var pFood = new FoodServing("Brown Rice",
+            new(ServingUnits: 45, ServingUnits.Gram, Cals: 170, P: 4, F: 1.5M, CTotal: 35, CFiber: 2));
+        var fFood = new FoodServing("Pumpkin Seeds",
+            new(ServingUnits: 30, ServingUnits.Gram, Cals: 170, P: 9, F: 15, CTotal: 3, CFiber: 2));
+        var cFood = new FoodServing("Protein To Carb Conversion",
+            new(ServingUnits: 1, ServingUnits.Gram, Cals: 0, P: -1, F: 0, CTotal: 1, CFiber: 0));
+
+        // Create a food grouping with a static serving (english muffin)
+        var foodGrouping = new FoodGrouping(
+            "wheat berries",
+            [englishMuffin], // Static serving - should appear once per meal instance
+            pFood,
+            fFood,
+            cFood,
+            FoodGrouping.PreparationMethodEnum.PrepareInAdvance);
+
+        // Create 2 meals per day with the same food grouping
+        var meal1 = new Meal("40 minutes after workout", new Macros(P: 28, F: 10, C: 120), foodGrouping);
+        var meal2 = new Meal("2-4 hours after last meal", new Macros(P: 28, F: 20, C: 100), foodGrouping);
+
+        // Simulate XfitDay with 3 days per week
+        var xfitMeals = new[] { meal1, meal2 };
+        var daysPerWeek = 3;
+
+        // Act - This simulates what happens in WeeklyMealsPrepPlans.CreateMealPrepPlan
+        var mealsWithCounts = xfitMeals.SumWithSameFoodGrouping(daysPerWeek).ToList();
+
+        // Assert
+        Assert.Single(mealsWithCounts); // Should be grouped into one summed meal
+        var (summedMeal, mealCount) = mealsWithCounts.First();
+
+        // Verify meal count is correct: 2 meals per day * 3 days = 6
+        Assert.Equal(6, mealCount);
+
+        // Verify the servings are already scaled for the full week
+        var muffinServing = summedMeal.Servings.FirstOrDefault(s => s.Name == "Ezekiel english muffin");
+        Assert.NotNull(muffinServing);
+
+        // The static serving should be scaled to 6 (1 muffin * 6 meal instances)
+        // NOT 18 (which would be 1 * 6 * 3 from double multiplication)
+        Assert.Equal(6, muffinServing.NutritionalInformation.ServingUnits);
+
+        // When creating the MealPrepPlan, servings should NOT be multiplied again
+        var mealPrepPlan = new MealPrepPlan(
+            "Crossfit day - wheat berries",
+            summedMeal.Servings, // Do NOT multiply by daysPerWeek again!
+            mealCount);
+
+        // Verify the final serving count in the meal prep plan
+        var finalMuffinServing = mealPrepPlan.Servings.FirstOrDefault(s => s.Name == "Ezekiel english muffin");
+        Assert.NotNull(finalMuffinServing);
+        Assert.Equal(6, finalMuffinServing.NutritionalInformation.ServingUnits); // Should still be 6, not 18
+    }
 }
