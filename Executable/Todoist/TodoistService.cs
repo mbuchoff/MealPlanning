@@ -1,4 +1,5 @@
 ﻿using static SystemOfEquations.Todoist.TodoistApi;
+using SystemOfEquations.Data;
 
 namespace SystemOfEquations.Todoist;
 
@@ -36,18 +37,24 @@ internal class TodoistService
         operations += eatingTasksToDelete;
         operations += cookingTasksToDelete;
 
-        // Meal prep plans
+        // Meal prep plans (cooking only)
         foreach (var mealPrepPlan in phase.MealPrepPlan.MealPrepPlans)
         {
-            operations++; // Main task
-            operations++; // Collapse
-            operations += mealPrepPlan.MealCount * 2; // Each quantity subtask + collapse
-            operations += mealPrepPlan.MealCount; // Comments for each quantity
+            var hasCookingServings = mealPrepPlan.CookingServings.Any();
 
-            // Servings for each quantity - use CountTodoistOperations to handle composites
-            foreach (var serving in mealPrepPlan.Servings)
+            // Cooking task operations
+            if (hasCookingServings)
             {
-                operations += mealPrepPlan.MealCount * TodoistServiceHelper.CountTodoistOperations(serving);
+                operations++; // Main task
+                operations++; // Collapse
+                operations += mealPrepPlan.MealCount * 2; // Each quantity subtask + collapse
+                operations += mealPrepPlan.MealCount; // Comments for each quantity
+
+                // Servings for each quantity - use CountTodoistOperations to handle composites
+                foreach (var serving in mealPrepPlan.CookingServings)
+                {
+                    operations += mealPrepPlan.MealCount * TodoistServiceHelper.CountTodoistOperations(serving);
+                }
             }
         }
 
@@ -56,7 +63,28 @@ internal class TodoistService
         operations++; // Collapse
         operations += phase.MealPrepPlan.Total.Sum(s => TodoistServiceHelper.CountTodoistOperations(s)); // All serving operations
 
-        // Eating meals
+        // Eating meals from PrepareInAdvance meals (AtEatingTime servings)
+        var eatingTasksFromPrepMeals = new[]
+        {
+            phase.TrainingWeek.XFitDay,
+            phase.TrainingWeek.RunningDay,
+            phase.TrainingWeek.NonworkoutDay,
+        }.SelectMany(trainingDay => trainingDay.Meals
+            .Where(meal => meal.FoodGrouping.PreparationMethod == FoodGrouping.PreparationMethodEnum.PrepareInAdvance &&
+                          meal.Servings.Any(s => s.AddWhen == FoodServing.AddWhenEnum.AtEatingTime)))
+            .ToList();
+
+        foreach (var meal in eatingTasksFromPrepMeals)
+        {
+            operations++; // Main task
+            operations++; // Collapse
+            operations++; // Meal name subtask
+            var eatingServings = meal.Servings.Where(s => s.AddWhen == FoodServing.AddWhenEnum.AtEatingTime && !s.IsConversion);
+            operations += eatingServings.Sum(s => TodoistServiceHelper.CountTodoistOperations(s)); // All serving operations
+            operations++; // Comment
+        }
+
+        // Eating meals (PrepareAsNeeded)
         var eatingMeals = new[]
         {
             phase.TrainingWeek.XFitDay,
@@ -117,19 +145,26 @@ internal class TodoistService
     private static async Task AddMealPrepPlan(Task<Project> projectTask, MealPrepPlan m, int order, ProgressTracker progress)
     {
         var project = await projectTask;
+        var hasCookingServings = m.CookingServings.Any();
+        var hasEatingServings = m.EatingServings.Any();
 
-        var parentTodoistTask = await AddTaskAsync(
-            m.Name, description: null, dueString: "every tue", parentId: null, project.Id, isCollapsed: true, order: order);
+        // Only create cooking task (eating servings handled separately in AddPhaseAsync)
+        if (!hasCookingServings)
+            return;
+
+        var cookingTaskName = hasEatingServings ? $"{m.Name} - Cooking" : m.Name;
+        var cookingParentTask = await AddTaskAsync(
+            cookingTaskName, description: null, dueString: "every tue", parentId: null, project.Id, isCollapsed: true, order: order);
         progress.IncrementProgress();
 
-        await UpdateTaskCollapsedAsync(parentTodoistTask.Id, collapsed: true);
+        await UpdateTaskCollapsedAsync(cookingParentTask.Id, collapsed: true);
         progress.IncrementProgress();
 
-        // Create subtasks for each meal quantity - add sequentially to maintain order
+        // Create subtasks for each meal quantity
         for (int mealCount = 1; mealCount <= m.MealCount; mealCount++)
         {
             var quantityLabel = mealCount == 1 ? "1 meal" : $"{mealCount} meals";
-            await AddMealQuantitySubtask(parentTodoistTask, quantityLabel, m.Servings, mealCount, m.MealCount, progress);
+            await AddMealQuantitySubtask(cookingParentTask, quantityLabel, m.CookingServings, mealCount, m.MealCount, progress);
         }
     }
 
@@ -175,6 +210,31 @@ internal class TodoistService
                             order: phase.MealPrepPlan.MealPrepPlans.Count() + 1),
         ];
 
+        // Extract eating servings from PrepareInAdvance meals (servings marked AtEatingTime)
+        var eatingTasksFromPrepMeals = new[]
+        {
+            phase.TrainingWeek.XFitDay,
+            phase.TrainingWeek.RunningDay,
+            phase.TrainingWeek.NonworkoutDay,
+        }.SelectMany(trainingDay => trainingDay.Meals.Select((meal, mealIdx) => new
+        {
+            DueString = GetDueString(trainingDay.TrainingDayType),
+            Idx = mealIdx,
+            trainingDay.TrainingDayType,
+            Meal = meal,
+        })).Where(x => x.Meal.FoodGrouping.PreparationMethod == FoodGrouping.PreparationMethodEnum.PrepareInAdvance &&
+                       x.Meal.Servings.Any(s => s.AddWhen == FoodServing.AddWhenEnum.AtEatingTime))
+        .Select((x, globalIdx) => new
+        {
+            x.DueString,
+            x.Idx,
+            x.TrainingDayType,
+            x.Meal,
+            Servings = x.Meal.Servings.Where(s => s.AddWhen == FoodServing.AddWhenEnum.AtEatingTime).ToList(),
+            Order = globalIdx + 1
+        })
+        .ToList();
+
         var eatingMealsToAdd = new[]
         {
             phase.TrainingWeek.XFitDay,
@@ -189,6 +249,42 @@ internal class TodoistService
         })).Where(x => x.Meal.FoodGrouping.PreparationMethod == FoodGrouping.PreparationMethodEnum.PrepareAsNeeded)
         .Select((x, globalIdx) => new { x.DueString, x.Idx, x.TrainingDayType, x.Meal, Order = globalIdx + 1 })
         .ToList();
+
+        // Add eating tasks from PrepareInAdvance meals (eating servings only)
+        systemTasks.AddRange(eatingTasksFromPrepMeals.Select(async x =>
+        {
+            var content = $"{x.Idx + 1} - {x.TrainingDayType} - {x.Meal.Name}";
+
+            var eatingProject = await eatingProjectTask;
+            var parentTodoistTask = await AddTaskAsync(
+                content, $"Synced on {DateTime.Now}",
+                x.DueString, parentId: null, eatingProject.Id, isCollapsed: true, order: x.Order);
+            progress.IncrementProgress();
+
+            await UpdateTaskCollapsedAsync(parentTodoistTask.Id, collapsed: true);
+            progress.IncrementProgress();
+
+            // Add food grouping name as first item, then eating servings, then comment
+            // Add food grouping name (e.g., "wheat berries") not meal timing (e.g., "40 minutes after workout")
+            await AddTaskAsync(
+                x.Meal.FoodGrouping.Name, description: null, dueString: null, parentTodoistTask.Id, projectId: null);
+            progress.IncrementProgress();
+
+            // Add eating servings
+            await Task.WhenAll(
+                x.Servings.Where(s => !s.IsConversion)
+                    .Select(async s =>
+                    {
+                        await AddTaskAsync(
+                            s.ToString(), description: null, dueString: null, parentTodoistTask.Id, projectId: null);
+                        progress.IncrementProgress();
+                    }));
+
+            // Add comment
+            var comment = TodoistServiceHelper.GenerateNutritionalComment(x.Servings);
+            await AddCommentAsync(parentTodoistTask.Id, comment);
+            progress.IncrementProgress();
+        }));
 
         systemTasks.AddRange(eatingMealsToAdd.Select(async x =>
         {

@@ -38,9 +38,9 @@ public class WeeklyMealsPrepPlanTests
         var mealPrepPlans = new List<MealPrepPlan>
         {
             new MealPrepPlan("XfitDay - Rice Bowl",
-                meal1.Servings.Select(s => s * 2), 2), // 2 Xfit days
+                meal1.Servings.Select(s => s * 2), [], 2), // 2 Xfit days
             new MealPrepPlan("RunningDay - Rice Bowl",
-                meal2.Servings.Select(s => s * 3), 3), // 3 Running days
+                meal2.Servings.Select(s => s * 3), [], 3), // 3 Running days
         };
 
         var weeklyPlan = new WeeklyMealsPrepPlan(mealPrepPlans);
@@ -73,17 +73,17 @@ public class WeeklyMealsPrepPlanTests
             {
                 food1 * 2,
                 food2 * 1.5M
-            }, 1),
+            }, [], 1),
             new MealPrepPlan("Plan 2", new List<FoodServing>
             {
                 food1 * 3,
                 food2 * 2.5M
-            }, 1),
+            }, [], 1),
             new MealPrepPlan("Plan 3", new List<FoodServing>
             {
                 food1 * 1.5M
                 // No food2 in this plan
-            }, 1)
+            }, [], 1)
         };
 
         var weeklyPlan = new WeeklyMealsPrepPlan(mealPrepPlans);
@@ -122,7 +122,7 @@ public class WeeklyMealsPrepPlanTests
 
         // Verify that the total is the sum of all servings from all meal prep plans
         var allServingsFromPlans = mealPrepPlan.MealPrepPlans
-            .SelectMany(plan => plan.Servings)
+            .SelectMany(plan => plan.CookingServings.Concat(plan.EatingServings))
             .ToList();
 
         // Group by food name and sum servings (using same logic as Total property)
@@ -152,7 +152,7 @@ public class WeeklyMealsPrepPlanTests
 
         var mealPrepPlans = new List<MealPrepPlan>
         {
-            new MealPrepPlan("Test Plan", new List<FoodServing> { food * 5 }, 1)
+            new MealPrepPlan("Test Plan", new List<FoodServing> { food * 5 }, [], 1)
         };
 
         var weeklyPlan = new WeeklyMealsPrepPlan(mealPrepPlans);
@@ -256,10 +256,11 @@ public class WeeklyMealsPrepPlanTests
         var mealPrepPlan = new MealPrepPlan(
             "Crossfit day - wheat berries",
             summedMeal.Servings, // Do NOT multiply by daysPerWeek again!
+            [],
             mealCount);
 
         // Verify the final serving count in the meal prep plan
-        var finalMuffinServing = mealPrepPlan.Servings.FirstOrDefault(s => s.Name == "Ezekiel english muffin");
+        var finalMuffinServing = mealPrepPlan.CookingServings.FirstOrDefault(s => s.Name == "Ezekiel english muffin");
         Assert.NotNull(finalMuffinServing);
         Assert.Equal(6, finalMuffinServing.NutritionalInformation.ServingUnits); // Should still be 6, not 18
     }
@@ -366,7 +367,7 @@ public class WeeklyMealsPrepPlanTests
 
         // Assert - Conversion foods should be excluded from all meal prep plans
         var allServings = mealPrepPlan.MealPrepPlans
-            .SelectMany(plan => plan.Servings)
+            .SelectMany(plan => plan.CookingServings.Concat(plan.EatingServings))
             .ToList();
 
         // Should NOT contain any conversion foods

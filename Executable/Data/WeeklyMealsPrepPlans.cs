@@ -22,18 +22,16 @@ internal class WeeklyMealsPrepPlans
                 .Where(m => m.FoodGrouping.PreparationMethod == FoodGrouping.PreparationMethodEnum.PrepareInAdvance)
                 .SumWithSameFoodGrouping(x.DaysEatingPreparedMeals),
             TrainingDayType = x.TrainingDayType,
-        }).SelectMany(x => x.MealsWithCounts.Select(mc => new MealPrepPlan(
-            $"{x.TrainingDayType} - {mc.Meal.Name}",
-            mc.Meal.Servings
-                .Where(s => !s.IsConversion)
-                .Where(s => !_foodsExcludedFromMealPrepPlan.Any(excluded => excluded.Name == s.Name)),
-            mc.MealCount))));
+        }).SelectMany(x => x.MealsWithCounts.Select(mc =>
+        {
+            var allServings = mc.Meal.Servings.Where(s => !s.IsConversion);
+            var cookingServings = allServings.Where(s => s.AddWhen == FoodServing.AddWhenEnum.WithMeal);
+            var eatingServings = allServings.Where(s => s.AddWhen == FoodServing.AddWhenEnum.AtEatingTime);
 
-    private readonly static IEnumerable<FoodServing> _foodsExcludedFromMealPrepPlan = [
-        Foods.AlmondButter_1_Tbsp,
-        Foods.BlueBerries_1_Scoop,
-        Foods.ChiaSeeds_2_5_Tbsp,
-        Foods.Oats_1_Scoop,
-        Foods.PeaProtein_1_Scoop,
-    ];
+            return new MealPrepPlan(
+                $"{x.TrainingDayType} - {mc.Meal.Name}",
+                cookingServings,
+                eatingServings,
+                mc.MealCount);
+        })));
 }
