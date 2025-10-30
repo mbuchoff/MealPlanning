@@ -160,7 +160,10 @@ internal static class Foods
 
     // Public FoodServing definitions
     public static FoodServing AlmondButter_1_Tbsp =>
-        AlmondButterFood.WithServing(1, ServingUnits.Tablespoon);
+        AlmondButterFood.WithServing(1, ServingUnits.Tablespoon) with
+        {
+            AddWhen = FoodServing.AddWhenEnum.AtEatingTime
+        };
 
     public static FoodServing AlmondMilk_2_Cup =>
         AlmondMilkFood.WithServing(2, ServingUnits.Cup);
@@ -173,7 +176,10 @@ internal static class Foods
         BlackBeansFood.WithServing(45, ServingUnits.Gram);
 
     public static FoodServing BlueBerries_1_Cup =>
-        BlueBerries.WithServing(1, ServingUnits.Cup);
+        BlueBerries.WithServing(1, ServingUnits.Cup) with
+        {
+            AddWhen = FoodServing.AddWhenEnum.AtEatingTime
+        };
 
     public static FoodServing BrownRice_45_Grams => CompositeFoodServing.FromComponentsWithStatic(
         "brown rice",
@@ -193,7 +199,10 @@ internal static class Foods
         ]);
 
     public static FoodServing ChiaSeeds_2_5_Tbsp =>
-        ChiaSeedsFood.WithServing(2.5M, ServingUnits.Tablespoon);
+        ChiaSeedsFood.WithServing(2.5M, ServingUnits.Tablespoon) with
+        {
+            AddWhen = FoodServing.AddWhenEnum.AtEatingTime
+        };
 
     public static FoodServing Creatine_1_Scoop =>
         CreatineFood.WithServing(1, ServingUnits.Scoop);
@@ -205,7 +214,10 @@ internal static class Foods
         EzekielCerealLowSodiumFood.WithServing(0.5M, ServingUnits.Cup);
 
     public static FoodServing Ezekiel_English_Muffin =>
-        EzekielEnglishMuffinFood.WithServing(1, ServingUnits.None);
+        EzekielEnglishMuffinFood.WithServing(1, ServingUnits.None) with
+        {
+            AddWhen = FoodServing.AddWhenEnum.AtEatingTime
+        };
 
     public static FoodServing NutritionalYeast_Sprouts_16_Grams =>
         NutritionalYeastFood.WithServing(16, ServingUnits.Gram);
@@ -315,7 +327,10 @@ internal static class Foods
         WheatBranFood.WithServing(0.5M, ServingUnits.Cup);
 
     public static FoodServing BlueBerries_1_Scoop =>
-        BlueBerries.WithServing(1, ServingUnits.Scoop);
+        BlueBerries.WithServing(1, ServingUnits.Scoop) with
+        {
+            AddWhen = FoodServing.AddWhenEnum.AtEatingTime
+        };
 
     public static FoodServing Seitan_Sprouts_Yeast_1_Gram_Gluten_4x => CompositeFoodServing.FromComponentsWithStatic(
         "Seitan (Nutritional Yeast + Gluten + Chicken Flavored Miss Dash)",
@@ -339,9 +354,15 @@ internal static class Foods
     public static FoodServing Ezeliel_Cereal_Low_Sodium_1_Scoop =>
         EzekielCerealLowSodiumFood.WithServing(1, ServingUnits.Scoop);
     public static FoodServing Oats_1_Scoop =>
-        OatsFood.WithServing(1, ServingUnits.Scoop);
+        OatsFood.WithServing(1, ServingUnits.Scoop) with
+        {
+            AddWhen = FoodServing.AddWhenEnum.AtEatingTime
+        };
     public static FoodServing PeaProtein_1_Scoop =>
-        PeaProteinFood.WithServing(1, ServingUnits.Scoop);
+        PeaProteinFood.WithServing(1, ServingUnits.Scoop) with
+        {
+            AddWhen = FoodServing.AddWhenEnum.AtEatingTime
+        };
     public static FoodServing PumpkinSeeds_1_Scoop =>
         PumpkinSeedsFood.WithServing(1, ServingUnits.Scoop);
     public static FoodServing WheatBran_1_Scoop =>

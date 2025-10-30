@@ -5,6 +5,13 @@ public record FoodServing(
     NutritionalInformation NutritionalInformation,
     bool IsConversion = false)
 {
+    public enum AddWhenEnum
+    {
+        WithMeal,
+        AtEatingTime
+    }
+
+    public AddWhenEnum AddWhen { get; init; } = AddWhenEnum.WithMeal;
 
     public FoodServing Copy(ServingUnit newServingUnit, decimal newServings) =>
         new(Name,
