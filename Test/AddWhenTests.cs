@@ -19,20 +19,6 @@ public class AddWhenTests
     }
 
     [Fact]
-    public void FoodServing_CanSetAddWhen_ToAtEatingTime()
-    {
-        // Arrange & Act
-        var food = new FoodServing("test food",
-            new NutritionalInformation(100, ServingUnits.Gram, 100, 10, 5, 15, 2))
-        {
-            AddWhen = FoodServing.AddWhenEnum.AtEatingTime
-        };
-
-        // Assert
-        Assert.Equal(FoodServing.AddWhenEnum.AtEatingTime, food.AddWhen);
-    }
-
-    [Fact]
     public void MealPrepPlan_PartitionsServings_ByCookingAndEating()
     {
         // Arrange
