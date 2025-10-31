@@ -376,10 +376,34 @@ internal class TodoistService
 
         foreach (var trainingDay in allDayTypes)
         {
+            var mealsForDay = new List<MealWithIndex>();
+            int mealIndex = 1;
+
+            // Collect PrepareAsNeeded meals
+            foreach (var meal in trainingDay.Meals
+                .Where(m => m.FoodGrouping.PreparationMethod == FoodGrouping.PreparationMethodEnum.PrepareAsNeeded))
+            {
+                mealsForDay.Add(new MealWithIndex(
+                    Index: mealIndex++,
+                    Meal: meal,
+                    Servings: meal.Servings.Where(s => !s.IsConversion)));
+            }
+
+            // Collect PrepareInAdvance meals with AtEatingTime servings
+            foreach (var meal in trainingDay.Meals
+                .Where(m => m.FoodGrouping.PreparationMethod == FoodGrouping.PreparationMethodEnum.PrepareInAdvance
+                         && m.Servings.Any(s => s.AddWhen == FoodServing.AddWhenEnum.AtEatingTime)))
+            {
+                mealsForDay.Add(new MealWithIndex(
+                    Index: mealIndex++,
+                    Meal: meal,
+                    Servings: meal.Servings.Where(s => s.AddWhen == FoodServing.AddWhenEnum.AtEatingTime && !s.IsConversion)));
+            }
+
             yield return new DayTypeGroup(
                 TrainingDayType: trainingDay.TrainingDayType,
                 DueString: GetDueString(trainingDay.TrainingDayType),
-                Meals: new List<MealWithIndex>());
+                Meals: mealsForDay);
         }
     }
 
