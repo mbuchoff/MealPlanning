@@ -5,6 +5,16 @@ namespace SystemOfEquations.Todoist;
 
 internal class TodoistService
 {
+    internal record DayTypeGroup(
+        TrainingDayType TrainingDayType,
+        string DueString,
+        List<MealWithIndex> Meals);
+
+    internal record MealWithIndex(
+        int Index,
+        Meal Meal,
+        IEnumerable<FoodServing> Servings);
+
     public static async Task SyncAsync(Phase phase)
     {
         // First, get projects and count operations needed
@@ -63,6 +73,9 @@ internal class TodoistService
         operations++; // Collapse
         operations += phase.MealPrepPlan.Total.Sum(s => TodoistServiceHelper.CountTodoistOperations(s)); // All serving operations
 
+        // Day-type parent tasks (3 groups: XFit, Running, NonWorkout)
+        operations += 3 * 2; // Each group: parent task + collapse
+
         // Eating meals from PrepareInAdvance meals (AtEatingTime servings)
         var eatingTasksFromPrepMeals = new[]
         {
@@ -76,11 +89,11 @@ internal class TodoistService
 
         foreach (var meal in eatingTasksFromPrepMeals)
         {
-            operations++; // Main task
+            operations++; // Meal task
             operations++; // Collapse
-            operations++; // Meal name subtask
+            operations++; // Food grouping name subtask
             var eatingServings = meal.Servings.Where(s => s.AddWhen == FoodServing.AddWhenEnum.AtEatingTime && !s.IsConversion);
-            operations += eatingServings.Sum(s => TodoistServiceHelper.CountTodoistOperations(s)); // All serving operations
+            operations += eatingServings.Sum(s => TodoistServiceHelper.CountTodoistOperations(s));
             operations++; // Comment
         }
 
@@ -96,9 +109,9 @@ internal class TodoistService
 
         foreach (var meal in eatingMeals)
         {
-            operations++; // Main task
+            operations++; // Meal task
             operations++; // Collapse
-            operations += meal.Servings.Where(s => !s.IsConversion).Sum(s => TodoistServiceHelper.CountTodoistOperations(s)); // All serving operations
+            operations += meal.Servings.Where(s => !s.IsConversion).Sum(s => TodoistServiceHelper.CountTodoistOperations(s));
             operations++; // Comment
         }
 
@@ -194,6 +207,46 @@ internal class TodoistService
                 .Append(AddCommentAsync(quantityTask.Id, comment).ContinueWith(_ => progress.IncrementProgress())));
     }
 
+    private static async Task AddMealSubtask(
+        TodoistTask dayTypeParentTask,
+        MealWithIndex mealWithIndex,
+        ProgressTracker progress)
+    {
+        var content = $"{mealWithIndex.Index} - {mealWithIndex.Meal.Name}";
+
+        var mealTask = await AddTaskAsync(
+            content,
+            description: null,
+            dueString: null,
+            parentId: dayTypeParentTask.Id,
+            projectId: null,
+            isCollapsed: true);
+        progress.IncrementProgress();
+
+        await UpdateTaskCollapsedAsync(mealTask.Id, collapsed: true);
+        progress.IncrementProgress();
+
+        // For PrepareInAdvance meals, add food grouping name as first subtask
+        if (mealWithIndex.Meal.FoodGrouping.PreparationMethod == FoodGrouping.PreparationMethodEnum.PrepareInAdvance)
+        {
+            await AddTaskAsync(
+                mealWithIndex.Meal.FoodGrouping.Name,
+                description: null,
+                dueString: null,
+                parentId: mealTask.Id,
+                projectId: null);
+            progress.IncrementProgress();
+        }
+
+        // Add servings as subtasks
+        await Task.WhenAll(mealWithIndex.Servings.Select(s => AddServingAsync(mealTask, s, progress)));
+
+        // Add nutritional comment
+        var comment = TodoistServiceHelper.GenerateNutritionalComment(mealWithIndex.Servings);
+        await AddCommentAsync(mealTask.Id, comment);
+        progress.IncrementProgress();
+    }
+
     private static async Task AddPhaseAsync(
         Phase phase, Task<Project> eatingProjectTask, Task<Project> cookingProjectTask, ProgressTracker progress)
     {
@@ -210,107 +263,33 @@ internal class TodoistService
                             order: phase.MealPrepPlan.MealPrepPlans.Count() + 1),
         ];
 
-        // Extract eating servings from PrepareInAdvance meals (servings marked AtEatingTime)
-        var eatingTasksFromPrepMeals = new[]
-        {
-            phase.TrainingWeek.XFitDay,
-            phase.TrainingWeek.RunningDay,
-            phase.TrainingWeek.NonworkoutDay,
-        }.SelectMany(trainingDay => trainingDay.Meals.Select((meal, mealIdx) => new
-        {
-            DueString = GetDueString(trainingDay.TrainingDayType),
-            Idx = mealIdx,
-            trainingDay.TrainingDayType,
-            Meal = meal,
-        })).Where(x => x.Meal.FoodGrouping.PreparationMethod == FoodGrouping.PreparationMethodEnum.PrepareInAdvance &&
-                       x.Meal.Servings.Any(s => s.AddWhen == FoodServing.AddWhenEnum.AtEatingTime))
-        .Select((x, globalIdx) => new
-        {
-            x.DueString,
-            x.Idx,
-            x.TrainingDayType,
-            x.Meal,
-            Servings = x.Meal.Servings.Where(s => s.AddWhen == FoodServing.AddWhenEnum.AtEatingTime).ToList(),
-            Order = globalIdx + 1
-        })
-        .ToList();
+        // Get day-type groups and create parent tasks with nested meals
+        var dayTypeGroups = GetDayTypeGroups(phase).ToList();
 
-        var eatingMealsToAdd = new[]
+        systemTasks.AddRange(dayTypeGroups.Select((group, groupIdx) => Task.Run(async () =>
         {
-            phase.TrainingWeek.XFitDay,
-            phase.TrainingWeek.RunningDay,
-            phase.TrainingWeek.NonworkoutDay,
-        }.SelectMany(trainingDay => trainingDay.Meals.Select((meal, mealIdx) => new
-        {
-            DueString = GetDueString(trainingDay.TrainingDayType),
-            Idx = mealIdx,
-            trainingDay.TrainingDayType,
-            Meal = meal,
-        })).Where(x => x.Meal.FoodGrouping.PreparationMethod == FoodGrouping.PreparationMethodEnum.PrepareAsNeeded)
-        .Select((x, globalIdx) => new { x.DueString, x.Idx, x.TrainingDayType, x.Meal, Order = globalIdx + 1 })
-        .ToList();
-
-        // Add eating tasks from PrepareInAdvance meals (eating servings only)
-        systemTasks.AddRange(eatingTasksFromPrepMeals.Select(async x =>
-        {
-            var content = $"{x.Idx + 1} - {x.TrainingDayType} - {x.Meal.Name}";
-
             var eatingProject = await eatingProjectTask;
-            var parentTodoistTask = await AddTaskAsync(
-                content, $"Synced on {DateTime.Now}",
-                x.DueString, parentId: null, eatingProject.Id, isCollapsed: true, order: x.Order);
+
+            // Create parent task for the day type
+            var dayTypeParentTask = await AddTaskAsync(
+                content: group.TrainingDayType.ToString(),
+                description: null,
+                dueString: group.DueString,
+                parentId: null,
+                eatingProject.Id,
+                isCollapsed: true,
+                order: groupIdx + 1);
             progress.IncrementProgress();
 
-            await UpdateTaskCollapsedAsync(parentTodoistTask.Id, collapsed: true);
+            await UpdateTaskCollapsedAsync(dayTypeParentTask.Id, collapsed: true);
             progress.IncrementProgress();
 
-            // Add food grouping name as first item, then eating servings, then comment
-            // Add food grouping name (e.g., "wheat berries") not meal timing (e.g., "40 minutes after workout")
-            await AddTaskAsync(
-                x.Meal.FoodGrouping.Name, description: null, dueString: null, parentTodoistTask.Id, projectId: null);
-            progress.IncrementProgress();
-
-            // Add eating servings
-            await Task.WhenAll(
-                x.Servings.Where(s => !s.IsConversion)
-                    .Select(async s =>
-                    {
-                        await AddTaskAsync(
-                            s.ToString(), description: null, dueString: null, parentTodoistTask.Id, projectId: null);
-                        progress.IncrementProgress();
-                    }));
-
-            // Add comment
-            var comment = TodoistServiceHelper.GenerateNutritionalComment(x.Servings);
-            await AddCommentAsync(parentTodoistTask.Id, comment);
-            progress.IncrementProgress();
-        }));
-
-        systemTasks.AddRange(eatingMealsToAdd.Select(async x =>
-        {
-            var content = $"{x.Idx + 1} - {x.TrainingDayType} - {x.Meal.Name}";
-
-            var eatingProject = await eatingProjectTask;
-            var parentTodoistTask = await AddTaskAsync(
-                content, $"Synced on {DateTime.Now}",
-                x.DueString, parentId: null, eatingProject.Id, isCollapsed: true, order: x.Order);
-            progress.IncrementProgress();
-
-            await UpdateTaskCollapsedAsync(parentTodoistTask.Id, collapsed: true);
-            progress.IncrementProgress();
-
-            // Add child tasks and comment in parallel
-            var comment = TodoistServiceHelper.GenerateNutritionalComment(x.Meal.Servings);
-            await Task.WhenAll(
-                x.Meal.Servings.Where(s => !s.IsConversion)
-                    .Select(async s =>
-                    {
-                        await AddTaskAsync(
-                            s.ToString(), description: null, dueString: null, parentTodoistTask.Id, projectId: null);
-                        progress.IncrementProgress();
-                    })
-                    .Append(AddCommentAsync(parentTodoistTask.Id, comment).ContinueWith(_ => progress.IncrementProgress())));
-        }));
+            // Create meal subtasks
+            foreach (var mealWithIndex in group.Meals)
+            {
+                await AddMealSubtask(dayTypeParentTask, mealWithIndex, progress);
+            }
+        })));
 
         await Task.WhenAll(systemTasks);
     }
@@ -354,4 +333,54 @@ internal class TodoistService
         { Day.Friday, "fri" },
         { Day.Saturday, "sat" },
     };
+
+    private static IEnumerable<DayTypeGroup> GetDayTypeGroups(Phase phase)
+    {
+        var allDayTypes = new[]
+        {
+            phase.TrainingWeek.XFitDay,
+            phase.TrainingWeek.RunningDay,
+            phase.TrainingWeek.NonworkoutDay
+        };
+
+        foreach (var trainingDay in allDayTypes)
+        {
+            var mealsForDay = new List<MealWithIndex>();
+            int mealIndex = 1;
+
+            // Collect PrepareAsNeeded meals
+            foreach (var meal in trainingDay.Meals
+                .Where(m => m.FoodGrouping.PreparationMethod == FoodGrouping.PreparationMethodEnum.PrepareAsNeeded))
+            {
+                mealsForDay.Add(new MealWithIndex(
+                    Index: mealIndex++,
+                    Meal: meal,
+                    Servings: meal.Servings.Where(s => !s.IsConversion)));
+            }
+
+            // Collect PrepareInAdvance meals with AtEatingTime servings
+            foreach (var meal in trainingDay.Meals
+                .Where(m => m.FoodGrouping.PreparationMethod == FoodGrouping.PreparationMethodEnum.PrepareInAdvance
+                         && m.Servings.Any(s => s.AddWhen == FoodServing.AddWhenEnum.AtEatingTime)))
+            {
+                mealsForDay.Add(new MealWithIndex(
+                    Index: mealIndex++,
+                    Meal: meal,
+                    Servings: meal.Servings.Where(s => s.AddWhen == FoodServing.AddWhenEnum.AtEatingTime && !s.IsConversion)));
+            }
+
+            yield return new DayTypeGroup(
+                TrainingDayType: trainingDay.TrainingDayType,
+                DueString: GetDueString(trainingDay.TrainingDayType),
+                Meals: mealsForDay);
+        }
+    }
+
+    // Test helper - makes GetDayTypeGroups accessible to tests
+    internal static IEnumerable<DayTypeGroup> GetDayTypeGroupsPublic(Phase phase)
+        => GetDayTypeGroups(phase);
+
+    // Test helper - makes CalculateTotalOperations accessible to tests
+    internal static int CalculateTotalOperationsPublic(Phase phase, int eatingTasksToDelete, int cookingTasksToDelete)
+        => CalculateTotalOperations(phase, eatingTasksToDelete, cookingTasksToDelete);
 }
