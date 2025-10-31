@@ -73,6 +73,9 @@ internal class TodoistService
         operations++; // Collapse
         operations += phase.MealPrepPlan.Total.Sum(s => TodoistServiceHelper.CountTodoistOperations(s)); // All serving operations
 
+        // Day-type parent tasks (3 groups: XFit, Running, NonWorkout)
+        operations += 3 * 2; // Each group: parent task + collapse
+
         // Eating meals from PrepareInAdvance meals (AtEatingTime servings)
         var eatingTasksFromPrepMeals = new[]
         {
@@ -86,11 +89,11 @@ internal class TodoistService
 
         foreach (var meal in eatingTasksFromPrepMeals)
         {
-            operations++; // Main task
+            operations++; // Meal task
             operations++; // Collapse
-            operations++; // Meal name subtask
+            operations++; // Food grouping name subtask
             var eatingServings = meal.Servings.Where(s => s.AddWhen == FoodServing.AddWhenEnum.AtEatingTime && !s.IsConversion);
-            operations += eatingServings.Sum(s => TodoistServiceHelper.CountTodoistOperations(s)); // All serving operations
+            operations += eatingServings.Sum(s => TodoistServiceHelper.CountTodoistOperations(s));
             operations++; // Comment
         }
 
@@ -106,9 +109,9 @@ internal class TodoistService
 
         foreach (var meal in eatingMeals)
         {
-            operations++; // Main task
+            operations++; // Meal task
             operations++; // Collapse
-            operations += meal.Servings.Where(s => !s.IsConversion).Sum(s => TodoistServiceHelper.CountTodoistOperations(s)); // All serving operations
+            operations += meal.Servings.Where(s => !s.IsConversion).Sum(s => TodoistServiceHelper.CountTodoistOperations(s));
             operations++; // Comment
         }
 
@@ -450,4 +453,8 @@ internal class TodoistService
     // Test helper - makes GetDayTypeGroups accessible to tests
     internal static IEnumerable<DayTypeGroup> GetDayTypeGroupsPublic(Phase phase)
         => GetDayTypeGroups(phase);
+
+    // Test helper - makes CalculateTotalOperations accessible to tests
+    internal static int CalculateTotalOperationsPublic(Phase phase, int eatingTasksToDelete, int cookingTasksToDelete)
+        => CalculateTotalOperations(phase, eatingTasksToDelete, cookingTasksToDelete);
 }
