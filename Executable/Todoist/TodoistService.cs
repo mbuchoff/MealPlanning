@@ -5,12 +5,12 @@ namespace SystemOfEquations.Todoist;
 
 internal class TodoistService
 {
-    private record DayTypeGroup(
+    internal record DayTypeGroup(
         TrainingDayType TrainingDayType,
         string DueString,
         List<MealWithIndex> Meals);
 
-    private record MealWithIndex(
+    internal record MealWithIndex(
         int Index,
         Meal Meal,
         IEnumerable<FoodServing> Servings);
@@ -364,4 +364,26 @@ internal class TodoistService
         { Day.Friday, "fri" },
         { Day.Saturday, "sat" },
     };
+
+    private static IEnumerable<DayTypeGroup> GetDayTypeGroups(Phase phase)
+    {
+        var allDayTypes = new[]
+        {
+            phase.TrainingWeek.XFitDay,
+            phase.TrainingWeek.RunningDay,
+            phase.TrainingWeek.NonworkoutDay
+        };
+
+        foreach (var trainingDay in allDayTypes)
+        {
+            yield return new DayTypeGroup(
+                TrainingDayType: trainingDay.TrainingDayType,
+                DueString: GetDueString(trainingDay.TrainingDayType),
+                Meals: new List<MealWithIndex>());
+        }
+    }
+
+    // Test helper - makes GetDayTypeGroups accessible to tests
+    internal static IEnumerable<DayTypeGroup> GetDayTypeGroupsPublic(Phase phase)
+        => GetDayTypeGroups(phase);
 }
