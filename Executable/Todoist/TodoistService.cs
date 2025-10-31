@@ -204,6 +204,46 @@ internal class TodoistService
                 .Append(AddCommentAsync(quantityTask.Id, comment).ContinueWith(_ => progress.IncrementProgress())));
     }
 
+    private static async Task AddMealSubtask(
+        TodoistTask dayTypeParentTask,
+        MealWithIndex mealWithIndex,
+        ProgressTracker progress)
+    {
+        var content = $"{mealWithIndex.Index} - {mealWithIndex.Meal.Name}";
+
+        var mealTask = await AddTaskAsync(
+            content,
+            description: null,
+            dueString: null,
+            parentId: dayTypeParentTask.Id,
+            projectId: null,
+            isCollapsed: true);
+        progress.IncrementProgress();
+
+        await UpdateTaskCollapsedAsync(mealTask.Id, collapsed: true);
+        progress.IncrementProgress();
+
+        // For PrepareInAdvance meals, add food grouping name as first subtask
+        if (mealWithIndex.Meal.FoodGrouping.PreparationMethod == FoodGrouping.PreparationMethodEnum.PrepareInAdvance)
+        {
+            await AddTaskAsync(
+                mealWithIndex.Meal.FoodGrouping.Name,
+                description: null,
+                dueString: null,
+                parentId: mealTask.Id,
+                projectId: null);
+            progress.IncrementProgress();
+        }
+
+        // Add servings as subtasks
+        await Task.WhenAll(mealWithIndex.Servings.Select(s => AddServingAsync(mealTask, s, progress)));
+
+        // Add nutritional comment
+        var comment = TodoistServiceHelper.GenerateNutritionalComment(mealWithIndex.Servings);
+        await AddCommentAsync(mealTask.Id, comment);
+        progress.IncrementProgress();
+    }
+
     private static async Task AddPhaseAsync(
         Phase phase, Task<Project> eatingProjectTask, Task<Project> cookingProjectTask, ProgressTracker progress)
     {
