@@ -5,6 +5,16 @@ namespace SystemOfEquations.Todoist;
 
 internal class TodoistService
 {
+    private record DayTypeGroup(
+        TrainingDayType TrainingDayType,
+        string DueString,
+        List<MealWithIndex> Meals);
+
+    private record MealWithIndex(
+        int Index,
+        Meal Meal,
+        IEnumerable<FoodServing> Servings);
+
     public static async Task SyncAsync(Phase phase)
     {
         // First, get projects and count operations needed
