@@ -17,10 +17,13 @@ internal class TodoistService
 
     public static async Task SyncAsync(Phase phase)
     {
+        // Create batch for accumulating commands
+        var batch = new CommandBatch();
+
         // First, get projects and count operations needed
         var allProjects = await GetProjectsAsync();
-        var eatingProject = await GetOrCreateProjectAsync(Task.FromResult(allProjects), "Eating");
-        var cookingProject = await GetOrCreateProjectAsync(Task.FromResult(allProjects), "Cooking");
+        var eatingProject = await GetOrCreateProjectAsync(Task.FromResult(allProjects), "Eating", batch);
+        var cookingProject = await GetOrCreateProjectAsync(Task.FromResult(allProjects), "Cooking", batch);
 
         var eatingTasks = await GetTasksFromProjectAsync(eatingProject.Id);
         var cookingTasks = await GetTasksFromProjectAsync(cookingProject.Id);
@@ -28,15 +31,17 @@ internal class TodoistService
         var eatingTasksToDelete = eatingTasks.Where(t => t.Parent_Id == null && t.Created_at < DateTime.UtcNow).ToList();
         var cookingTasksToDelete = cookingTasks.Where(t => t.Parent_Id == null && t.Created_at < DateTime.UtcNow).ToList();
 
-        // Count total operations
+        // Count total operations (now counting batch executions instead of individual API calls)
         int totalOperations = CalculateTotalOperations(phase, eatingTasksToDelete.Count, cookingTasksToDelete.Count);
 
         using var progress = new ProgressTracker(totalOperations);
 
-        await Task.WhenAll(
-            DeleteTasksFromProjectAsync(Task.FromResult(eatingProject), DateTime.UtcNow, progress),
-            DeleteTasksFromProjectAsync(Task.FromResult(cookingProject), DateTime.UtcNow, progress),
-            AddPhaseAsync(phase, Task.FromResult(eatingProject), Task.FromResult(cookingProject), progress));
+        await DeleteTasksFromProjectAsync(Task.FromResult(eatingProject), DateTime.UtcNow, progress, batch);
+        await DeleteTasksFromProjectAsync(Task.FromResult(cookingProject), DateTime.UtcNow, progress, batch);
+        await AddPhaseAsync(phase, Task.FromResult(eatingProject), Task.FromResult(cookingProject), progress, batch);
+
+        // Final flush of any remaining commands
+        await FlushBatchAsync(batch, progress);
     }
 
     private static int CalculateTotalOperations(Phase phase, int eatingTasksToDelete, int cookingTasksToDelete)
@@ -118,14 +123,46 @@ internal class TodoistService
         return operations;
     }
 
-    private static async Task AddServingAsync(TodoistTask parentTodoistTask, FoodServing s, ProgressTracker progress)
+    /// <summary>
+    /// Flushes the batch if it has commands, executes them, and records temp ID mappings.
+    /// Increments progress for each command executed.
+    /// </summary>
+    private static async Task FlushBatchAsync(CommandBatch batch, ProgressTracker progress)
     {
-        await TodoistServiceHelper.CreateTodoistSubtasksAsync(s, parentTodoistTask.Id,
+        if (batch.IsEmpty)
+            return;
+
+        var commandCount = batch.Count;
+        var response = await TodoistApi.ExecuteBatchAsync(batch);
+        batch.RecordTempIdMappings(response.TempIdMapping);
+        batch.Clear();
+
+        // Increment progress for each command executed
+        for (int i = 0; i < commandCount; i++)
+        {
+            progress.IncrementProgress();
+        }
+    }
+
+    /// <summary>
+    /// Flushes the batch if it's full (at 100 command limit).
+    /// </summary>
+    private static async Task FlushIfFullAsync(CommandBatch batch, ProgressTracker progress)
+    {
+        if (batch.IsFull)
+        {
+            await FlushBatchAsync(batch, progress);
+        }
+    }
+
+    private static async Task AddServingAsync(string parentTaskId, FoodServing s, ProgressTracker progress, CommandBatch batch)
+    {
+        await TodoistServiceHelper.CreateTodoistSubtasksAsync(s, parentTaskId,
             async (content, description, dueString, parentId, projectId) =>
             {
-                var task = await AddTaskAsync(content, description, dueString, parentId, projectId);
-                progress.IncrementProgress();
-                return (object)task;
+                var taskId = batch.AddItemAddCommand(content, description, projectId, parentId, dueString);
+                await FlushIfFullAsync(batch, progress);
+                return (object)taskId;
             });
     }
 
@@ -135,27 +172,31 @@ internal class TodoistService
         string? dueString,
         IEnumerable<FoodServing> servings,
         ProgressTracker progress,
+        CommandBatch batch,
         int? order = null)
     {
         var project = await projectTask;
 
-        var parentTodoistTask = await AddTaskAsync(
+        var parentTaskId = batch.AddItemAddCommand(
             content,
             description: null,
-            dueString: dueString,
+            projectId: project.Id,
             parentId: null,
-            project.Id,
-            isCollapsed: true,
-            order: order);
-        progress.IncrementProgress();
+            dueString: dueString,
+            collapsed: null,
+            childOrder: order);
+        await FlushIfFullAsync(batch, progress);
 
-        await UpdateTaskCollapsedAsync(parentTodoistTask.Id, collapsed: true);
-        progress.IncrementProgress();
+        batch.AddItemUpdateCommand(parentTaskId, collapsed: true);
+        await FlushIfFullAsync(batch, progress);
 
-        await Task.WhenAll(servings.Select(s => AddServingAsync(parentTodoistTask, s, progress)).ToList());
+        foreach (var s in servings)
+        {
+            await AddServingAsync(parentTaskId, s, progress, batch);
+        }
     }
 
-    private static async Task AddMealPrepPlan(Task<Project> projectTask, MealPrepPlan m, int order, ProgressTracker progress)
+    private static async Task AddMealPrepPlan(Task<Project> projectTask, MealPrepPlan m, int order, ProgressTracker progress, CommandBatch batch)
     {
         var project = await projectTask;
         var hasCookingServings = m.CookingServings.Any();
@@ -166,138 +207,165 @@ internal class TodoistService
             return;
 
         var cookingTaskName = hasEatingServings ? $"{m.Name} - Cooking" : m.Name;
-        var cookingParentTask = await AddTaskAsync(
-            cookingTaskName, description: null, dueString: "every tue", parentId: null, project.Id, isCollapsed: true, order: order);
-        progress.IncrementProgress();
+        var cookingParentTaskId = batch.AddItemAddCommand(
+            cookingTaskName,
+            description: null,
+            projectId: project.Id,
+            parentId: null,
+            dueString: "every tue",
+            collapsed: null,
+            childOrder: order);
+        await FlushIfFullAsync(batch, progress);
 
-        await UpdateTaskCollapsedAsync(cookingParentTask.Id, collapsed: true);
-        progress.IncrementProgress();
+        batch.AddItemUpdateCommand(cookingParentTaskId, collapsed: true);
+        await FlushIfFullAsync(batch, progress);
 
         // Create subtasks for each meal quantity
         for (int mealCount = 1; mealCount <= m.MealCount; mealCount++)
         {
             var quantityLabel = mealCount == 1 ? "1 meal" : $"{mealCount} meals";
-            await AddMealQuantitySubtask(cookingParentTask, quantityLabel, m.CookingServings, mealCount, m.MealCount, progress);
+            await AddMealQuantitySubtask(cookingParentTaskId, quantityLabel, m.CookingServings, mealCount, m.MealCount, progress, batch);
         }
     }
 
     private static async Task AddMealQuantitySubtask(
-        TodoistTask parentTask,
+        string parentTaskId,
         string quantityLabel,
         IEnumerable<FoodServing> baseServings,
         int mealCount,
         int totalMealCount,
-        ProgressTracker progress)
+        ProgressTracker progress,
+        CommandBatch batch)
     {
-        var quantityTask = await AddTaskAsync(
-            quantityLabel, description: null, dueString: null, parentTask.Id, projectId: null, isCollapsed: true);
-        progress.IncrementProgress();
+        var quantityTaskId = batch.AddItemAddCommand(
+            quantityLabel,
+            description: null,
+            projectId: null,
+            parentId: parentTaskId,
+            dueString: null,
+            collapsed: null);
+        await FlushIfFullAsync(batch, progress);
 
-        await UpdateTaskCollapsedAsync(quantityTask.Id, collapsed: true);
-        progress.IncrementProgress();
+        batch.AddItemUpdateCommand(quantityTaskId, collapsed: true);
+        await FlushIfFullAsync(batch, progress);
 
         // Scale servings based on meal count ratio
         decimal scaleFactor = (decimal)mealCount / totalMealCount;
         var scaledServings = baseServings.Select(s => s * scaleFactor).ToList();
 
-        // Generate and add nutritional comment in parallel with servings
+        // Add servings
+        foreach (var s in scaledServings)
+        {
+            await AddServingAsync(quantityTaskId, s, progress, batch);
+        }
+
+        // Add nutritional comment
         var comment = TodoistServiceHelper.GenerateNutritionalComment(scaledServings);
-        await Task.WhenAll(
-            scaledServings.Select(s => AddServingAsync(quantityTask, s, progress))
-                .Append(AddCommentAsync(quantityTask.Id, comment).ContinueWith(_ => progress.IncrementProgress())));
+        batch.AddNoteAddCommand(quantityTaskId, comment);
+        await FlushIfFullAsync(batch, progress);
     }
 
     private static async Task AddMealSubtask(
-        TodoistTask dayTypeParentTask,
+        string dayTypeParentTaskId,
         MealWithIndex mealWithIndex,
-        ProgressTracker progress)
+        ProgressTracker progress,
+        CommandBatch batch)
     {
         var content = $"{mealWithIndex.Index} - {mealWithIndex.Meal.Name}";
 
-        var mealTask = await AddTaskAsync(
+        var mealTaskId = batch.AddItemAddCommand(
             content,
             description: null,
-            dueString: null,
-            parentId: dayTypeParentTask.Id,
             projectId: null,
-            isCollapsed: true);
-        progress.IncrementProgress();
+            parentId: dayTypeParentTaskId,
+            dueString: null,
+            collapsed: null);
+        await FlushIfFullAsync(batch, progress);
 
-        await UpdateTaskCollapsedAsync(mealTask.Id, collapsed: true);
-        progress.IncrementProgress();
+        batch.AddItemUpdateCommand(mealTaskId, collapsed: true);
+        await FlushIfFullAsync(batch, progress);
 
         // For PrepareInAdvance meals, add food grouping name as first subtask
         if (mealWithIndex.Meal.FoodGrouping.PreparationMethod == FoodGrouping.PreparationMethodEnum.PrepareInAdvance)
         {
-            await AddTaskAsync(
+            batch.AddItemAddCommand(
                 mealWithIndex.Meal.FoodGrouping.Name,
                 description: null,
-                dueString: null,
-                parentId: mealTask.Id,
-                projectId: null);
-            progress.IncrementProgress();
+                projectId: null,
+                parentId: mealTaskId,
+                dueString: null);
+            await FlushIfFullAsync(batch, progress);
         }
 
         // Add servings as subtasks
-        await Task.WhenAll(mealWithIndex.Servings.Select(s => AddServingAsync(mealTask, s, progress)));
+        foreach (var s in mealWithIndex.Servings)
+        {
+            await AddServingAsync(mealTaskId, s, progress, batch);
+        }
 
         // Add nutritional comment
         var comment = TodoistServiceHelper.GenerateNutritionalComment(mealWithIndex.Servings);
-        await AddCommentAsync(mealTask.Id, comment);
-        progress.IncrementProgress();
+        batch.AddNoteAddCommand(mealTaskId, comment);
+        await FlushIfFullAsync(batch, progress);
     }
 
     private static async Task AddPhaseAsync(
-        Phase phase, Task<Project> eatingProjectTask, Task<Project> cookingProjectTask, ProgressTracker progress)
+        Phase phase, Task<Project> eatingProjectTask, Task<Project> cookingProjectTask, ProgressTracker progress, CommandBatch batch)
     {
-        List<Task> systemTasks =
-        [
-            .. phase.MealPrepPlan.MealPrepPlans.Select((m, index) =>
-                AddMealPrepPlan(cookingProjectTask, m, order: index + 1, progress)),
-                    AddServingsAsync(
-                            cookingProjectTask,
-                            content: "Totals",
-                            dueString: "every tues",
-                            phase.MealPrepPlan.Total,
-                            progress,
-                            order: phase.MealPrepPlan.MealPrepPlans.Count() + 1),
-        ];
+        // Add meal prep plans
+        foreach (var (m, index) in phase.MealPrepPlan.MealPrepPlans.Select((m, i) => (m, i)))
+        {
+            await AddMealPrepPlan(cookingProjectTask, m, order: index + 1, progress, batch);
+        }
+
+        // Add totals
+        await AddServingsAsync(
+            cookingProjectTask,
+            content: "Totals",
+            dueString: "every tues",
+            phase.MealPrepPlan.Total,
+            progress,
+            batch,
+            order: phase.MealPrepPlan.MealPrepPlans.Count() + 1);
 
         // Get day-type groups and create parent tasks with nested meals
         var dayTypeGroups = GetDayTypeGroups(phase).ToList();
+        var eatingProject = await eatingProjectTask;
 
-        systemTasks.AddRange(dayTypeGroups.Select((group, groupIdx) => Task.Run(async () =>
+        foreach (var (group, groupIdx) in dayTypeGroups.Select((g, i) => (g, i)))
         {
-            var eatingProject = await eatingProjectTask;
-
             // Create parent task for the day type
-            var dayTypeParentTask = await AddTaskAsync(
+            var dayTypeParentTaskId = batch.AddItemAddCommand(
                 content: group.TrainingDayType.ToString(),
                 description: null,
-                dueString: group.DueString,
+                projectId: eatingProject.Id,
                 parentId: null,
-                eatingProject.Id,
-                isCollapsed: true,
-                order: groupIdx + 1);
-            progress.IncrementProgress();
+                dueString: group.DueString,
+                collapsed: null,
+                childOrder: groupIdx + 1);
+            await FlushIfFullAsync(batch, progress);
 
-            await UpdateTaskCollapsedAsync(dayTypeParentTask.Id, collapsed: true);
-            progress.IncrementProgress();
+            batch.AddItemUpdateCommand(dayTypeParentTaskId, collapsed: true);
+            await FlushIfFullAsync(batch, progress);
 
             // Create meal subtasks
             foreach (var mealWithIndex in group.Meals)
             {
-                await AddMealSubtask(dayTypeParentTask, mealWithIndex, progress);
+                await AddMealSubtask(dayTypeParentTaskId, mealWithIndex, progress, batch);
             }
-        })));
-
-        await Task.WhenAll(systemTasks);
+        }
     }
 
-    private static async Task<Project> GetOrCreateProjectAsync(Task<Project[]> projectsTask, string projectName)
+    private static async Task<Project> GetOrCreateProjectAsync(Task<Project[]> projectsTask, string projectName, CommandBatch batch)
     {
         var projects = await projectsTask;
-        var project = projects.SingleOrDefault(p => p.Name == projectName) ?? await AddProjectAsync(projectName);
+        var project = projects.SingleOrDefault(p => p.Name == projectName);
+
+        if (project == null)
+        {
+            project = await AddProjectAsync(projectName);
+        }
+
         return project ?? throw new NullReferenceException(nameof(project));
     }
 
@@ -307,17 +375,17 @@ internal class TodoistService
         return projects;
     }
 
-    private static async Task DeleteTasksFromProjectAsync(Task<Project> projectTask, DateTime createdBeforeUtc, ProgressTracker progress)
+    private static async Task DeleteTasksFromProjectAsync(Task<Project> projectTask, DateTime createdBeforeUtc, ProgressTracker progress, CommandBatch batch)
     {
         var project = await projectTask;
         var todoistTasks = await GetTasksFromProjectAsync(project.Id);
 
         var tasksToDelete = todoistTasks.Where(t => t.Parent_Id == null && t.Created_at < createdBeforeUtc);
-        await Task.WhenAll(tasksToDelete.Select(async task =>
+        foreach (var task in tasksToDelete)
         {
-            await DeleteTaskAsync(task.Id);
-            progress.IncrementProgress();
-        }).ToList());
+            batch.AddItemDeleteCommand(task.Id);
+            await FlushIfFullAsync(batch, progress);
+        }
     }
 
     private static string GetDueString(TrainingDayType trainingDayType) => $"every {string.Join(",",
