@@ -5,6 +5,49 @@ namespace SystemOfEquations.Todoist;
 
 internal static class TodoistApi
 {
+    /// <summary>
+    /// Executes a batch of Sync API v9 commands and returns the response with temp ID mappings.
+    /// Throws InvalidOperationException if any commands in the batch failed.
+    /// </summary>
+    public static async Task<SyncApiResponse> ExecuteBatchAsync(CommandBatch batch)
+    {
+        if (batch.IsEmpty)
+        {
+            return new SyncApiResponse(new Dictionary<string, System.Text.Json.JsonElement>(), new Dictionary<string, string>());
+        }
+
+        using var httpClient = await CreateHttpClientAsync();
+
+        // Configure JSON options to ignore null values
+        var jsonOptions = new System.Text.Json.JsonSerializerOptions
+        {
+            DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
+        };
+
+        var requestBody = new { commands = batch.Commands };
+        var result = await httpClient.PostAsJsonAsync("https://api.todoist.com/sync/v9/sync", requestBody, jsonOptions);
+        result.EnsureSuccessStatusCode();
+
+        var response = await result.Content.ReadFromJsonAsync<SyncApiResponse>();
+        if (response == null)
+            throw new NullReferenceException(nameof(response));
+
+        // Check for any failed commands and throw with details
+        try
+        {
+            response.ThrowIfAnyFailed();
+        }
+        catch (InvalidOperationException)
+        {
+            // Log the failing batch for debugging
+            var json = System.Text.Json.JsonSerializer.Serialize(requestBody, jsonOptions);
+            Console.Error.WriteLine($"\nFailing batch JSON (first 2000 chars):\n{json.Substring(0, Math.Min(2000, json.Length))}\n");
+            throw;
+        }
+
+        return response;
+    }
+
     public static async Task AddCommentAsync(string taskId, string comment)
     {
         using var httpClient = await CreateHttpClientAsync();

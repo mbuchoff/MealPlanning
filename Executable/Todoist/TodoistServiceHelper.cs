@@ -95,7 +95,13 @@ internal static class TodoistServiceHelper
         var compositeTask = await addTaskFunc(serving.Name, null, null, parentTaskId, null);
 
         // Extract task ID from the returned object
-        var taskId = compositeTask.GetType().GetProperty("Id")?.GetValue(compositeTask)?.ToString();
+        // Supports both string (temp ID from batching) and objects with Id property (TodoistTask from REST API)
+        var taskId = compositeTask switch
+        {
+            string str => str,
+            _ => compositeTask.GetType().GetProperty("Id")?.GetValue(compositeTask)?.ToString()
+        };
+
         if (taskId == null)
             throw new InvalidOperationException("Could not get task ID from created task");
 
