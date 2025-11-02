@@ -19,10 +19,7 @@ internal record WeeklyMealsPrepPlan(IEnumerable<MealPrepPlan> MealPrepPlans)
             string header;
             if (m.HasConversionFoods)
             {
-                // Calculate TARGET macros
-                var targetCals = m.TargetMacros.P * 4 + m.TargetMacros.F * 9 + m.TargetMacros.C * 4;
-                var targetString = $"{targetCals:F0} cals, {m.TargetMacros}";
-                header = $"{m.Name}:\n  ACTUAL: {actualNutrition.ToNutrientsString()}\n  TARGET: {targetString}";
+                header = $"{m.Name}:\n  ACTUAL: {actualNutrition.ToNutrientsString()}\n  TARGET: {m.TargetMacros}";
             }
             else
             {
