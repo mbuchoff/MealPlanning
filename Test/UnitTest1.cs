@@ -10,7 +10,7 @@ public class UnitTest1
     {
         const int pServings = 1, fServings = 2, cServings = 3;
         var m = new Meal("m", new(pServings, fServings, cServings),
-            new("fg", pFood, fFood, cFood, FoodGrouping.PreparationMethodEnum.PrepareAsNeeded));
+            new FoodGrouping("fg", pFood, fFood, cFood, FoodGrouping.PreparationMethodEnum.PrepareAsNeeded));
         var hs = m.Servings.Select(s => new
         {
             s.Name,
