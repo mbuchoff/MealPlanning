@@ -12,14 +12,21 @@ internal static class FoodGroupings
         Foods.Oats_1_Scoop,
         PreparationMethodEnum.PrepareAsNeeded);
 
-    public static FoodGrouping[] Ezekial { get; } = [.. new[] { Foods.Edamame_1_Scoop, Foods.ProteinToCarbConversion }.Select(pFood =>
+    public static FallbackChain Ezekiel { get; } = new(
         new FoodGrouping(
-            "Ezekial",
+            "Ezekiel",
             [Foods.AlmondMilk_1_Scoop * 2],
             Foods.PumpkinSeeds_1_Scoop,
-            pFood,
+            Foods.Edamame_1_Scoop,
             Foods.Ezeliel_Cereal_Low_Sodium_1_Scoop,
-            PreparationMethodEnum.PrepareAsNeeded))];
+            PreparationMethodEnum.PrepareAsNeeded),
+        new FoodGrouping(
+            "Ezekiel",
+            [Foods.AlmondMilk_1_Scoop * 2],
+            Foods.PumpkinSeeds_1_Scoop,
+            Foods.ProteinToCarbConversion,
+            Foods.Ezeliel_Cereal_Low_Sodium_1_Scoop,
+            PreparationMethodEnum.PrepareAsNeeded));
 
     public static FoodGrouping OatmealWithAlmondButter { get; } = new(
         "oatmeal with almond butter",
@@ -36,20 +43,37 @@ internal static class FoodGroupings
         Foods.Oats_1_Scoop,
         PreparationMethodEnum.PrepareAsNeeded);
 
-    public static FoodGrouping Oatmeal(bool withEdamame = true) => new(
-        "Oatmeal and edamame",
-        withEdamame ? Foods.Edamame_1_Scoop : Foods.ProteinToCarbConversion,
-        Foods.AlmondButter_1_Tbsp,
-        Foods.Oats_1_Scoop,
-        PreparationMethodEnum.PrepareAsNeeded);
+    public static FallbackChain Oatmeal(bool withEdamame = true) => new(
+        new FoodGrouping(
+            "Oatmeal and edamame",
+            [],
+            withEdamame ? Foods.Edamame_1_Scoop : Foods.ProteinToCarbConversion,
+            Foods.AlmondButter_1_Tbsp,
+            Foods.Oats_1_Scoop,
+            PreparationMethodEnum.PrepareAsNeeded),
+        new FoodGrouping(
+            "Oatmeal and edamame",
+            [],
+            withEdamame ? Foods.ProteinToCarbConversion : Foods.Edamame_1_Scoop,
+            Foods.AlmondButter_1_Tbsp,
+            Foods.Oats_1_Scoop,
+            PreparationMethodEnum.PrepareAsNeeded));
 
-    public static FoodGrouping EnglishMuffinsAndPasta(int englishMuffins, bool withEdamame = true) => new(
-        "English muffins and pasta",
-        englishMuffins == 0 ? [] : [Foods.Ezekiel_English_Muffin * englishMuffins],
-        withEdamame ? Foods.Edamame_1_Scoop : Foods.ProteinToCarbConversion,
-        Foods.OliveOil_1_Tbsp,
-        Foods.Whole_Grain_Pasta_56_Grams,
-        PreparationMethodEnum.PrepareAsNeeded);
+    public static FallbackChain EnglishMuffinsAndPasta(int englishMuffins, bool withEdamame = true) => new(
+        new FoodGrouping(
+            "English muffins and pasta",
+            englishMuffins == 0 ? [] : [Foods.Ezekiel_English_Muffin * englishMuffins],
+            withEdamame ? Foods.Edamame_1_Scoop : Foods.ProteinToCarbConversion,
+            Foods.OliveOil_1_Tbsp,
+            Foods.Whole_Grain_Pasta_56_Grams,
+            PreparationMethodEnum.PrepareAsNeeded),
+        new FoodGrouping(
+            "English muffins and pasta",
+            englishMuffins == 0 ? [] : [Foods.Ezekiel_English_Muffin * englishMuffins],
+            withEdamame ? Foods.ProteinToCarbConversion : Foods.Edamame_1_Scoop,
+            Foods.OliveOil_1_Tbsp,
+            Foods.Whole_Grain_Pasta_56_Grams,
+            PreparationMethodEnum.PrepareAsNeeded));
 
     public static FoodGrouping ProteinShake { get; } = new(
         "protein shake",
