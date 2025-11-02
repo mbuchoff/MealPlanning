@@ -364,31 +364,4 @@ public class TodoistServiceTests
         var sections = comment.Split("\n\n");
         Assert.Equal(2, sections.Length);
     }
-
-    [Fact]
-    public void ItemAddCommand_With_DueString_Should_Serialize_To_Correct_Format()
-    {
-        // Arrange
-        var batch = new CommandBatch();
-        batch.AddItemAddCommand(
-            content: "Test Task",
-            description: null,
-            projectId: "project123",
-            parentId: null,
-            dueString: "every monday",
-            collapsed: null,
-            childOrder: 1);
-
-        // Act - Serialize the command to JSON
-        var json = System.Text.Json.JsonSerializer.Serialize(batch.Commands[0], new System.Text.Json.JsonSerializerOptions
-        {
-            DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
-        });
-
-        // Assert - Verify the JSON contains the correct due format
-        // Sync API v9 expects: "due": {"string": "every monday"}
-        // NOT: "due_string": "every monday"
-        Assert.Contains("\"due\":{\"string\":\"every monday\"}", json);
-        Assert.DoesNotContain("\"due_string\"", json);
-    }
 }

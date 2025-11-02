@@ -16,13 +16,6 @@ internal record SyncCommand(
 );
 
 /// <summary>
-/// Due date for Sync API v9 commands.
-/// </summary>
-internal record DueDate(
-    [property: JsonPropertyName("string")] string String
-);
-
-/// <summary>
 /// Arguments for item_add command (creating tasks).
 /// </summary>
 internal record ItemAddArgs(
@@ -30,7 +23,7 @@ internal record ItemAddArgs(
     [property: JsonPropertyName("description")] string? Description = null,
     [property: JsonPropertyName("project_id")] string? ProjectId = null,
     [property: JsonPropertyName("parent_id")] string? ParentId = null,
-    [property: JsonPropertyName("due")] DueDate? Due = null,
+    [property: JsonPropertyName("due_string")] string? DueString = null,
     [property: JsonPropertyName("collapsed")] bool? Collapsed = null,
     [property: JsonPropertyName("child_order")] int? ChildOrder = null
 );
