@@ -4,7 +4,7 @@ using SystemOfEquations.Data;
 
 internal static class TodoistServiceHelper
 {
-    public static string GenerateNutritionalComment(IEnumerable<FoodServing> servings)
+    public static string GenerateNutritionalComment(IEnumerable<FoodServing> servings, Macros? targetMacros = null)
     {
         var servingsList = servings.ToList();
 
@@ -19,9 +19,20 @@ internal static class TodoistServiceHelper
         // Check if there are any conversion foods
         var hasConversionFoods = servingsList.Any(s => s.IsConversion);
 
-        // Build header sections based on whether conversion foods exist
+        // Build header sections based on whether conversion foods or target macros exist
         List<string> headerSections;
-        if (hasConversionFoods)
+        if (targetMacros != null)
+        {
+            // Show ACTUAL and TARGET when target macros provided
+            var targetCals = targetMacros.P * 4 + targetMacros.F * 9 + targetMacros.C * 4;
+            var targetString = $"{targetCals:F0} cals, {targetMacros}";
+            headerSections = new List<string>
+            {
+                $"ACTUAL:\n{actualTotal.ToNutrientsString()}",
+                $"TARGET:\n{targetString}"
+            };
+        }
+        else if (hasConversionFoods)
         {
             // Calculate INTENDED total (all servings including conversions)
             var intendedTotal = servingsList
@@ -36,7 +47,7 @@ internal static class TodoistServiceHelper
         }
         else
         {
-            // No conversion foods - show unlabeled total
+            // No conversion foods or target - show unlabeled total
             headerSections = new List<string>
             {
                 actualTotal.ToNutrientsString()

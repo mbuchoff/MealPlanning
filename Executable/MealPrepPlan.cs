@@ -4,4 +4,6 @@ internal record MealPrepPlan(
     string Name,
     IEnumerable<FoodServing> CookingServings,
     IEnumerable<FoodServing> EatingServings,
-    int MealCount);
+    int MealCount,
+    Macros TargetMacros,
+    bool HasConversionFoods = false);

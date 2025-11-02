@@ -37,12 +37,24 @@ public class Meal
         var sb = new StringBuilder();
         sb.AppendLine($"{Name}: {FoodGrouping.Name}");
 
-        if (FoodGrouping.PreparationMethod == FoodGrouping.PreparationMethodEnum.PrepareAsNeeded)
+        // Add macro information - show ACTUAL/TARGET labels only if there are conversion foods
+        var actualNutrition = NutritionalInformation;
+        var hasConversionFoods = Servings.Any(s => s.IsConversion);
+        if (hasConversionFoods)
         {
-            foreach (var serving in Servings.Where(s => !s.IsConversion))
-            {
-                sb.AppendLine(serving.ToString());
-            }
+            sb.AppendLine($"  ACTUAL: {actualNutrition.ToNutrientsString()}");
+            sb.AppendLine($"  TARGET: {Macros}");
+        }
+        else
+        {
+            // No conversion foods - show unlabeled macros
+            sb.AppendLine($"  {actualNutrition.ToNutrientsString()}");
+        }
+
+        // Show servings for all meals
+        foreach (var serving in Servings.Where(s => !s.IsConversion))
+        {
+            sb.AppendLine(serving.ToString());
         }
 
         return sb.ToString();

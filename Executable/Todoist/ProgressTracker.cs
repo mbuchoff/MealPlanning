@@ -8,6 +8,11 @@ internal sealed class ProgressTracker : IDisposable
     private readonly object _lock = new();
     private int _completedOperations;
 
+    [ThreadStatic]
+    private static ProgressTracker? _current;
+
+    public static ProgressTracker? Current => _current;
+
     public ProgressTracker(int totalOperations)
     {
         var options = new ProgressBarOptions
@@ -20,6 +25,7 @@ internal sealed class ProgressTracker : IDisposable
         };
 
         _progressBar = new ProgressBar(totalOperations, "Syncing to Todoist...", options);
+        _current = this;
     }
 
     public void IncrementProgress(string? message = null)
@@ -31,8 +37,20 @@ internal sealed class ProgressTracker : IDisposable
         }
     }
 
+    public void UpdateMessage(string message)
+    {
+        lock (_lock)
+        {
+            _progressBar.Message = message;
+        }
+    }
+
     public void Dispose()
     {
         _progressBar.Dispose();
+        if (_current == this)
+        {
+            _current = null;
+        }
     }
 }

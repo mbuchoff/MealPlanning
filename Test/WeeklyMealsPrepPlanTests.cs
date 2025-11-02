@@ -38,9 +38,9 @@ public class WeeklyMealsPrepPlanTests
         var mealPrepPlans = new List<MealPrepPlan>
         {
             new MealPrepPlan("XfitDay - Rice Bowl",
-                meal1.Servings.Select(s => s * 2), [], 2), // 2 Xfit days
+                meal1.Servings.Select(s => s * 2), [], 2, meal1.Macros * 2), // 2 Xfit days
             new MealPrepPlan("RunningDay - Rice Bowl",
-                meal2.Servings.Select(s => s * 3), [], 3), // 3 Running days
+                meal2.Servings.Select(s => s * 3), [], 3, meal2.Macros * 3), // 3 Running days
         };
 
         var weeklyPlan = new WeeklyMealsPrepPlan(mealPrepPlans);
@@ -73,17 +73,17 @@ public class WeeklyMealsPrepPlanTests
             {
                 food1 * 2,
                 food2 * 1.5M
-            }, [], 1),
+            }, [], 1, new Macros(P: 40, F: 15, C: 60)),
             new MealPrepPlan("Plan 2", new List<FoodServing>
             {
                 food1 * 3,
                 food2 * 2.5M
-            }, [], 1),
+            }, [], 1, new Macros(P: 40, F: 15, C: 60)),
             new MealPrepPlan("Plan 3", new List<FoodServing>
             {
                 food1 * 1.5M
                 // No food2 in this plan
-            }, [], 1)
+            }, [], 1, new Macros(P: 40, F: 15, C: 60))
         };
 
         var weeklyPlan = new WeeklyMealsPrepPlan(mealPrepPlans);
@@ -152,7 +152,7 @@ public class WeeklyMealsPrepPlanTests
 
         var mealPrepPlans = new List<MealPrepPlan>
         {
-            new MealPrepPlan("Test Plan", new List<FoodServing> { food * 5 }, [], 1)
+            new MealPrepPlan("Test Plan", new List<FoodServing> { food * 5 }, [], 1, new Macros(P: 40, F: 15, C: 60))
         };
 
         var weeklyPlan = new WeeklyMealsPrepPlan(mealPrepPlans);
@@ -161,9 +161,11 @@ public class WeeklyMealsPrepPlanTests
         var output = weeklyPlan.ToString();
 
         // Assert
-        Assert.Contains("Test Plan: 500 grams Test Food", output);
-        Assert.Contains("Totals:", output);
+        // Servings should NOT have the meal name prefix
+        Assert.DoesNotContain("Test Plan: 500 grams", output);
+        // Should contain the serving without prefix
         Assert.Contains("500 grams Test Food", output);
+        Assert.Contains("Totals:", output);
     }
     [Fact]
     public void SumWithSameFoodGrouping_Should_Return_MealCount()
@@ -257,7 +259,8 @@ public class WeeklyMealsPrepPlanTests
             "Crossfit day - wheat berries",
             summedMeal.Servings, // Do NOT multiply by daysPerWeek again!
             [],
-            mealCount);
+            mealCount,
+            summedMeal.Macros);
 
         // Verify the final serving count in the meal prep plan
         var finalMuffinServing = mealPrepPlan.CookingServings.FirstOrDefault(s => s.Name == "Ezekiel english muffin");
@@ -377,5 +380,166 @@ public class WeeklyMealsPrepPlanTests
         // Should still contain the real foods
         Assert.Contains(allServings, s => s.Name == "Brown Rice");
         Assert.Contains(allServings, s => s.Name == "Pumpkin Seeds");
+    }
+
+    [Fact]
+    public void WeeklyMealsPrepPlan_ToString_Should_Show_Macros()
+    {
+        // Arrange
+        var targetMacros = new Macros(P: 50, F: 15, C: 80);
+        var meal = new Meal("Test Meal", targetMacros, FoodGroupings.Seitan);
+
+        var mealPrepPlans = new List<MealPrepPlan>
+        {
+            new MealPrepPlan("Crossfit day - seitan",
+                meal.Servings.Where(s => !s.IsConversion),
+                [],
+                3,
+                targetMacros)
+        };
+
+        var weeklyPlan = new WeeklyMealsPrepPlan(mealPrepPlans);
+
+        // Act
+        var output = weeklyPlan.ToString();
+
+        // Assert
+        // Seitan has no conversion foods, so macros should be unlabeled
+        Assert.Contains("50 P", output); // Protein
+        Assert.Contains("15 F", output); // Fat
+        Assert.Contains("80 C", output); // Carbs
+    }
+
+    [Fact]
+    public void WeeklyMealsPrepPlan_ToString_Should_Not_Prefix_Servings_With_Meal_Name()
+    {
+        // Arrange
+        var targetMacros = new Macros(P: 50, F: 15, C: 80);
+        var meal = new Meal("Test Meal", targetMacros, FoodGroupings.Seitan);
+
+        var mealPrepPlans = new List<MealPrepPlan>
+        {
+            new MealPrepPlan("Crossfit day - seitan",
+                meal.Servings.Where(s => !s.IsConversion),
+                [],
+                3,
+                targetMacros)
+        };
+
+        var weeklyPlan = new WeeklyMealsPrepPlan(mealPrepPlans);
+
+        // Act
+        var output = weeklyPlan.ToString();
+
+        // Assert
+        // Should NOT contain the meal name as a prefix on serving lines
+        Assert.DoesNotContain("Crossfit day - seitan: ", output);
+
+        // Should contain servings without the prefix (just ingredient names)
+        Assert.Contains("olive oil", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("brown rice", output, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void WeeklyMealsPrepPlan_ToString_Should_Separate_Entries_With_Blank_Lines()
+    {
+        // Arrange
+        var targetMacros1 = new Macros(P: 50, F: 15, C: 80);
+        var meal1 = new Meal("Test Meal 1", targetMacros1, FoodGroupings.Seitan);
+
+        var targetMacros2 = new Macros(P: 40, F: 20, C: 70);
+        var meal2 = new Meal("Test Meal 2", targetMacros2, FoodGroupings.Tofu);
+
+        var mealPrepPlans = new List<MealPrepPlan>
+        {
+            new MealPrepPlan("Crossfit day - seitan",
+                meal1.Servings.Where(s => !s.IsConversion),
+                [],
+                3,
+                targetMacros1),
+            new MealPrepPlan("Running day - tofu",
+                meal2.Servings.Where(s => !s.IsConversion),
+                [],
+                2,
+                targetMacros2)
+        };
+
+        var weeklyPlan = new WeeklyMealsPrepPlan(mealPrepPlans);
+
+        // Act
+        var output = weeklyPlan.ToString();
+
+        // Assert
+        // Should contain blank line between entries (two consecutive newlines)
+        // Pattern: last serving of first meal, blank line, header of second meal
+        var lines = output.Split('\n');
+
+        // Find the transition between the two meal plans
+        var seitanIndex = Array.FindIndex(lines, line => line.Contains("Crossfit day - seitan"));
+        var tofuIndex = Array.FindIndex(lines, line => line.Contains("Running day - tofu"));
+
+        Assert.True(seitanIndex >= 0, "Should contain Crossfit day - seitan");
+        Assert.True(tofuIndex > seitanIndex, "Should contain Running day - tofu after seitan");
+
+        // There should be a blank line before the tofu entry
+        Assert.Equal("", lines[tofuIndex - 1]);
+    }
+
+    [Fact]
+    public void WeeklyMealsPrepPlan_ToString_Should_Not_Show_Actual_Target_Labels_Without_Conversion_Foods()
+    {
+        // Arrange
+        var targetMacros = new Macros(P: 50, F: 15, C: 80);
+        // Seitan has no conversion foods
+        var meal = new Meal("Test Meal", targetMacros, FoodGroupings.Seitan);
+
+        var mealPrepPlans = new List<MealPrepPlan>
+        {
+            new MealPrepPlan("Crossfit day - seitan",
+                meal.Servings.Where(s => !s.IsConversion),
+                [],
+                3,
+                targetMacros,
+                HasConversionFoods: false)
+        };
+
+        var weeklyPlan = new WeeklyMealsPrepPlan(mealPrepPlans);
+
+        // Act
+        var output = weeklyPlan.ToString();
+
+        // Assert
+        // Should NOT show ACTUAL/TARGET labels when there are no conversion foods
+        Assert.DoesNotContain("ACTUAL:", output);
+        Assert.DoesNotContain("TARGET:", output);
+    }
+
+    [Fact]
+    public void WeeklyMealsPrepPlan_ToString_Should_Show_Actual_Target_Labels_With_Conversion_Foods()
+    {
+        // Arrange
+        var targetMacros = new Macros(P: 30, F: 20, C: 80);
+        // Oatmeal with conversion foods
+        var meal = new Meal("Test Meal", targetMacros, FoodGroupings.Oatmeal(withEdamame: false));
+
+        var mealPrepPlans = new List<MealPrepPlan>
+        {
+            new MealPrepPlan("Test day - oatmeal",
+                meal.Servings.Where(s => !s.IsConversion),
+                [],
+                3,
+                targetMacros,
+                HasConversionFoods: true)
+        };
+
+        var weeklyPlan = new WeeklyMealsPrepPlan(mealPrepPlans);
+
+        // Act
+        var output = weeklyPlan.ToString();
+
+        // Assert
+        // SHOULD show ACTUAL/TARGET labels when there are conversion foods
+        Assert.Contains("ACTUAL:", output);
+        Assert.Contains("TARGET:", output);
     }
 }

@@ -90,7 +90,10 @@ internal static class TodoistApi
     private static async Task<HttpClient> CreateHttpClientAsync()
     {
         var apiKey = await GetApiKeyAsync();
-        var httpClient = new HttpClient(new HttpClientRetryHandler());
+        var retryHandler = new HttpClientRetryHandler(
+            new HttpClientHandler(),
+            message => ProgressTracker.Current?.UpdateMessage(message));
+        var httpClient = new HttpClient(retryHandler);
         httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiKey}");
         return httpClient;
     }

@@ -24,6 +24,7 @@ internal class WeeklyMealsPrepPlans
             TrainingDayType = x.TrainingDayType,
         }).SelectMany(x => x.MealsWithCounts.Select(mc =>
         {
+            var hasConversionFoods = mc.Meal.Servings.Any(s => s.IsConversion);
             var allServings = mc.Meal.Servings.Where(s => !s.IsConversion);
             var cookingServings = allServings.Where(s => s.AddWhen == FoodServing.AddWhenEnum.WithMeal);
             var eatingServings = allServings.Where(s => s.AddWhen == FoodServing.AddWhenEnum.AtEatingTime);
@@ -32,6 +33,8 @@ internal class WeeklyMealsPrepPlans
                 $"{x.TrainingDayType} - {mc.Meal.Name}",
                 cookingServings,
                 eatingServings,
-                mc.MealCount);
+                mc.MealCount,
+                mc.Meal.Macros,
+                hasConversionFoods);
         })));
 }

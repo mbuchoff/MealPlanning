@@ -364,4 +364,31 @@ public class TodoistServiceTests
         var sections = comment.Split("\n\n");
         Assert.Equal(2, sections.Length);
     }
+
+    [Fact]
+    public void GenerateNutritionalComment_Should_Include_Target_Macros_When_Provided()
+    {
+        // Arrange
+        var chicken = new FoodServing("Chicken",
+            new(ServingUnits: 100, ServingUnits.Gram, Cals: 165, P: 31, F: 3.6M, CTotal: 0, CFiber: 0));
+        var rice = new FoodServing("Brown Rice",
+            new(ServingUnits: 100, ServingUnits.Gram, Cals: 111, P: 2.6M, F: 0.9M, CTotal: 23, CFiber: 1.8M));
+
+        var servings = new List<FoodServing> { chicken * 2, rice * 1.5M };
+        var targetMacros = new Macros(P: 65, F: 10, C: 35);
+
+        // Act
+        var comment = TodoistServiceHelper.GenerateNutritionalComment(servings, targetMacros);
+
+        // Assert
+        // Should contain ACTUAL label with actual macros
+        Assert.Contains("ACTUAL:", comment);
+        Assert.Contains("497 cals", comment); // Actual total
+
+        // Should contain TARGET label with target macros
+        Assert.Contains("TARGET:", comment);
+        Assert.Contains("65 P", comment); // Target P
+        Assert.Contains("10 F", comment); // Target F
+        Assert.Contains("35 C", comment); // Target C
+    }
 }
