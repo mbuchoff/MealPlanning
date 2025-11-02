@@ -38,7 +38,8 @@ public class AddWhenTests
             "Test Meal",
             [cookingFood],
             [eatingFood],
-            5);
+            5,
+            new Macros(P: 40, F: 15, C: 60));
 
         // Assert
         Assert.Single(mealPrepPlan.CookingServings);

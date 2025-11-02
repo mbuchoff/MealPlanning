@@ -49,12 +49,12 @@ internal record MuscleGain2 : TrainingWeekBase
         PreparationMethodEnum.PrepareAsNeeded)).ToArray();
 
     private static FoodGrouping[] WheatBerriesAndRice { get; } =
-        new[] { Foods.BrownRice_45_Grams, Foods.ProteinToCarbConversion }.Select(cFood => new FoodGrouping(
-            "wheat berries",
+        new[] { Foods.WheatBerries_45_Grams, Foods.ProteinToCarbConversion }.Select(pFood => new FoodGrouping(
+            "rice",
             [Foods.Ezekiel_English_Muffin * 1],
-            Foods.WheatBerries_45_Grams,
+            pFood,
             Foods.PumpkinSeeds_30_Grams,
-            cFood,
+            Foods.BrownRice_45_Grams,
             PreparationMethodEnum.PrepareInAdvance)).ToArray();
 
     private static readonly FoodGrouping[] WakingBlueberryOatmealShakeFoodGroupings =

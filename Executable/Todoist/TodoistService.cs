@@ -241,8 +241,8 @@ internal class TodoistService
         // Add servings as subtasks
         await Task.WhenAll(mealWithIndex.Servings.Select(s => AddServingAsync(mealTask, s, progress)));
 
-        // Add nutritional comment
-        var comment = TodoistServiceHelper.GenerateNutritionalComment(mealWithIndex.Servings);
+        // Add nutritional comment with target macros
+        var comment = TodoistServiceHelper.GenerateNutritionalComment(mealWithIndex.Servings, mealWithIndex.Meal.Macros);
         await AddCommentAsync(mealTask.Id, comment);
         progress.IncrementProgress();
     }
