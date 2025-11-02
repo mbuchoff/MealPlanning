@@ -14,6 +14,15 @@ public class Meal
         ActualFoodGrouping = foodGrouping;
     }
 
+    public Meal(string name, Macros macros, FallbackChain fallbackChain)
+    {
+        Name = name;
+        Macros = macros;
+        _foodGroupings = fallbackChain?.All ?? throw new ArgumentNullException(nameof(fallbackChain));
+        if (_foodGroupings.Length == 0)
+            throw new ArgumentException("FallbackChain must contain at least one FoodGrouping", nameof(fallbackChain));
+    }
+
     public static Meal WithFallbacks(string name, Macros macros, params FoodGrouping[] foodGroupings)
     {
         return new Meal(name, macros, foodGroupings);

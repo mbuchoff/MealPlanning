@@ -75,4 +75,32 @@ public class MealFallbackTests
         Assert.Equal(2, summedMeal.FoodGroupings.Length);
         Assert.Equal(4, mealCount); // 2 meals * 2 days
     }
+
+    [Fact]
+    public void Meal_Should_Accept_FallbackChain_In_Constructor()
+    {
+        // Arrange
+        var pFood = new FoodServing("Protein",
+            new(ServingUnits: 100, ServingUnits.Gram, Cals: 100, P: 20, F: 5, CTotal: 0, CFiber: 0));
+        var fFood = new FoodServing("Fat",
+            new(ServingUnits: 10, ServingUnits.Gram, Cals: 90, P: 0, F: 10, CTotal: 0, CFiber: 0));
+        var cFood1 = new FoodServing("Carb1",
+            new(ServingUnits: 100, ServingUnits.Gram, Cals: 100, P: 2, F: 0, CTotal: 25, CFiber: 2));
+        var cFood2 = new FoodServing("Carb2",
+            new(ServingUnits: 100, ServingUnits.Gram, Cals: 90, P: 1, F: 0, CTotal: 22, CFiber: 3));
+
+        var grouping1 = new FoodGrouping("Grouping1", [], pFood, fFood, cFood1,
+            FoodGrouping.PreparationMethodEnum.PrepareInAdvance);
+        var grouping2 = new FoodGrouping("Grouping2", [], pFood, fFood, cFood2,
+            FoodGrouping.PreparationMethodEnum.PrepareInAdvance);
+
+        var fallbackChain = new FallbackChain(grouping1, grouping2);
+
+        // Act
+        var meal = new Meal("Test Meal", new Macros(P: 30, F: 15, C: 50), fallbackChain);
+
+        // Assert
+        Assert.NotNull(meal);
+        Assert.Equal("Test Meal", meal.Name);
+    }
 }
