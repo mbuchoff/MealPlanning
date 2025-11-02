@@ -76,8 +76,16 @@ Where x, y, z are the servings of PFood, FFood, and CFood respectively. See `Mea
 Meals support fallback FoodGroupings when the primary grouping produces negative servings or has no solution:
 
 ```csharp
-Meal.WithFallbacks("Meal Name", macros, primaryGrouping, fallback1, fallback2)
+new Meal("Meal Name", macros, new FallbackChain(primaryGrouping, fallback1, fallback2))
+// Or using predefined chains from FoodGroupings:
+new Meal("Meal Name", macros, FoodGroupings.Ezekiel)
 ```
+
+The `FallbackChain` type makes fallback chains explicit in the type system, with properties:
+- `Primary`: The first (preferred) grouping
+- `Fallbacks`: Subsequent options if primary fails
+- `All`: Complete array for iteration
+- `Count`: Number of groupings in chain
 
 The meal tries each FoodGrouping sequentially until finding one that works. This is critical for scaling (via `ForTargetCalories()`) since different calorie levels may require different food combinations.
 

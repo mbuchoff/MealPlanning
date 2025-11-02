@@ -542,4 +542,46 @@ public class WeeklyMealsPrepPlanTests
         Assert.Contains("ACTUAL:", output);
         Assert.Contains("TARGET:", output);
     }
+
+    [Fact]
+    public void WeeklyMealsPrepPlan_ToString_Target_Should_Not_Show_Calories()
+    {
+        // TARGET macros don't inherently have calories - calories are derived from P/F/C
+        // ACTUAL shows calories because it comes from real food servings
+        // TARGET should only show the macro breakdown without calories
+
+        // Arrange
+        var targetMacros = new Macros(P: 170, F: 97, C: 712);
+        // Create a meal with conversion foods so ACTUAL/TARGET labels appear
+        var meal = new Meal("rice", targetMacros, FoodGroupings.Oatmeal(withEdamame: false));
+
+        var mealPrepPlans = new List<MealPrepPlan>
+        {
+            new MealPrepPlan("Crossfit day - rice",
+                meal.Servings.Where(s => !s.IsConversion),
+                [],
+                3,
+                targetMacros,
+                HasConversionFoods: true)
+        };
+
+        var weeklyPlan = new WeeklyMealsPrepPlan(mealPrepPlans);
+
+        // Act
+        var output = weeklyPlan.ToString();
+
+        // Assert
+        // Find the TARGET line in the output
+        var lines = output.Split('\n');
+        var targetLine = lines.FirstOrDefault(line => line.Contains("TARGET:"));
+        Assert.NotNull(targetLine);
+
+        // TARGET should NOT contain "cals"
+        Assert.DoesNotContain("cals", targetLine);
+
+        // TARGET should still show the macros
+        Assert.Contains("170 P", targetLine);
+        Assert.Contains("97 F", targetLine);
+        Assert.Contains("712 C", targetLine);
+    }
 }

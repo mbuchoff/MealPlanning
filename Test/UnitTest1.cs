@@ -10,7 +10,7 @@ public class UnitTest1
     {
         const int pServings = 1, fServings = 2, cServings = 3;
         var m = new Meal("m", new(pServings, fServings, cServings),
-            new("fg", pFood, fFood, cFood, FoodGrouping.PreparationMethodEnum.PrepareAsNeeded));
+            new FoodGrouping("fg", pFood, fFood, cFood, FoodGrouping.PreparationMethodEnum.PrepareAsNeeded));
         var hs = m.Servings.Select(s => new
         {
             s.Name,
@@ -66,7 +66,7 @@ public class UnitTest1
         var targetMacros = new Macros(P: 1, F: 2, C: 3);
 
         // Create meal with array of FoodGroupings
-        var meal = Meal.WithFallbacks("test meal", targetMacros, impossibleFoodGrouping, workingFoodGrouping);
+        var meal = new Meal("test meal", targetMacros, new FallbackChain(impossibleFoodGrouping, workingFoodGrouping));
 
         // Verify that servings were calculated correctly (this triggers the calculation)
         var servings = meal.Servings.ToList();
@@ -98,19 +98,27 @@ public class UnitTest1
         var targetMacros = new Macros(P: 1, F: 2, C: 3);
 
         // Create meal with array of impossible FoodGroupings
-        var meal = Meal.WithFallbacks("test meal", targetMacros, impossibleFoodGrouping1, impossibleFoodGrouping2);
+        var meal = new Meal("test meal", targetMacros, new FallbackChain(impossibleFoodGrouping1, impossibleFoodGrouping2));
 
         // Should throw when trying to calculate servings since all FoodGroupings fail
         Assert.Throws<Exception>(() => meal.Servings.ToList());
     }
 
     [Fact]
-    public void Meal_Should_Throw_When_No_FoodGroupings_Provided()
+    public void FallbackChain_Should_Throw_When_Less_Than_Two_FoodGroupings_Provided()
     {
-        var targetMacros = new Macros(P: 1, F: 2, C: 3);
+        var pFood = new FoodServing("Protein",
+            new(ServingUnits: 100, ServingUnits.Gram, Cals: 100, P: 20, F: 5, CTotal: 0, CFiber: 0));
+        var fFood = new FoodServing("Fat",
+            new(ServingUnits: 10, ServingUnits.Gram, Cals: 90, P: 0, F: 10, CTotal: 0, CFiber: 0));
+        var cFood = new FoodServing("Carb",
+            new(ServingUnits: 100, ServingUnits.Gram, Cals: 100, P: 2, F: 0, CTotal: 25, CFiber: 2));
 
-        // Should throw when creating meal with empty array
-        Assert.Throws<ArgumentException>(() => Meal.WithFallbacks("test meal", targetMacros));
+        var singleGrouping = new FoodGrouping("Single", [], pFood, fFood, cFood,
+            FoodGrouping.PreparationMethodEnum.PrepareInAdvance);
+
+        // Should throw when creating FallbackChain with only one grouping
+        Assert.Throws<ArgumentException>(() => new FallbackChain(singleGrouping));
     }
 
     private static readonly FoodServing pFood = new("1g p",
