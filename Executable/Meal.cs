@@ -23,20 +23,6 @@ public class Meal
             throw new ArgumentException("FallbackChain must contain at least one FoodGrouping", nameof(fallbackChain));
     }
 
-    public static Meal WithFallbacks(string name, Macros macros, params FoodGrouping[] foodGroupings)
-    {
-        return new Meal(name, macros, foodGroupings);
-    }
-
-    private Meal(string name, Macros macros, params FoodGrouping[] foodGroupings)
-    {
-        Name = name;
-        Macros = macros;
-        _foodGroupings = foodGroupings ?? throw new ArgumentNullException(nameof(foodGroupings));
-        if (foodGroupings.Length == 0)
-            throw new ArgumentException("At least one FoodGrouping must be provided", nameof(foodGroupings));
-    }
-
     private readonly FoodGrouping[] _foodGroupings;
 
     public FoodGrouping[] FoodGroupings => _foodGroupings;
@@ -163,7 +149,14 @@ public class Meal
     {
         var tweakedMacros = Macros.CloneWithTweakedMacros(pPercent, fPercent, cPercent);
         // Preserve ALL fallback options, not just the one that was used
-        return WithFallbacks(Name, tweakedMacros, FoodGroupings);
+        if (_foodGroupings.Length == 1)
+        {
+            return new Meal(Name, tweakedMacros, _foodGroupings[0]);
+        }
+        else
+        {
+            return new Meal(Name, tweakedMacros, new FallbackChain(_foodGroupings));
+        }
     }
 }
 
@@ -195,7 +188,9 @@ internal static class MealExtensions
             }).ToArray();
 
             // Create meal with ALL scaled fallback options preserved
-            var meal = Meal.WithFallbacks(scaledFoodGroupings[0].Name, totalMacros, scaledFoodGroupings);
+            var meal = scaledFoodGroupings.Length == 1
+                ? new Meal(scaledFoodGroupings[0].Name, totalMacros, scaledFoodGroupings[0])
+                : new Meal(scaledFoodGroupings[0].Name, totalMacros, new FallbackChain(scaledFoodGroupings));
 
             return (meal, mealCount);
         });
