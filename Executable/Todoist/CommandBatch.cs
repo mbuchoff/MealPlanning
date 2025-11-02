@@ -64,7 +64,7 @@ internal class CommandBatch
             Description: description,
             ProjectId: resolvedProjectId,
             ParentId: resolvedParentId,
-            Due: dueString != null ? new DueDate(dueString) : null,
+            DueString: dueString,
             Collapsed: collapsed,
             ChildOrder: childOrder
         );
