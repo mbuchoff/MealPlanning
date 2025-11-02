@@ -26,8 +26,8 @@ public class MealFallbackTests
         var foodGrouping2 = new FoodGrouping("Grouping2", [], pFood, fFood, cFood2,
             FoodGrouping.PreparationMethodEnum.PrepareInAdvance);
 
-        var originalMeal = Meal.WithFallbacks("Test Meal", new Macros(P: 30, F: 15, C: 50),
-            foodGrouping1, foodGrouping2);
+        var originalMeal = new Meal("Test Meal", new Macros(P: 30, F: 15, C: 50),
+            new FallbackChain(foodGrouping1, foodGrouping2));
 
         // Act - Clone with tweaked macros
         var clonedMeal = originalMeal.CloneWithTweakedMacros(1.1M, 1.0M, 1.0M);
@@ -62,8 +62,8 @@ public class MealFallbackTests
 
         var meals = new List<Meal>
         {
-            Meal.WithFallbacks("Meal 1", new Macros(P: 30, F: 15, C: 50), foodGrouping1, foodGrouping2),
-            Meal.WithFallbacks("Meal 2", new Macros(P: 35, F: 20, C: 60), foodGrouping1, foodGrouping2),
+            new Meal("Meal 1", new Macros(P: 30, F: 15, C: 50), new FallbackChain(foodGrouping1, foodGrouping2)),
+            new Meal("Meal 2", new Macros(P: 35, F: 20, C: 60), new FallbackChain(foodGrouping1, foodGrouping2)),
         };
 
         // Act - Sum meals
