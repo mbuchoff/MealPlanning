@@ -1,4 +1,6 @@
 .vs
+.idea
 **/bin
 **/obj
 .worktrees/
+*.DotSettings.user
