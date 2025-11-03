@@ -354,25 +354,31 @@ internal class TodoistService
             var mealsForDay = new List<MealWithIndex>();
             int mealIndex = 1;
 
-            // Collect PrepareAsNeeded meals
-            foreach (var meal in trainingDay.Meals
-                .Where(m => m.FoodGrouping.PreparationMethod == FoodGrouping.PreparationMethodEnum.PrepareAsNeeded))
+            // Iterate through all meals in chronological order
+            foreach (var meal in trainingDay.Meals)
             {
-                mealsForDay.Add(new MealWithIndex(
-                    Index: mealIndex++,
-                    Meal: meal,
-                    Servings: meal.Servings.Where(s => !s.IsConversion)));
-            }
+                IEnumerable<FoodServing> servings;
 
-            // Collect PrepareInAdvance meals with AtEatingTime servings
-            foreach (var meal in trainingDay.Meals
-                .Where(m => m.FoodGrouping.PreparationMethod == FoodGrouping.PreparationMethodEnum.PrepareInAdvance
-                         && m.Servings.Any(s => s.AddWhen == FoodServing.AddWhenEnum.AtEatingTime)))
-            {
+                if (meal.FoodGrouping.PreparationMethod == FoodGrouping.PreparationMethodEnum.PrepareAsNeeded)
+                {
+                    // PrepareAsNeeded: show all servings (except conversions)
+                    servings = meal.Servings.Where(s => !s.IsConversion);
+                }
+                else if (meal.FoodGrouping.PreparationMethod == FoodGrouping.PreparationMethodEnum.PrepareInAdvance)
+                {
+                    // PrepareInAdvance: show only AtEatingTime servings (except conversions)
+                    // If no AtEatingTime servings, empty list (will show food grouping name only)
+                    servings = meal.Servings.Where(s => s.AddWhen == FoodServing.AddWhenEnum.AtEatingTime && !s.IsConversion);
+                }
+                else
+                {
+                    continue; // Skip meals with unknown preparation method
+                }
+
                 mealsForDay.Add(new MealWithIndex(
                     Index: mealIndex++,
                     Meal: meal,
-                    Servings: meal.Servings.Where(s => s.AddWhen == FoodServing.AddWhenEnum.AtEatingTime && !s.IsConversion)));
+                    Servings: servings));
             }
 
             yield return new DayTypeGroup(
