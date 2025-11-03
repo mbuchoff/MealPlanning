@@ -159,13 +159,12 @@ internal class TodoistService
     {
         var project = await projectTask;
         var hasCookingServings = m.CookingServings.Any();
-        var hasEatingServings = m.EatingServings.Any();
 
         // Only create cooking task (eating servings handled separately in AddPhaseAsync)
         if (!hasCookingServings)
             return;
 
-        var cookingTaskName = hasEatingServings ? $"{m.Name} - Cooking" : m.Name;
+        var cookingTaskName = TodoistServiceHelper.GetMealPrepTaskName(m.Name);
         var cookingParentTask = await AddTaskAsync(
             cookingTaskName, description: null, dueString: "every tue", parentId: null, project.Id, isCollapsed: true, order: order);
         progress.IncrementProgress();
