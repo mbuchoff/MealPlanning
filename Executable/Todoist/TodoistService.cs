@@ -177,7 +177,7 @@ internal class TodoistService
         for (int mealCount = 1; mealCount <= m.MealCount; mealCount++)
         {
             var quantityLabel = mealCount == 1 ? "1 meal" : $"{mealCount} meals";
-            await AddMealQuantitySubtask(cookingParentTask, quantityLabel, m.CookingServings, mealCount, m.MealCount, progress);
+            await AddMealQuantitySubtask(cookingParentTask, quantityLabel, m.CookingServings, mealCount, m.MealCount, m.TargetMacros, m.HasConversionFoods, progress);
         }
     }
 
@@ -187,6 +187,8 @@ internal class TodoistService
         IEnumerable<FoodServing> baseServings,
         int mealCount,
         int totalMealCount,
+        Macros totalTargetMacros,
+        bool hasConversionFoods,
         ProgressTracker progress)
     {
         var quantityTask = await AddTaskAsync(
@@ -199,9 +201,10 @@ internal class TodoistService
         // Scale servings based on meal count ratio
         decimal scaleFactor = (decimal)mealCount / totalMealCount;
         var scaledServings = baseServings.Select(s => s * scaleFactor).ToList();
+        var scaledTargetMacros = totalTargetMacros * scaleFactor;
 
         // Generate and add nutritional comment in parallel with servings
-        var comment = TodoistServiceHelper.GenerateNutritionalComment(scaledServings);
+        var comment = TodoistServiceHelper.GenerateNutritionalComment(scaledServings, scaledTargetMacros, hasConversionFoods);
         await Task.WhenAll(
             scaledServings.Select(s => AddServingAsync(quantityTask, s, progress))
                 .Append(AddCommentAsync(quantityTask.Id, comment).ContinueWith(_ => progress.IncrementProgress())));
@@ -242,7 +245,11 @@ internal class TodoistService
         await Task.WhenAll(mealWithIndex.Servings.Select(s => AddServingAsync(mealTask, s, progress)));
 
         // Add nutritional comment with target macros
-        var comment = TodoistServiceHelper.GenerateNutritionalComment(mealWithIndex.Servings, mealWithIndex.Meal.Macros);
+        // Use meal's HasConversionFoods property (mealWithIndex.Servings has conversion foods filtered out)
+        var comment = TodoistServiceHelper.GenerateNutritionalComment(
+            mealWithIndex.Servings,
+            mealWithIndex.Meal.Macros,
+            mealWithIndex.Meal.HasConversionFoods);
         await AddCommentAsync(mealTask.Id, comment);
         progress.IncrementProgress();
     }
