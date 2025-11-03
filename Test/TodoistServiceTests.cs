@@ -366,22 +366,25 @@ public class TodoistServiceTests
     }
 
     [Fact]
-    public void GenerateNutritionalComment_Should_Include_Target_Macros_When_Provided()
+    public void GenerateNutritionalComment_Should_Include_Target_Macros_When_Provided_With_Conversion_Foods()
     {
-        // Arrange
+        // Arrange - Include conversion food to trigger ACTUAL/TARGET display
         var chicken = new FoodServing("Chicken",
             new(ServingUnits: 100, ServingUnits.Gram, Cals: 165, P: 31, F: 3.6M, CTotal: 0, CFiber: 0));
         var rice = new FoodServing("Brown Rice",
             new(ServingUnits: 100, ServingUnits.Gram, Cals: 111, P: 2.6M, F: 0.9M, CTotal: 23, CFiber: 1.8M));
+        var conversion = new FoodServing("Macro Adjustment",
+            new(ServingUnits: 1, ServingUnits.Gram, Cals: 0, P: -1, F: 0, CTotal: 1, CFiber: 0),
+            IsConversion: true);
 
-        var servings = new List<FoodServing> { chicken * 2, rice * 1.5M };
+        var servings = new List<FoodServing> { chicken * 2, rice * 1.5M, conversion };
         var targetMacros = new Macros(P: 65, F: 10, C: 35);
 
         // Act
         var comment = TodoistServiceHelper.GenerateNutritionalComment(servings, targetMacros);
 
         // Assert
-        // Should contain ACTUAL label with actual macros
+        // Should contain ACTUAL label with actual macros (excluding conversion)
         Assert.Contains("ACTUAL:", comment);
         Assert.Contains("497 cals", comment); // Actual total
 
@@ -390,5 +393,214 @@ public class TodoistServiceTests
         Assert.Contains("65 P", comment); // Target P
         Assert.Contains("10 F", comment); // Target F
         Assert.Contains("35 C", comment); // Target C
+    }
+
+    [Fact]
+    public void GenerateNutritionalComment_Should_Not_Show_Calories_In_Target_Line()
+    {
+        // Arrange - Include conversion food to trigger ACTUAL/TARGET display
+        var chicken = new FoodServing("Chicken",
+            new(ServingUnits: 100, ServingUnits.Gram, Cals: 165, P: 31, F: 3.6M, CTotal: 0, CFiber: 0));
+        var rice = new FoodServing("Brown Rice",
+            new(ServingUnits: 100, ServingUnits.Gram, Cals: 111, P: 2.6M, F: 0.9M, CTotal: 23, CFiber: 1.8M));
+        var conversion = new FoodServing("Macro Adjustment",
+            new(ServingUnits: 1, ServingUnits.Gram, Cals: 0, P: -1, F: 0, CTotal: 1, CFiber: 0),
+            IsConversion: true);
+
+        var servings = new List<FoodServing> { chicken * 2, rice * 1.5M, conversion };
+        var targetMacros = new Macros(P: 65, F: 10, C: 35);
+
+        // Act
+        var comment = TodoistServiceHelper.GenerateNutritionalComment(servings, targetMacros);
+
+        // Assert
+        // Split into sections to isolate ACTUAL and TARGET
+        var sections = comment.Split("\n\n");
+
+        // Find ACTUAL section (should include actual calories)
+        var actualSection = sections.First(s => s.Contains("ACTUAL:"));
+        Assert.Contains("497 cals", actualSection); // Actual calories should be shown
+
+        // Find TARGET section (should NOT include any calories)
+        var targetSection = sections.First(s => s.Contains("TARGET:"));
+        Assert.DoesNotContain("cals", targetSection); // TARGET should not show calories
+        Assert.Contains("65 P", targetSection); // But should show target macros
+        Assert.Contains("10 F", targetSection);
+        Assert.Contains("35 C", targetSection);
+    }
+
+    [Fact]
+    public void GenerateNutritionalComment_Without_TargetMacros_Should_Not_Show_ACTUAL_And_TARGET_Labels()
+    {
+        // Arrange - Simulate the CURRENT WRONG behavior where targetMacros is not passed
+        var baseServings = new List<FoodServing>
+        {
+            new FoodServing("Seitan",
+                new(ServingUnits: 500, ServingUnits.Gram, Cals: 1850, P: 375, F: 10, CTotal: 70, CFiber: 0)),
+            new FoodServing("Rice",
+                new(ServingUnits: 300, ServingUnits.Gram, Cals: 333, P: 7.8M, F: 2.7M, CTotal: 69, CFiber: 5.4M))
+        };
+
+        decimal scaleFactor = 0.2M; // 1 meal out of 5
+        var scaledServings = baseServings.Select(s => s * scaleFactor).ToList();
+
+        // Act - Call without targetMacros (current behavior in TodoistService.AddMealQuantitySubtask)
+        var comment = TodoistServiceHelper.GenerateNutritionalComment(scaledServings);
+
+        // Assert - Current behavior: no ACTUAL/TARGET labels (just raw macros)
+        Assert.DoesNotContain("ACTUAL:", comment);
+        Assert.DoesNotContain("TARGET:", comment);
+    }
+
+    [Fact]
+    public void GenerateNutritionalComment_With_TargetMacros_But_No_Conversion_Foods_Should_Not_Show_Labels()
+    {
+        // Arrange - NO conversion foods, but target macros provided
+        var chicken = new FoodServing("Chicken",
+            new(ServingUnits: 100, ServingUnits.Gram, Cals: 165, P: 31, F: 3.6M, CTotal: 0, CFiber: 0),
+            IsConversion: false);
+        var rice = new FoodServing("Brown Rice",
+            new(ServingUnits: 100, ServingUnits.Gram, Cals: 111, P: 2.6M, F: 0.9M, CTotal: 23, CFiber: 1.8M),
+            IsConversion: false);
+
+        var servings = new List<FoodServing> { chicken * 2, rice * 1.5M };
+        var targetMacros = new Macros(P: 65, F: 10, C: 35);
+
+        // Act
+        var comment = TodoistServiceHelper.GenerateNutritionalComment(servings, targetMacros);
+
+        // Assert - Should NOT show ACTUAL/TARGET labels when no conversion foods
+        // This matches console output behavior: only show labels when there's a discrepancy
+        Assert.DoesNotContain("ACTUAL:", comment);
+        Assert.DoesNotContain("TARGET:", comment);
+
+        // Should still show macros (unlabeled)
+        Assert.Contains("497 cals", comment); // Total
+        Assert.Contains("66 P", comment);
+    }
+
+    [Fact]
+    public void GenerateNutritionalComment_For_MealPrep_Quantity_Should_Show_ACTUAL_And_TARGET_Only_With_Conversion_Foods()
+    {
+        // Arrange - Simulate meal prep plan scenario with targetMacros AND conversion foods
+        var totalTargetMacros = new Macros(P: 375, F: 50, C: 175);
+
+        // Base servings with a conversion food
+        var baseServings = new List<FoodServing>
+        {
+            new FoodServing("Seitan",
+                new(ServingUnits: 500, ServingUnits.Gram, Cals: 1850, P: 375, F: 10, CTotal: 70, CFiber: 0),
+                IsConversion: false),
+            new FoodServing("Macro Adjustment",
+                new(ServingUnits: 1, ServingUnits.Gram, Cals: 0, P: -5, F: 0, CTotal: 5, CFiber: 0),
+                IsConversion: true)
+        };
+
+        // We're generating a comment for "1 meal" out of 5 total meals
+        decimal scaleFactor = 0.2M; // 1/5
+        var scaledServings = baseServings.Select(s => s * scaleFactor).ToList();
+        var scaledTargetMacros = totalTargetMacros * scaleFactor; // 75 P, 10 F, 35 C
+
+        // Act - Call WITH targetMacros AND conversion foods
+        var comment = TodoistServiceHelper.GenerateNutritionalComment(scaledServings, scaledTargetMacros);
+
+        // Assert - Should show ACTUAL/TARGET labels when conversion foods present
+        Assert.Contains("ACTUAL:", comment);
+        Assert.Contains("TARGET:", comment);
+        Assert.Contains("75 P", comment); // 375 * 0.2 = 75
+        Assert.Contains("10 F", comment); // 50 * 0.2 = 10
+        Assert.Contains("35 C", comment); // 175 * 0.2 = 35
+    }
+
+    [Fact]
+    public void GenerateNutritionalComment_When_HasConversionFoods_Flag_Is_True_Should_Show_Labels_Even_If_Servings_Filtered()
+    {
+        // Arrange - Simulate REAL meal prep scenario
+        // Original meal HAD conversion foods (HasConversionFoods=true)
+        // But MealPrepPlan.CookingServings has them filtered out
+        // This matches what WeeklyMealsPrepPlans.cs does on line 28
+        var totalTargetMacros = new Macros(P: 375, F: 50, C: 175);
+        var hasConversionFoods = true; // Original meal had conversion foods
+
+        // Base servings WITHOUT conversion foods (filtered out for cooking)
+        var baseServings = new List<FoodServing>
+        {
+            new FoodServing("Seitan",
+                new(ServingUnits: 500, ServingUnits.Gram, Cals: 1850, P: 375, F: 10, CTotal: 70, CFiber: 0),
+                IsConversion: false),
+            new FoodServing("Rice",
+                new(ServingUnits: 300, ServingUnits.Gram, Cals: 333, P: 7.8M, F: 2.7M, CTotal: 69, CFiber: 5.4M),
+                IsConversion: false)
+        };
+
+        decimal scaleFactor = 0.2M;
+        var scaledServings = baseServings.Select(s => s * scaleFactor).ToList();
+        var scaledTargetMacros = totalTargetMacros * scaleFactor;
+
+        // Act - Pass hasConversionFoods flag to match console behavior
+        var comment = TodoistServiceHelper.GenerateNutritionalComment(scaledServings, scaledTargetMacros, hasConversionFoods);
+
+        // Assert - SHOULD show ACTUAL/TARGET labels because HasConversionFoods=true
+        // This matches console output behavior in WeeklyMealsPrepPlan.ToString:20
+        Assert.Contains("ACTUAL:", comment);
+        Assert.Contains("TARGET:", comment);
+    }
+
+    [Fact]
+    public void GenerateNutritionalComment_When_HasConversionFoods_Flag_Is_False_Should_Not_Show_Labels()
+    {
+        // Arrange - Original meal did NOT have conversion foods
+        var totalTargetMacros = new Macros(P: 375, F: 50, C: 175);
+        var hasConversionFoods = false;
+
+        var baseServings = new List<FoodServing>
+        {
+            new FoodServing("Seitan",
+                new(ServingUnits: 500, ServingUnits.Gram, Cals: 1850, P: 375, F: 10, CTotal: 70, CFiber: 0)),
+            new FoodServing("Rice",
+                new(ServingUnits: 300, ServingUnits.Gram, Cals: 333, P: 7.8M, F: 2.7M, CTotal: 69, CFiber: 5.4M))
+        };
+
+        decimal scaleFactor = 0.2M;
+        var scaledServings = baseServings.Select(s => s * scaleFactor).ToList();
+        var scaledTargetMacros = totalTargetMacros * scaleFactor;
+
+        // Act
+        var comment = TodoistServiceHelper.GenerateNutritionalComment(scaledServings, scaledTargetMacros, hasConversionFoods);
+
+        // Assert - Should NOT show labels when HasConversionFoods=false
+        Assert.DoesNotContain("ACTUAL:", comment);
+        Assert.DoesNotContain("TARGET:", comment);
+    }
+
+    [Fact]
+    public void GenerateNutritionalComment_For_Eating_Meal_With_Conversion_Foods_Should_Show_Labels()
+    {
+        // Arrange - Simulate eating meal scenario (like "Eating > Non-weight training day > 3 - Bedtime")
+        // GetDayTypeGroups filters out conversion foods from servings (line 361, 372)
+        // But the original meal HAD conversion foods
+
+        // Original meal servings (with conversion food)
+        var allServings = new List<FoodServing>
+        {
+            new FoodServing("Protein",
+                new(ServingUnits: 30, ServingUnits.Gram, Cals: 120, P: 24, F: 2, CTotal: 2, CFiber: 0),
+                IsConversion: false),
+            new FoodServing("Macro Adjustment",
+                new(ServingUnits: 1, ServingUnits.Gram, Cals: 0, P: -2, F: 0, CTotal: 2, CFiber: 0),
+                IsConversion: true)
+        };
+
+        // Filtered servings (conversion foods removed - what GetDayTypeGroups creates)
+        var filteredServings = allServings.Where(s => !s.IsConversion).ToList();
+        var targetMacros = new Macros(P: 22, F: 2, C: 4);
+        var hasConversionFoods = allServings.Any(s => s.IsConversion); // true
+
+        // Act - Pass hasConversionFoods flag to match console behavior
+        var comment = TodoistServiceHelper.GenerateNutritionalComment(filteredServings, targetMacros, hasConversionFoods);
+
+        // Assert - Should show ACTUAL/TARGET labels because original meal had conversion foods
+        Assert.Contains("ACTUAL:", comment);
+        Assert.Contains("TARGET:", comment);
     }
 }

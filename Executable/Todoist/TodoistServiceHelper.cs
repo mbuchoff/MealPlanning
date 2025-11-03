@@ -4,7 +4,10 @@ using SystemOfEquations.Data;
 
 internal static class TodoistServiceHelper
 {
-    public static string GenerateNutritionalComment(IEnumerable<FoodServing> servings, Macros? targetMacros = null)
+    public static string GenerateNutritionalComment(
+        IEnumerable<FoodServing> servings,
+        Macros? targetMacros = null,
+        bool? hasConversionFoods = null)
     {
         var servingsList = servings.ToList();
 
@@ -16,38 +19,42 @@ internal static class TodoistServiceHelper
             .Select(s => s.NutritionalInformation)
             .Sum(1, ServingUnits.Meal);
 
-        // Check if there are any conversion foods
-        var hasConversionFoods = servingsList.Any(s => s.IsConversion);
+        // Determine if there are conversion foods:
+        // - If explicitly provided via flag, use that (for meal prep where conversion foods are filtered out)
+        // - Otherwise, check the servings list (for inline meal comments)
+        var hasConversions = hasConversionFoods ?? servingsList.Any(s => s.IsConversion);
 
-        // Build header sections based on whether conversion foods or target macros exist
+        // Build header sections - only show ACTUAL/TARGET labels when there are conversion foods
+        // This matches console output behavior (Meal.ToString and WeeklyMealsPrepPlan.ToString)
         List<string> headerSections;
-        if (targetMacros != null)
+        if (hasConversions)
         {
-            // Show ACTUAL and TARGET when target macros provided
-            var targetCals = targetMacros.P * 4 + targetMacros.F * 9 + targetMacros.C * 4;
-            var targetString = $"{targetCals:F0} cals, {targetMacros}";
-            headerSections = new List<string>
+            if (targetMacros != null)
             {
-                $"ACTUAL:\n{actualTotal.ToNutrientsString()}",
-                $"TARGET:\n{targetString}"
-            };
-        }
-        else if (hasConversionFoods)
-        {
-            // Calculate INTENDED total (all servings including conversions)
-            var intendedTotal = servingsList
-                .Select(s => s.NutritionalInformation)
-                .Sum(1, ServingUnits.Meal);
+                // Show ACTUAL and TARGET when conversion foods + target macros
+                headerSections = new List<string>
+                {
+                    $"ACTUAL:\n{actualTotal.ToNutrientsString()}",
+                    $"TARGET:\n{targetMacros}"
+                };
+            }
+            else
+            {
+                // Show ACTUAL and INTENDED when conversion foods without target macros
+                var intendedTotal = servingsList
+                    .Select(s => s.NutritionalInformation)
+                    .Sum(1, ServingUnits.Meal);
 
-            headerSections = new List<string>
-            {
-                $"ACTUAL:\n{actualTotal.ToNutrientsString()}",
-                $"INTENDED:\n{intendedTotal.ToNutrientsString()}"
-            };
+                headerSections = new List<string>
+                {
+                    $"ACTUAL:\n{actualTotal.ToNutrientsString()}",
+                    $"INTENDED:\n{intendedTotal.ToNutrientsString()}"
+                };
+            }
         }
         else
         {
-            // No conversion foods or target - show unlabeled total
+            // No conversion foods - show unlabeled total (ignore targetMacros)
             headerSections = new List<string>
             {
                 actualTotal.ToNutrientsString()

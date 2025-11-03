@@ -34,8 +34,7 @@ public class Meal
 
         // Add macro information - show ACTUAL/TARGET labels only if there are conversion foods
         var actualNutrition = NutritionalInformation;
-        var hasConversionFoods = Servings.Any(s => s.IsConversion);
-        if (hasConversionFoods)
+        if (HasConversionFoods)
         {
             sb.AppendLine($"  ACTUAL: {actualNutrition.ToNutrientsString()}");
             sb.AppendLine($"  TARGET: {Macros}");
@@ -144,6 +143,12 @@ public class Meal
     public NutritionalInformation NutritionalInformation => Servings
         .Select(s => s.NutritionalInformation)
         .Sum(1, ServingUnits.Meal);
+
+    /// <summary>
+    /// Indicates whether this meal contains any conversion foods (macro adjustments).
+    /// Consolidated logic for determining if ACTUAL/TARGET labels should be shown.
+    /// </summary>
+    public bool HasConversionFoods => Servings.Any(s => s.IsConversion);
 
     public Meal CloneWithTweakedMacros(decimal pPercent, decimal fPercent, decimal cPercent)
     {
