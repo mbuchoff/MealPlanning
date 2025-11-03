@@ -617,4 +617,186 @@ public class TodoistServiceTests
         Assert.Equal("Crossfit day - rice", taskName);
         Assert.DoesNotContain(" - Cooking", taskName);
     }
+
+    [Fact]
+    public void GetDayTypeGroups_Should_Return_All_Meals_In_Chronological_Order()
+    {
+        // Arrange - Create a test training week with meals in specific order
+        var prepareAsNeededGrouping = new FoodGrouping("test grouping", Foods.PeaProtein_1_Scoop, Foods.ChiaSeeds_2_5_Tbsp, Foods.Oats_1_Scoop, FoodGrouping.PreparationMethodEnum.PrepareAsNeeded);
+        var prepareAsNeededFallback = new FoodGrouping("test fallback", Foods.PeaProtein_1_Scoop, Foods.AlmondButter_1_Tbsp, Foods.Oats_1_Scoop, FoodGrouping.PreparationMethodEnum.PrepareAsNeeded);
+
+        var meal1 = new Meal("1 - PrepareAsNeeded", new Macros(P: 30, F: 10, C: 50),
+            new FallbackChain(prepareAsNeededGrouping, prepareAsNeededFallback));
+
+        var meal2 = new Meal("2 - PrepareAsNeeded", new Macros(P: 30, F: 10, C: 50),
+            new FallbackChain(prepareAsNeededGrouping, prepareAsNeededFallback));
+
+        // PrepareInAdvance with AtEatingTime servings (Ezekiel_English_Muffin has AddWhen.AtEatingTime)
+        var prepareInAdvanceGrouping = new FoodGrouping("grouping3", [Foods.Ezekiel_English_Muffin], Foods.WheatBerries_45_Grams, Foods.PumpkinSeeds_30_Grams, Foods.BrownRice_45_Grams, FoodGrouping.PreparationMethodEnum.PrepareInAdvance);
+        var prepareInAdvanceFallback = new FoodGrouping("grouping3 fallback", [Foods.Ezekiel_English_Muffin], Foods.ProteinToCarbConversion, Foods.PumpkinSeeds_30_Grams, Foods.BrownRice_45_Grams, FoodGrouping.PreparationMethodEnum.PrepareInAdvance);
+
+        var meal3 = new Meal("3 - PrepareInAdvance with AtEatingTime", new Macros(P: 30, F: 10, C: 50),
+            new FallbackChain(prepareInAdvanceGrouping, prepareInAdvanceFallback));
+
+        var meal4 = new Meal("4 - PrepareAsNeeded", new Macros(P: 30, F: 10, C: 50),
+            new FallbackChain(prepareAsNeededGrouping, prepareAsNeededFallback));
+
+        var meal5 = new Meal("5 - PrepareAsNeeded", new Macros(P: 30, F: 10, C: 50),
+            new FallbackChain(prepareAsNeededGrouping, prepareAsNeededFallback));
+
+        var meal6 = new Meal("6 - PrepareAsNeeded", new Macros(P: 30, F: 10, C: 50),
+            new FallbackChain(prepareAsNeededGrouping, prepareAsNeededFallback));
+
+        var meals = new[] { meal1, meal2, meal3, meal4, meal5, meal6 };
+        var trainingWeek = new TrainingWeek("Test Week", meals, meals, meals);
+        var phase = new Phase("Test Phase", trainingWeek);
+
+        // Act
+        var dayTypeGroups = TodoistService.GetDayTypeGroupsPublic(phase).ToList();
+
+        // Assert
+        var xfitGroup = dayTypeGroups.First(g => g.TrainingDayType == TrainingDayTypes.XfitDay);
+        var mealsResult = xfitGroup.Meals;
+
+        // Should have all 6 meals
+        Assert.Equal(6, mealsResult.Count);
+
+        // Should be in chronological order (1, 2, 3, 4, 5, 6)
+        Assert.Equal(1, mealsResult[0].Index);
+        Assert.Equal("1 - PrepareAsNeeded", mealsResult[0].Meal.Name);
+
+        Assert.Equal(2, mealsResult[1].Index);
+        Assert.Equal("2 - PrepareAsNeeded", mealsResult[1].Meal.Name);
+
+        Assert.Equal(3, mealsResult[2].Index);
+        Assert.Equal("3 - PrepareInAdvance with AtEatingTime", mealsResult[2].Meal.Name);
+
+        Assert.Equal(4, mealsResult[3].Index);
+        Assert.Equal("4 - PrepareAsNeeded", mealsResult[3].Meal.Name);
+
+        Assert.Equal(5, mealsResult[4].Index);
+        Assert.Equal("5 - PrepareAsNeeded", mealsResult[4].Meal.Name);
+
+        Assert.Equal(6, mealsResult[5].Index);
+        Assert.Equal("6 - PrepareAsNeeded", mealsResult[5].Meal.Name);
+    }
+
+    [Fact]
+    public void GetDayTypeGroups_Should_Include_PrepareInAdvance_Meals_Without_AtEatingTime_Servings()
+    {
+        // Arrange - Create a PrepareInAdvance meal with NO AtEatingTime servings
+        var prepareAsNeededGrouping = new FoodGrouping("test grouping", Foods.PeaProtein_1_Scoop, Foods.ChiaSeeds_2_5_Tbsp, Foods.Oats_1_Scoop, FoodGrouping.PreparationMethodEnum.PrepareAsNeeded);
+        var prepareAsNeededFallback = new FoodGrouping("test fallback", Foods.PeaProtein_1_Scoop, Foods.AlmondButter_1_Tbsp, Foods.Oats_1_Scoop, FoodGrouping.PreparationMethodEnum.PrepareAsNeeded);
+
+        var meal1 = new Meal("1 - PrepareAsNeeded", new Macros(P: 30, F: 10, C: 50),
+            new FallbackChain(prepareAsNeededGrouping, prepareAsNeededFallback));
+
+        // PrepareInAdvance WITHOUT AtEatingTime servings (all servings are WithMeal by default)
+        var prepareInAdvanceGrouping = new FoodGrouping("grouping2", Foods.WheatBerries_45_Grams, Foods.PumpkinSeeds_30_Grams, Foods.BrownRice_45_Grams, FoodGrouping.PreparationMethodEnum.PrepareInAdvance);
+        var prepareInAdvanceFallback = new FoodGrouping("grouping2 fallback", Foods.ProteinToCarbConversion, Foods.PumpkinSeeds_30_Grams, Foods.BrownRice_45_Grams, FoodGrouping.PreparationMethodEnum.PrepareInAdvance);
+
+        var meal2 = new Meal("2 - PrepareInAdvance NO AtEatingTime", new Macros(P: 30, F: 10, C: 50),
+            new FallbackChain(prepareInAdvanceGrouping, prepareInAdvanceFallback));
+
+        var meal3 = new Meal("3 - PrepareAsNeeded", new Macros(P: 30, F: 10, C: 50),
+            new FallbackChain(prepareAsNeededGrouping, prepareAsNeededFallback));
+
+        var meals = new[] { meal1, meal2, meal3 };
+        var trainingWeek = new TrainingWeek("Test Week", meals, meals, meals);
+        var phase = new Phase("Test Phase", trainingWeek);
+
+        // Act
+        var dayTypeGroups = TodoistService.GetDayTypeGroupsPublic(phase).ToList();
+
+        // Assert
+        var xfitGroup = dayTypeGroups.First(g => g.TrainingDayType == TrainingDayTypes.XfitDay);
+        var mealsResult = xfitGroup.Meals;
+
+        // Should have all 3 meals, including the PrepareInAdvance meal without AtEatingTime servings
+        Assert.Equal(3, mealsResult.Count);
+
+        // Should be in chronological order
+        Assert.Equal(1, mealsResult[0].Index);
+        Assert.Equal("1 - PrepareAsNeeded", mealsResult[0].Meal.Name);
+
+        Assert.Equal(2, mealsResult[1].Index);
+        Assert.Equal("2 - PrepareInAdvance NO AtEatingTime", mealsResult[1].Meal.Name);
+
+        Assert.Equal(3, mealsResult[2].Index);
+        Assert.Equal("3 - PrepareAsNeeded", mealsResult[2].Meal.Name);
+
+        // The PrepareInAdvance meal should have empty servings (will display food grouping name only)
+        Assert.Empty(mealsResult[1].Servings);
+    }
+
+    [Fact]
+    public void GetDayTypeGroups_PrepareAsNeeded_Meals_Should_Show_All_Servings()
+    {
+        // Arrange
+        var prepareAsNeededGrouping = new FoodGrouping("test grouping", Foods.PeaProtein_1_Scoop, Foods.ChiaSeeds_2_5_Tbsp, Foods.Oats_1_Scoop, FoodGrouping.PreparationMethodEnum.PrepareAsNeeded);
+        var prepareAsNeededFallback = new FoodGrouping("test fallback", Foods.PeaProtein_1_Scoop, Foods.AlmondButter_1_Tbsp, Foods.Oats_1_Scoop, FoodGrouping.PreparationMethodEnum.PrepareAsNeeded);
+
+        var meal = new Meal("PrepareAsNeeded Meal", new Macros(P: 30, F: 10, C: 50),
+            new FallbackChain(prepareAsNeededGrouping, prepareAsNeededFallback));
+
+        var meals = new[] { meal };
+        var trainingWeek = new TrainingWeek("Test Week", meals, meals, meals);
+        var phase = new Phase("Test Phase", trainingWeek);
+
+        // Act
+        var dayTypeGroups = TodoistService.GetDayTypeGroupsPublic(phase).ToList();
+
+        // Assert
+        var xfitGroup = dayTypeGroups.First(g => g.TrainingDayType == TrainingDayTypes.XfitDay);
+        var mealWithIndex = xfitGroup.Meals.First();
+
+        // Should include all servings (excluding conversions)
+        var servings = mealWithIndex.Servings.ToList();
+        Assert.NotEmpty(servings);
+
+        // Should not include conversion servings
+        Assert.DoesNotContain(servings, s => s.IsConversion);
+    }
+
+    [Fact]
+    public void GetDayTypeGroups_PrepareInAdvance_Meals_With_AtEatingTime_Should_Show_Only_Those_Servings()
+    {
+        // Arrange - PrepareInAdvance meal with both WithMeal and AtEatingTime servings
+        var prepareInAdvanceGrouping = new FoodGrouping("grouping",
+            [Foods.Ezekiel_English_Muffin], // AtEatingTime
+            Foods.WheatBerries_45_Grams, // WithMeal (default)
+            Foods.PumpkinSeeds_30_Grams, // WithMeal (default)
+            Foods.BrownRice_45_Grams, // WithMeal (default)
+            FoodGrouping.PreparationMethodEnum.PrepareInAdvance);
+        var prepareInAdvanceFallback = new FoodGrouping("grouping fallback",
+            [Foods.Ezekiel_English_Muffin], // AtEatingTime
+            Foods.ProteinToCarbConversion, // WithMeal (default)
+            Foods.PumpkinSeeds_30_Grams, // WithMeal (default)
+            Foods.BrownRice_45_Grams, // WithMeal (default)
+            FoodGrouping.PreparationMethodEnum.PrepareInAdvance);
+
+        var meal = new Meal("PrepareInAdvance Meal", new Macros(P: 30, F: 10, C: 50),
+            new FallbackChain(prepareInAdvanceGrouping, prepareInAdvanceFallback));
+
+        var meals = new[] { meal };
+        var trainingWeek = new TrainingWeek("Test Week", meals, meals, meals);
+        var phase = new Phase("Test Phase", trainingWeek);
+
+        // Act
+        var dayTypeGroups = TodoistService.GetDayTypeGroupsPublic(phase).ToList();
+
+        // Assert
+        var xfitGroup = dayTypeGroups.First(g => g.TrainingDayType == TrainingDayTypes.XfitDay);
+        var mealWithIndex = xfitGroup.Meals.First();
+
+        // Should include only AtEatingTime servings
+        var servings = mealWithIndex.Servings.ToList();
+        Assert.NotEmpty(servings);
+
+        // All servings should have AddWhen = AtEatingTime
+        Assert.All(servings, s => Assert.Equal(FoodServing.AddWhenEnum.AtEatingTime, s.AddWhen));
+
+        // Should not include conversion servings
+        Assert.DoesNotContain(servings, s => s.IsConversion);
+    }
 }
