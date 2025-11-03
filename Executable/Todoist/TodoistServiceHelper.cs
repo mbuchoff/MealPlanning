@@ -73,6 +73,11 @@ internal static class TodoistServiceHelper
     }
 
     /// <summary>
+    /// Gets the task name for a meal prep plan.
+    /// </summary>
+    public static string GetMealPrepTaskName(string mealName) => mealName;
+
+    /// <summary>
     /// Counts how many Todoist task operations a serving will create.
     /// Handles CompositeFoodServing by counting parent + all components recursively.
     /// </summary>

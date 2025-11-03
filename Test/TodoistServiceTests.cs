@@ -603,4 +603,18 @@ public class TodoistServiceTests
         Assert.Contains("ACTUAL:", comment);
         Assert.Contains("TARGET:", comment);
     }
+
+    [Fact]
+    public void GetMealPrepTaskName_Should_Return_Meal_Name_Without_Cooking_Suffix()
+    {
+        // Arrange
+        var mealName = "Crossfit day - rice";
+
+        // Act
+        var taskName = TodoistServiceHelper.GetMealPrepTaskName(mealName);
+
+        // Assert - Should NOT have " - Cooking" suffix
+        Assert.Equal("Crossfit day - rice", taskName);
+        Assert.DoesNotContain(" - Cooking", taskName);
+    }
 }
