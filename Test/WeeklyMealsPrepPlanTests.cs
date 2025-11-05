@@ -584,4 +584,78 @@ public class WeeklyMealsPrepPlanTests
         Assert.Contains("97 F", targetLine);
         Assert.Contains("712 C", targetLine);
     }
+
+    [Fact]
+    public void WeeklyMealsPrepPlan_Total_Should_Include_PrepareAsNeeded_Meals()
+    {
+        // PrepareAsNeeded meals (like protein shakes) should be included in the Totals section
+        // so users can see all ingredients they need to buy for the week, not just batch-cooked meals.
+
+        // Arrange - Create PrepareAsNeeded and PrepareInAdvance meals
+        var peaProtein = new FoodServing("Pea Protein",
+            new(ServingUnits: 30, ServingUnits.Gram, Cals: 120, P: 24, F: 2, CTotal: 3, CFiber: 0));
+        var chiaSeeds = new FoodServing("Chia Seeds",
+            new(ServingUnits: 15, ServingUnits.Gram, Cals: 73, P: 2.5M, F: 4.6M, CTotal: 6.3M, CFiber: 4.8M));
+        var oats = new FoodServing("Oats",
+            new(ServingUnits: 40, ServingUnits.Gram, Cals: 152, P: 5.3M, F: 2.6M, CTotal: 27, CFiber: 4.1M));
+
+        var prepareAsNeededGrouping = new FoodGrouping(
+            "Protein Shake",
+            [],
+            peaProtein,
+            chiaSeeds,
+            oats,
+            FoodGrouping.PreparationMethodEnum.PrepareAsNeeded);
+
+        var brownRice = new FoodServing("Brown Rice",
+            new(ServingUnits: 100, ServingUnits.Gram, Cals: 111, P: 2.6M, F: 0.9M, CTotal: 23, CFiber: 1.8M));
+        var chicken = new FoodServing("Chicken",
+            new(ServingUnits: 100, ServingUnits.Gram, Cals: 165, P: 31, F: 3.6M, CTotal: 0, CFiber: 0));
+        var oliveOil = new FoodServing("Olive Oil",
+            new(ServingUnits: 14, ServingUnits.Gram, Cals: 124, P: 0, F: 14, CTotal: 0, CFiber: 0));
+
+        var prepareInAdvanceGrouping = new FoodGrouping(
+            "Rice Bowl",
+            [],
+            chicken,
+            oliveOil,
+            brownRice,
+            FoodGrouping.PreparationMethodEnum.PrepareInAdvance);
+
+        // Create meals
+        var shakeMeal = new Meal("Morning Shake", new Macros(P: 30, F: 10, C: 40), prepareAsNeededGrouping);
+        var riceMeal = new Meal("Lunch", new Macros(P: 40, F: 15, C: 60), prepareInAdvanceGrouping);
+
+        // Create a training week with both meal types
+        var trainingWeek = new TrainingWeek(
+            "Test Week",
+            nonworkoutMeals: [shakeMeal], // PrepareAsNeeded - 2 days per week
+            runningMeals: [riceMeal],     // PrepareInAdvance - 3 days per week
+            xfitMeals: []);
+
+        // Act
+        var mealPrepPlan = WeeklyMealsPrepPlans.CreateMealPrepPlan(trainingWeek);
+        var total = mealPrepPlan.Total.OrderBy(s => s.Name).ToList();
+
+        // Assert
+        // Total should include ingredients from BOTH PrepareInAdvance AND PrepareAsNeeded meals
+        // PrepareInAdvance meal (rice bowl) - should be in totals
+        Assert.Contains(total, s => s.Name == "Brown Rice");
+        Assert.Contains(total, s => s.Name == "Chicken");
+        Assert.Contains(total, s => s.Name == "Olive Oil");
+
+        // PrepareAsNeeded meal (shake) - should ALSO be in totals
+        Assert.Contains(total, s => s.Name == "Pea Protein");
+        Assert.Contains(total, s => s.Name == "Chia Seeds");
+        Assert.Contains(total, s => s.Name == "Oats");
+
+        // Verify quantities are calculated correctly
+        // The system re-solves the equations for the combined macros, so the exact amounts
+        // won't be simple multiples, but they should be > 0
+        var peaProteinServing = total.First(s => s.Name == "Pea Protein");
+        Assert.True(peaProteinServing.NutritionalInformation.ServingUnits > 0);
+
+        var chickenServing = total.First(s => s.Name == "Chicken");
+        Assert.True(chickenServing.NutritionalInformation.ServingUnits > 0);
+    }
 }
