@@ -51,7 +51,7 @@ internal record MuscleGain2 : TrainingWeekBase
     private static FallbackChain WheatBerriesAndRice { get; } = new(
         new[] { Foods.WheatBerries_45_Grams, Foods.ProteinToCarbConversion }.Select(pFood => new FoodGrouping(
             "rice",
-            [Foods.Ezekiel_English_Muffin * 1],
+            [Foods.Ezekiel_English_Muffin * 2],
             pFood,
             Foods.PumpkinSeeds_30_Grams,
             Foods.BrownRice_45_Grams,
