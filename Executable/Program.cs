@@ -29,15 +29,25 @@ var actualPercentChange = ((adjustedAverage / baseAverage) - 1) * 100;
 
 var phase = new Phase($"{trainingWeek.Name}, adjusted to {targetDailyCalories:F0} cal/day ({actualPercentChange:+0.0;-0.0}%)", trainingWeek);
 
-Console.WriteLine(phase);
-Console.WriteLine(phase.MealPrepPlan);
-
-Console.WriteLine();
-Console.WriteLine("Sync with Todoist? Type 'yes' to confirm.");
-if (Console.ReadLine()?.Trim().Equals("yes", StringComparison.CurrentCultureIgnoreCase) == true)
+// Check if running interactively (no args) or in scripted mode (with args)
+if (args.Length == 0 && Console.IsInputRedirected == false)
 {
+    // Interactive mode - launch the TUI navigator
+    await InteractiveNavigator.RunAsync(phase);
+}
+else
+{
+    // Scripted mode - use original behavior
+    Console.WriteLine(phase);
+    Console.WriteLine(phase.MealPrepPlan);
+
     Console.WriteLine();
-    Console.WriteLine("Syncing with Todoist...");
-    await TodoistService.SyncAsync(phase);
-    Console.WriteLine("Done");
+    Console.WriteLine("Sync with Todoist? Type 'yes' to confirm.");
+    if (Console.ReadLine()?.Trim().Equals("yes", StringComparison.CurrentCultureIgnoreCase) == true)
+    {
+        Console.WriteLine();
+        Console.WriteLine("Syncing with Todoist...");
+        await TodoistService.SyncAsync(phase);
+        Console.WriteLine("Done");
+    }
 }
