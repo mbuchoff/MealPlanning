@@ -83,8 +83,39 @@ internal static class InteractiveNavigator
             AnsiConsole.Clear();
 
             // Display header
-            var nutrients = trainingDay.TotalNutrients;
-            var header = $"{trainingDay.TrainingDayType.Name}\n{nutrients.Macros}";
+            // Check if any meal has conversion foods
+            var hasConversionFoods = trainingDay.Meals.Any(m => m.HasConversionFoods);
+
+            string header;
+            if (hasConversionFoods)
+            {
+                // Calculate actual macros (sum of non-conversion servings from all meals)
+                // This matches what individual meals display
+                var actualMacros = new Macros(0, 0, 0);
+                foreach (var meal in trainingDay.Meals)
+                {
+                    var nonConversionServings = meal.Servings.Where(s => !s.IsConversion);
+                    foreach (var serving in nonConversionServings)
+                    {
+                        actualMacros += serving.NutritionalInformation.Macros;
+                    }
+                }
+
+                // Sum up target macros from all meals
+                var targetMacros = new Macros(0, 0, 0);
+                foreach (var meal in trainingDay.Meals)
+                {
+                    targetMacros += meal.Macros;
+                }
+
+                header = $"{trainingDay.TrainingDayType.Name}\nACTUAL: {actualMacros}\nTARGET: {targetMacros}";
+            }
+            else
+            {
+                var nutrients = trainingDay.ActualNutrients;
+                header = $"{trainingDay.TrainingDayType.Name}\n{nutrients.Macros}";
+            }
+
             var panel = new Panel(new Markup($"[bold]{header}[/]"))
             {
                 Border = BoxBorder.Rounded
@@ -237,9 +268,9 @@ internal static class InteractiveNavigator
         foreach (var trainingDay in trainingWeek.TrainingDays)
         {
             var daysPerWeek = trainingDay.TrainingDayType.DaysTraining.Count;
-            totalCals += trainingDay.TotalNutrients.Cals * daysPerWeek;
-            totalMacros += trainingDay.TotalNutrients.Macros * daysPerWeek;
-            totalFiber += trainingDay.TotalNutrients.Fiber * daysPerWeek;
+            totalCals += trainingDay.ActualNutrients.Cals * daysPerWeek;
+            totalMacros += trainingDay.ActualNutrients.Macros * daysPerWeek;
+            totalFiber += trainingDay.ActualNutrients.Fiber * daysPerWeek;
         }
 
         return (totalCals, totalMacros, totalFiber);

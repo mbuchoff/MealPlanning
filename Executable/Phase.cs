@@ -23,9 +23,9 @@ internal record Phase(string Name, WeeklyMealsPrepPlan MealPrepPlan, TrainingWee
             foreach (var trainingDay in TrainingWeek.TrainingDays)
             {
                 var daysPerWeek = trainingDay.TrainingDayType.DaysTraining.Count;
-                totalCals += trainingDay.TotalNutrients.Cals * daysPerWeek;
-                totalMacros += trainingDay.TotalNutrients.Macros * daysPerWeek;
-                totalFiber += trainingDay.TotalNutrients.Fiber * daysPerWeek;
+                totalCals += trainingDay.ActualNutrients.Cals * daysPerWeek;
+                totalMacros += trainingDay.ActualNutrients.Macros * daysPerWeek;
+                totalFiber += trainingDay.ActualNutrients.Fiber * daysPerWeek;
             }
 
             sb.AppendLine($"Ave per day: {totalCals / 7:F0} cals, {totalMacros / 7}, {totalFiber / 7:F1}g fiber");

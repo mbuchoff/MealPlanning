@@ -13,7 +13,7 @@ internal record TrainingDay
     public override string ToString()
     {
         var sb = new StringBuilder();
-        var nutrients = TotalNutrients;
+        var nutrients = ActualNutrients;
         sb.AppendLine($"{TrainingDayType}: {nutrients.Cals:F0} calories, {nutrients.Macros}, {nutrients.Fiber:F1}g fiber");
         foreach (var meal in Meals)
         {
@@ -26,25 +26,30 @@ internal record TrainingDay
     public IEnumerable<Meal> Meals { get; }
     public TrainingDayType TrainingDayType { get; }
 
-    private (decimal Cals, Macros Macros, decimal Fiber)? _totalNutrients;
-    public (decimal Cals, Macros Macros, decimal Fiber) TotalNutrients
+    private (decimal Cals, Macros Macros, decimal Fiber)? _actualNutrients;
+    /// <summary>
+    /// Gets the actual consumed nutrients (excluding conversion foods).
+    /// This represents what is actually eaten.
+    /// </summary>
+    public (decimal Cals, Macros Macros, decimal Fiber) ActualNutrients
     {
         get
         {
             try
             {
-                if (_totalNutrients != null)
+                if (_actualNutrients != null)
                 {
-                    return _totalNutrients.Value;
+                    return _actualNutrients.Value;
                 }
 
-                var servings = Meals.SelectMany(m => m.Servings).ToList();
-                _totalNutrients = (
+                // Only include non-conversion servings (what's actually consumed)
+                var servings = Meals.SelectMany(m => m.Servings.Where(s => !s.IsConversion)).ToList();
+                _actualNutrients = (
                     Cals: servings.Sum(s => s.NutritionalInformation.Cals),
                     Macros: servings.Sum(s => s.NutritionalInformation.Macros),
                     Fiber: servings.Sum(s => s.NutritionalInformation.CFiber));
 
-                return _totalNutrients.Value;
+                return _actualNutrients.Value;
             }
             catch (Exception ex)
             {
