@@ -96,22 +96,6 @@ public record CompositeFoodServing : FoodServing
         return string.Join("\n", unscaledCombinedComponents.Select(c => c.ToString()));
     }
 
-    // Override to return component lines instead of composite line
-    public override IEnumerable<string> ToOutputLines(string prefix = "")
-    {
-        var scale = NutritionalInformation.ServingUnits;
-
-        // Get scaled components using polymorphic ApplyScale method
-        var scaledComponents = Components.Select(c => c.ApplyScale(scale));
-
-        // Combine like components and output
-        var combinedComponents = CombineLikeComponents(scaledComponents);
-        foreach (var component in combinedComponents)
-        {
-            yield return $"{prefix}{component}";
-        }
-    }
-
     // Override to return scaled components for display
     public override IEnumerable<FoodServing> GetComponentsForDisplay()
     {

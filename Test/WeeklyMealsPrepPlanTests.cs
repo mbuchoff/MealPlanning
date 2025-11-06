@@ -658,4 +658,71 @@ public class WeeklyMealsPrepPlanTests
         var chickenServing = total.First(s => s.Name == "Chicken");
         Assert.True(chickenServing.NutritionalInformation.ServingUnits > 0);
     }
+
+    [Fact]
+    public void WeeklyMealsPrepPlan_ToString_Should_Match_Todoist_Formatting()
+    {
+        // Console output should use the same serving formatting as Todoist
+        // to ensure consistency between what the user sees and what gets synced.
+        //
+        // This means:
+        // 1. Use FoodServing.ToString() directly (not ToOutputLines())
+        // 2. For composite servings, this creates task hierarchy in Todoist
+        //    but in console it should display individual components without nesting
+
+        // Arrange - Create a composite serving (like seitan with components)
+        var nutritionalYeast = new FoodServing("nutritional yeast from Sprouts",
+            new(ServingUnits: 2, ServingUnits.Gram, Cals: 10, P: 2, F: 0, CTotal: 1, CFiber: 1));
+        var gluten = new FoodServing("gluten",
+            new(ServingUnits: 20, ServingUnits.Gram, Cals: 80, P: 15, F: 1, CTotal: 4, CFiber: 0));
+        var water = new FoodServing("water",
+            new(ServingUnits: 0.15M, ServingUnits.Cup, Cals: 0, P: 0, F: 0, CTotal: 0, CFiber: 0));
+        var missDash = new FoodServing("Chicken Flavored Miss Dash",
+            new(ServingUnits: 1, ServingUnits.Tablespoon, Cals: 0, P: 0, F: 0, CTotal: 0, CFiber: 0));
+
+        var composite = CompositeFoodServing.FromComponents("seitan",
+            new[] { nutritionalYeast, gluten, water, missDash });
+
+        var targetMacros = new Macros(P: 56, F: 45, C: 129);
+        var oliveOil = new FoodServing("olive oil",
+            new(ServingUnits: 14, ServingUnits.Gram, Cals: 124, P: 0, F: 14, CTotal: 0, CFiber: 0));
+        var brownRice = new FoodServing("brown rice",
+            new(ServingUnits: 45, ServingUnits.Gram, Cals: 50, P: 1, F: 0.4M, CTotal: 10, CFiber: 0.8M));
+
+        var mealPrepPlans = new List<MealPrepPlan>
+        {
+            new MealPrepPlan("Running day - seitan",
+                new[] { composite * 2, oliveOil * 3, brownRice * 4 },
+                [],
+                2,
+                targetMacros,
+                HasConversionFoods: false)
+        };
+
+        var weeklyPlan = new WeeklyMealsPrepPlan(mealPrepPlans);
+
+        // Act
+        var output = weeklyPlan.ToString();
+
+        // Assert
+        // Composite should be flattened - show individual components directly
+        Assert.Contains("nutritional yeast from Sprouts", output);
+        Assert.Contains("gluten", output);
+        Assert.Contains("water", output);
+        Assert.Contains("Chicken Flavored Miss Dash", output);
+
+        // Should NOT show the composite name "seitan" as a separate line before components
+        var lines = output.Split('\n').Select(l => l.Trim()).Where(l => !string.IsNullOrEmpty(l)).ToList();
+
+        // The word "seitan" might appear in the meal name "Running day - seitan",
+        // but should not appear as a standalone serving line
+        var seitanServingLine = lines.FirstOrDefault(l =>
+            l.Contains("seitan", StringComparison.OrdinalIgnoreCase) &&
+            !l.Contains("Running day", StringComparison.OrdinalIgnoreCase));
+        Assert.Null(seitanServingLine);
+
+        // Other servings should appear normally
+        Assert.Contains("olive oil", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("brown rice", output, StringComparison.OrdinalIgnoreCase);
+    }
 }

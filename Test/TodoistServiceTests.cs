@@ -799,4 +799,36 @@ public class TodoistServiceTests
         // Should not include conversion servings
         Assert.DoesNotContain(servings, s => s.IsConversion);
     }
+
+    [Fact]
+    public void FormatServingsAsStrings_Should_Flatten_Composite_Servings()
+    {
+        // This test verifies that console output and Todoist use the same formatting logic
+        // via the shared TodoistServiceHelper.FormatServingsAsStrings method
+
+        // Arrange - Create a composite serving (like seitan)
+        var nutritionalYeast = new FoodServing("nutritional yeast from Sprouts",
+            new(ServingUnits: 2, ServingUnits.Gram, Cals: 10, P: 2, F: 0, CTotal: 1, CFiber: 1));
+        var gluten = new FoodServing("gluten",
+            new(ServingUnits: 20, ServingUnits.Gram, Cals: 80, P: 15, F: 1, CTotal: 4, CFiber: 0));
+        var water = new FoodServing("water",
+            new(ServingUnits: 0.15M, ServingUnits.Cup, Cals: 0, P: 0, F: 0, CTotal: 0, CFiber: 0));
+
+        var composite = CompositeFoodServing.FromComponents("seitan",
+            new[] { nutritionalYeast, gluten, water });
+
+        var servings = new[] { composite * 2 };
+
+        // Act
+        var formatted = TodoistServiceHelper.FormatServingsAsStrings(servings).ToList();
+
+        // Assert - Composite should be flattened to individual component strings
+        Assert.Equal(3, formatted.Count);
+        Assert.Contains("4 grams nutritional yeast from Sprouts", formatted);
+        Assert.Contains("40 grams gluten", formatted);
+        Assert.Contains("0.3 cups water", formatted);
+
+        // Should NOT contain the composite name as a separate line
+        Assert.DoesNotContain(formatted, s => s.Contains("seitan"));
+    }
 }
