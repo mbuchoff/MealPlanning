@@ -16,7 +16,7 @@ internal class TodoistService
         Meal Meal,
         IEnumerable<FoodServing> Servings);
 
-    public static async Task SyncAsync(Phase phase, bool showProgress = true)
+    public static async Task SyncAsync(Phase phase)
     {
         // First, get projects and count operations needed
         var allProjects = await GetProjectsAsync();
@@ -32,7 +32,7 @@ internal class TodoistService
         // Count total operations
         int totalOperations = CalculateTotalOperations(phase, eatingTasksToDelete.Count, cookingTasksToDelete.Count);
 
-        using var progress = showProgress ? new ProgressTracker(totalOperations) : null;
+        using var progress = new ProgressTracker(totalOperations);
 
         await Task.WhenAll(
             DeleteTasksFromProjectAsync(Task.FromResult(eatingProject), DateTime.UtcNow, progress),
@@ -119,13 +119,13 @@ internal class TodoistService
         return operations;
     }
 
-    private static async Task AddServingAsync(TodoistTask parentTodoistTask, FoodServing s, ProgressTracker? progress)
+    private static async Task AddServingAsync(TodoistTask parentTodoistTask, FoodServing s, ProgressTracker progress)
     {
         await TodoistServiceHelper.CreateTodoistSubtasksAsync(s, parentTodoistTask.Id,
             async (content, description, dueString, parentId, projectId) =>
             {
                 var task = await AddTaskAsync(content, description, dueString, parentId, projectId);
-                progress?.IncrementProgress();
+                progress.IncrementProgress();
                 return (object)task;
             });
     }
@@ -135,7 +135,7 @@ internal class TodoistService
         string content,
         string? dueString,
         IEnumerable<FoodServing> servings,
-        ProgressTracker? progress,
+        ProgressTracker progress,
         int? order = null)
     {
         var project = await projectTask;
@@ -148,15 +148,15 @@ internal class TodoistService
             project.Id,
             isCollapsed: true,
             order: order);
-        progress?.IncrementProgress();
+        progress.IncrementProgress();
 
         await UpdateTaskCollapsedAsync(parentTodoistTask.Id, collapsed: true);
-        progress?.IncrementProgress();
+        progress.IncrementProgress();
 
         await Task.WhenAll(servings.Select(s => AddServingAsync(parentTodoistTask, s, progress)).ToList());
     }
 
-    private static async Task AddMealPrepPlan(Task<Project> projectTask, MealPrepPlan m, int order, ProgressTracker? progress)
+    private static async Task AddMealPrepPlan(Task<Project> projectTask, MealPrepPlan m, int order, ProgressTracker progress)
     {
         var project = await projectTask;
         var hasCookingServings = m.CookingServings.Any();
@@ -168,10 +168,10 @@ internal class TodoistService
         var cookingTaskName = TodoistServiceHelper.GetMealPrepTaskName(m.Name);
         var cookingParentTask = await AddTaskAsync(
             cookingTaskName, description: null, dueString: "every tue", parentId: null, project.Id, isCollapsed: true, order: order);
-        progress?.IncrementProgress();
+        progress.IncrementProgress();
 
         await UpdateTaskCollapsedAsync(cookingParentTask.Id, collapsed: true);
-        progress?.IncrementProgress();
+        progress.IncrementProgress();
 
         // Create subtasks for each meal quantity
         for (int mealCount = 1; mealCount <= m.MealCount; mealCount++)
@@ -189,14 +189,14 @@ internal class TodoistService
         int totalMealCount,
         Macros totalTargetMacros,
         bool hasConversionFoods,
-        ProgressTracker? progress)
+        ProgressTracker progress)
     {
         var quantityTask = await AddTaskAsync(
             quantityLabel, description: null, dueString: null, parentTask.Id, projectId: null, isCollapsed: true);
-        progress?.IncrementProgress();
+        progress.IncrementProgress();
 
         await UpdateTaskCollapsedAsync(quantityTask.Id, collapsed: true);
-        progress?.IncrementProgress();
+        progress.IncrementProgress();
 
         // Scale servings based on meal count ratio
         decimal scaleFactor = (decimal)mealCount / totalMealCount;
@@ -207,13 +207,13 @@ internal class TodoistService
         var comment = TodoistServiceHelper.GenerateNutritionalComment(scaledServings, scaledTargetMacros, hasConversionFoods);
         await Task.WhenAll(
             scaledServings.Select(s => AddServingAsync(quantityTask, s, progress))
-                .Append(AddCommentAsync(quantityTask.Id, comment).ContinueWith(_ => progress?.IncrementProgress())));
+                .Append(AddCommentAsync(quantityTask.Id, comment).ContinueWith(_ => progress.IncrementProgress())));
     }
 
     private static async Task AddMealSubtask(
         TodoistTask dayTypeParentTask,
         MealWithIndex mealWithIndex,
-        ProgressTracker? progress)
+        ProgressTracker progress)
     {
         var content = $"{mealWithIndex.Index} - {mealWithIndex.Meal.Name}";
 
@@ -224,10 +224,10 @@ internal class TodoistService
             parentId: dayTypeParentTask.Id,
             projectId: null,
             isCollapsed: true);
-        progress?.IncrementProgress();
+        progress.IncrementProgress();
 
         await UpdateTaskCollapsedAsync(mealTask.Id, collapsed: true);
-        progress?.IncrementProgress();
+        progress.IncrementProgress();
 
         // For PrepareInAdvance meals, add food grouping name as first subtask
         if (mealWithIndex.Meal.FoodGrouping.PreparationMethod == FoodGrouping.PreparationMethodEnum.PrepareInAdvance)
@@ -238,7 +238,7 @@ internal class TodoistService
                 dueString: null,
                 parentId: mealTask.Id,
                 projectId: null);
-            progress?.IncrementProgress();
+            progress.IncrementProgress();
         }
 
         // Add servings as subtasks
@@ -251,11 +251,11 @@ internal class TodoistService
             mealWithIndex.Meal.Macros,
             mealWithIndex.Meal.HasConversionFoods);
         await AddCommentAsync(mealTask.Id, comment);
-        progress?.IncrementProgress();
+        progress.IncrementProgress();
     }
 
     private static async Task AddPhaseAsync(
-        Phase phase, Task<Project> eatingProjectTask, Task<Project> cookingProjectTask, ProgressTracker? progress)
+        Phase phase, Task<Project> eatingProjectTask, Task<Project> cookingProjectTask, ProgressTracker progress)
     {
         List<Task> systemTasks =
         [
@@ -286,15 +286,15 @@ internal class TodoistService
                 eatingProject.Id,
                 isCollapsed: true,
                 order: groupIdx + 1);
-            progress?.IncrementProgress();
+            progress.IncrementProgress();
 
             await UpdateTaskCollapsedAsync(dayTypeParentTask.Id, collapsed: true);
-            progress?.IncrementProgress();
+            progress.IncrementProgress();
 
             // Add comment with ACTUAL/TARGET macros for the day
             var dayComment = GenerateDayTypeComment(group.TrainingDay);
             await AddCommentAsync(dayTypeParentTask.Id, dayComment);
-            progress?.IncrementProgress();
+            progress.IncrementProgress();
 
             // Create meal subtasks
             foreach (var mealWithIndex in group.Meals)
@@ -319,7 +319,7 @@ internal class TodoistService
         return projects;
     }
 
-    private static async Task DeleteTasksFromProjectAsync(Task<Project> projectTask, DateTime createdBeforeUtc, ProgressTracker? progress)
+    private static async Task DeleteTasksFromProjectAsync(Task<Project> projectTask, DateTime createdBeforeUtc, ProgressTracker progress)
     {
         var project = await projectTask;
         var todoistTasks = await GetTasksFromProjectAsync(project.Id);
@@ -328,7 +328,7 @@ internal class TodoistService
         await Task.WhenAll(tasksToDelete.Select(async task =>
         {
             await DeleteTaskAsync(task.Id);
-            progress?.IncrementProgress();
+            progress.IncrementProgress();
         }).ToList());
     }
 
