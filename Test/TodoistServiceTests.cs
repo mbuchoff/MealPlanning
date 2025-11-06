@@ -831,4 +831,95 @@ public class TodoistServiceTests
         // Should NOT contain the composite name as a separate line
         Assert.DoesNotContain(formatted, s => s.Contains("seitan"));
     }
+
+    [Fact]
+    public void GenerateDayTypeComment_Should_Show_ACTUAL_And_TARGET_When_Conversion_Foods_Present()
+    {
+        // Arrange - Use a training week with conversion foods (pea protein)
+        var baseTrainingWeek = new SystemOfEquations.Data.TrainingWeeks.MuscleGain2();
+        var trainingWeek = baseTrainingWeek.ForTargetCalories(3400M);
+        var crossfitDay = trainingWeek.XFitDay;
+
+        // Act
+        var comment = TodoistService.GenerateDayTypeCommentPublic(crossfitDay);
+
+        // Assert - Should show ACTUAL and TARGET labels when conversion foods are present
+        if (crossfitDay.HasConversionFoods)
+        {
+            Assert.Contains("ACTUAL:", comment);
+            Assert.Contains("TARGET:", comment);
+            Assert.Contains("cals", comment);
+            Assert.Contains("fiber", comment);
+
+            // Should contain actual macros
+            var actualNutrients = crossfitDay.ActualNutrients;
+            Assert.Contains($"{actualNutrients.Cals:F0} cals", comment);
+
+            // Should contain target macros (verify the TARGET line exists with protein value)
+            var targetMacros = crossfitDay.TargetMacros;
+            Assert.Contains("TARGET:", comment);
+            Assert.Matches(@"TARGET:.*\d+ P", comment); // Verify TARGET line has protein value
+        }
+        else
+        {
+            Assert.DoesNotContain("ACTUAL:", comment);
+            Assert.DoesNotContain("TARGET:", comment);
+        }
+    }
+
+    [Fact]
+    public void GenerateDayTypeComment_Should_Not_Show_Labels_When_No_Conversion_Foods()
+    {
+        // Arrange - Create a simple training day without conversion foods
+        var trainingDayType = new TrainingDayType("Test Day", new[] { Day.Monday });
+        var simpleMeal = new Meal(
+            "Simple Meal",
+            new Macros(P: 30, F: 10, C: 40),
+            new FoodGrouping(
+                "Simple",
+                new List<FoodServing>(),
+                new FoodServing("Chicken", new NutritionalInformation(100, ServingUnits.Gram, 165, 31, 3.6M, 0, 0)),
+                new FoodServing("Olive Oil", new NutritionalInformation(1, ServingUnits.Tablespoon, 119, 0, 13.5M, 0, 0)),
+                new FoodServing("Rice", new NutritionalInformation(100, ServingUnits.Gram, 130, 2.7M, 0.3M, 28, 0.4M)),
+                FoodGrouping.PreparationMethodEnum.PrepareAsNeeded));
+
+        var trainingDay = new TrainingDay(trainingDayType, new[] { simpleMeal });
+
+        // Act
+        var comment = TodoistService.GenerateDayTypeCommentPublic(trainingDay);
+
+        // Assert - Should NOT show ACTUAL and TARGET labels
+        Assert.DoesNotContain("ACTUAL:", comment);
+        Assert.DoesNotContain("TARGET:", comment);
+
+        // Should still show nutritional information
+        Assert.Contains("cals", comment);
+        Assert.Contains("fiber", comment);
+    }
+
+    [Fact]
+    public void DayTypeGroup_Should_Include_TrainingDay_Reference()
+    {
+        // Arrange
+        var baseTrainingWeek = new SystemOfEquations.Data.TrainingWeeks.MuscleGain2();
+        var trainingWeek = baseTrainingWeek.ForTargetCalories(3400M);
+        var phase = new Phase("Test Phase", trainingWeek);
+
+        // Act
+        var dayTypeGroups = TodoistService.GetDayTypeGroupsPublic(phase).ToList();
+
+        // Assert - Each group should have a TrainingDay reference
+        Assert.Equal(3, dayTypeGroups.Count); // XFit, Running, NonWorkout
+
+        foreach (var group in dayTypeGroups)
+        {
+            Assert.NotNull(group.TrainingDay);
+            Assert.Equal(group.TrainingDayType, group.TrainingDay.TrainingDayType);
+
+            // Should be able to access TrainingDay properties
+            var _ = group.TrainingDay.ActualNutrients;
+            var __ = group.TrainingDay.TargetMacros;
+            var ___ = group.TrainingDay.HasConversionFoods;
+        }
+    }
 }

@@ -16,19 +16,35 @@ internal record Phase(string Name, WeeklyMealsPrepPlan MealPrepPlan, TrainingWee
         {
             var sb = new StringBuilder();
 
-            var totalCals = 0.0M;
-            var totalMacros = new Macros(0, 0, 0);
-            var totalFiber = 0.0M;
+            var totalActualCals = 0.0M;
+            var totalActualMacros = new Macros(0, 0, 0);
+            var totalActualFiber = 0.0M;
+            var totalTargetMacros = new Macros(0, 0, 0);
+            var hasAnyConversionFoods = false;
 
             foreach (var trainingDay in TrainingWeek.TrainingDays)
             {
                 var daysPerWeek = trainingDay.TrainingDayType.DaysTraining.Count;
-                totalCals += trainingDay.ActualNutrients.Cals * daysPerWeek;
-                totalMacros += trainingDay.ActualNutrients.Macros * daysPerWeek;
-                totalFiber += trainingDay.ActualNutrients.Fiber * daysPerWeek;
+                totalActualCals += trainingDay.ActualNutrients.Cals * daysPerWeek;
+                totalActualMacros += trainingDay.ActualNutrients.Macros * daysPerWeek;
+                totalActualFiber += trainingDay.ActualNutrients.Fiber * daysPerWeek;
+                totalTargetMacros += trainingDay.TargetMacros * daysPerWeek;
+                hasAnyConversionFoods |= trainingDay.HasConversionFoods;
             }
 
-            sb.AppendLine($"Ave per day: {totalCals / 7:F0} cals, {totalMacros / 7}, {totalFiber / 7:F1}g fiber");
+            if (hasAnyConversionFoods)
+            {
+                // Show both ACTUAL and TARGET when conversion foods are present
+                sb.AppendLine("Week Average:");
+                sb.AppendLine($"  ACTUAL: {totalActualCals / 7:F0} cals, {totalActualMacros / 7}, {totalActualFiber / 7:F1}g fiber");
+                sb.AppendLine($"  TARGET: {totalTargetMacros / 7}");
+            }
+            else
+            {
+                // No conversion foods - show unlabeled average
+                sb.AppendLine($"Ave per day: {totalActualCals / 7:F0} cals, {totalActualMacros / 7}, {totalActualFiber / 7:F1}g fiber");
+            }
+
             sb.AppendLine();
 
             sb.AppendLine(Name);
