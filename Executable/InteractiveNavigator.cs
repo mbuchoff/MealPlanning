@@ -29,8 +29,19 @@ internal static class InteractiveNavigator
         AnsiConsole.WriteLine();
 
         // Calculate and display week average
-        var (totalCals, totalMacros, totalFiber) = CalculateWeekTotals(phase.TrainingWeek);
-        AnsiConsole.MarkupLine($"[dim]Week Average: {totalCals / 7:F0} cals, {totalMacros / 7}, {totalFiber / 7:F1}g fiber[/]");
+        var (totalActualCals, totalActualMacros, totalActualFiber, totalTargetMacros, hasConversionFoods) = CalculateWeekTotals(phase.TrainingWeek);
+
+        if (hasConversionFoods)
+        {
+            AnsiConsole.MarkupLine($"[dim]Week Average:[/]");
+            AnsiConsole.MarkupLine($"[dim]  ACTUAL: {totalActualCals / 7:F0} cals, {totalActualMacros / 7}, {totalActualFiber / 7:F1}g fiber[/]");
+            AnsiConsole.MarkupLine($"[dim]  TARGET: {totalTargetMacros / 7}[/]");
+        }
+        else
+        {
+            AnsiConsole.MarkupLine($"[dim]Week Average: {totalActualCals / 7:F0} cals, {totalActualMacros / 7}, {totalActualFiber / 7:F1}g fiber[/]");
+        }
+
         AnsiConsole.WriteLine();
 
         // Create menu choices
@@ -259,11 +270,13 @@ internal static class InteractiveNavigator
         }
     }
 
-    private static (decimal TotalCals, Macros TotalMacros, decimal TotalFiber) CalculateWeekTotals(TrainingWeek trainingWeek)
+    private static (decimal TotalCals, Macros TotalMacros, decimal TotalFiber, Macros TotalTargetMacros, bool HasConversionFoods) CalculateWeekTotals(TrainingWeek trainingWeek)
     {
         var totalCals = 0.0M;
         var totalMacros = new Macros(0, 0, 0);
         var totalFiber = 0.0M;
+        var totalTargetMacros = new Macros(0, 0, 0);
+        var hasConversionFoods = false;
 
         foreach (var trainingDay in trainingWeek.TrainingDays)
         {
@@ -271,8 +284,10 @@ internal static class InteractiveNavigator
             totalCals += trainingDay.ActualNutrients.Cals * daysPerWeek;
             totalMacros += trainingDay.ActualNutrients.Macros * daysPerWeek;
             totalFiber += trainingDay.ActualNutrients.Fiber * daysPerWeek;
+            totalTargetMacros += trainingDay.TargetMacros * daysPerWeek;
+            hasConversionFoods |= trainingDay.HasConversionFoods;
         }
 
-        return (totalCals, totalMacros, totalFiber);
+        return (totalCals, totalMacros, totalFiber, totalTargetMacros, hasConversionFoods);
     }
 }

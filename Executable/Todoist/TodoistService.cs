@@ -7,6 +7,7 @@ internal class TodoistService
 {
     internal record DayTypeGroup(
         TrainingDayType TrainingDayType,
+        TrainingDay TrainingDay,
         string DueString,
         List<MealWithIndex> Meals);
 
@@ -74,7 +75,7 @@ internal class TodoistService
         operations += phase.MealPrepPlan.Total.Sum(s => TodoistServiceHelper.CountTodoistOperations(s)); // All serving operations
 
         // Day-type parent tasks (3 groups: XFit, Running, NonWorkout)
-        operations += 3 * 2; // Each group: parent task + collapse
+        operations += 3 * 3; // Each group: parent task + collapse + comment
 
         // Eating meals from PrepareInAdvance meals (AtEatingTime servings)
         var eatingTasksFromPrepMeals = new[]
@@ -290,6 +291,11 @@ internal class TodoistService
             await UpdateTaskCollapsedAsync(dayTypeParentTask.Id, collapsed: true);
             progress.IncrementProgress();
 
+            // Add comment with ACTUAL/TARGET macros for the day
+            var dayComment = GenerateDayTypeComment(group.TrainingDay);
+            await AddCommentAsync(dayTypeParentTask.Id, dayComment);
+            progress.IncrementProgress();
+
             // Create meal subtasks
             foreach (var mealWithIndex in group.Meals)
             {
@@ -324,6 +330,20 @@ internal class TodoistService
             await DeleteTaskAsync(task.Id);
             progress.IncrementProgress();
         }).ToList());
+    }
+
+    private static string GenerateDayTypeComment(TrainingDay trainingDay)
+    {
+        var actualNutrients = trainingDay.ActualNutrients;
+
+        if (trainingDay.HasConversionFoods)
+        {
+            return $"ACTUAL: {actualNutrients.Cals:F0} cals, {actualNutrients.Macros}, {actualNutrients.Fiber:F1}g fiber\nTARGET: {trainingDay.TargetMacros}";
+        }
+        else
+        {
+            return $"{actualNutrients.Cals:F0} cals, {actualNutrients.Macros}, {actualNutrients.Fiber:F1}g fiber";
+        }
     }
 
     private static string GetDueString(TrainingDayType trainingDayType) => $"every {string.Join(",",
@@ -383,6 +403,7 @@ internal class TodoistService
 
             yield return new DayTypeGroup(
                 TrainingDayType: trainingDay.TrainingDayType,
+                TrainingDay: trainingDay,
                 DueString: GetDueString(trainingDay.TrainingDayType),
                 Meals: mealsForDay);
         }
@@ -395,4 +416,8 @@ internal class TodoistService
     // Test helper - makes CalculateTotalOperations accessible to tests
     internal static int CalculateTotalOperationsPublic(Phase phase, int eatingTasksToDelete, int cookingTasksToDelete)
         => CalculateTotalOperations(phase, eatingTasksToDelete, cookingTasksToDelete);
+
+    // Test helper - makes GenerateDayTypeComment accessible to tests
+    internal static string GenerateDayTypeCommentPublic(TrainingDay trainingDay)
+        => GenerateDayTypeComment(trainingDay);
 }

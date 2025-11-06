@@ -13,8 +13,21 @@ internal record TrainingDay
     public override string ToString()
     {
         var sb = new StringBuilder();
-        var nutrients = ActualNutrients;
-        sb.AppendLine($"{TrainingDayType}: {nutrients.Cals:F0} calories, {nutrients.Macros}, {nutrients.Fiber:F1}g fiber");
+        var actualNutrients = ActualNutrients;
+
+        if (HasConversionFoods)
+        {
+            // Show both ACTUAL and TARGET when conversion foods are present
+            sb.AppendLine($"{TrainingDayType}:");
+            sb.AppendLine($"  ACTUAL: {actualNutrients.Cals:F0} calories, {actualNutrients.Macros}, {actualNutrients.Fiber:F1}g fiber");
+            sb.AppendLine($"  TARGET: {TargetMacros}");
+        }
+        else
+        {
+            // No conversion foods - show unlabeled nutrients
+            sb.AppendLine($"{TrainingDayType}: {actualNutrients.Cals:F0} calories, {actualNutrients.Macros}, {actualNutrients.Fiber:F1}g fiber");
+        }
+
         foreach (var meal in Meals)
         {
             sb.AppendLine(meal.ToString());
@@ -57,4 +70,28 @@ internal record TrainingDay
             }
         }
     }
+
+    private Macros? _targetMacros;
+    /// <summary>
+    /// Gets the target macros for this training day (sum of all meal target macros).
+    /// This represents the intended nutritional goals.
+    /// </summary>
+    public Macros TargetMacros
+    {
+        get
+        {
+            if (_targetMacros != null)
+            {
+                return _targetMacros;
+            }
+
+            _targetMacros = Meals.Sum(m => m.Macros);
+            return _targetMacros;
+        }
+    }
+
+    /// <summary>
+    /// Indicates whether any meal in this training day contains conversion foods.
+    /// </summary>
+    public bool HasConversionFoods => Meals.Any(m => m.HasConversionFoods);
 }

@@ -174,4 +174,123 @@ public class TrainingDayMacrosTests
         Assert.True(Math.Abs(displayedProteinSum - navigatorActual.P) <= 1,
             $"Displayed protein sum ({displayedProteinSum:F0}P) doesn't match Navigator calculation ({navigatorActual.P:F0}P)");
     }
+
+    [Fact]
+    public void TrainingDay_TargetMacros_ShouldEqualSumOfMealMacros()
+    {
+        // Arrange
+        var baseTrainingWeek = new MuscleGain2();
+        var trainingWeek = baseTrainingWeek.ForTargetCalories(3400M);
+        var crossfitDay = trainingWeek.XFitDay;
+
+        // Act - Calculate expected target from meal definitions
+        var expectedTarget = new Macros(0, 0, 0);
+        foreach (var meal in crossfitDay.Meals)
+        {
+            expectedTarget += meal.Macros;
+        }
+
+        // Get actual TargetMacros property
+        var actualTarget = crossfitDay.TargetMacros;
+
+        _output.WriteLine($"Expected target (sum of meal.Macros): {expectedTarget}");
+        _output.WriteLine($"Actual TargetMacros property: {actualTarget}");
+
+        // Assert - TargetMacros should equal sum of meal target macros
+        Assert.Equal(expectedTarget.P, actualTarget.P);
+        Assert.Equal(expectedTarget.F, actualTarget.F);
+        Assert.Equal(expectedTarget.C, actualTarget.C);
+    }
+
+    [Fact]
+    public void TrainingDay_HasConversionFoods_ShouldBeTrueWhenAnyMealHasConversionFoods()
+    {
+        // Arrange
+        var baseTrainingWeek = new MuscleGain2();
+        var trainingWeek = baseTrainingWeek.ForTargetCalories(3400M);
+        var crossfitDay = trainingWeek.XFitDay;
+
+        // Act
+        var hasConversionFoods = crossfitDay.HasConversionFoods;
+
+        // Check if any meal actually has conversion foods
+        var anyMealHasConversion = crossfitDay.Meals.Any(m => m.HasConversionFoods);
+
+        _output.WriteLine($"TrainingDay.HasConversionFoods: {hasConversionFoods}");
+        _output.WriteLine($"Any meal has conversion: {anyMealHasConversion}");
+
+        // List which meals have conversion foods
+        foreach (var meal in crossfitDay.Meals)
+        {
+            _output.WriteLine($"  {meal.Name}: {meal.HasConversionFoods}");
+        }
+
+        // Assert - HasConversionFoods should match whether any meal has conversion foods
+        Assert.Equal(anyMealHasConversion, hasConversionFoods);
+    }
+
+    [Fact]
+    public void TrainingDay_ToString_ShouldShowActualAndTargetWhenConversionFoodsPresent()
+    {
+        // Arrange
+        var baseTrainingWeek = new MuscleGain2();
+        var trainingWeek = baseTrainingWeek.ForTargetCalories(3400M);
+        var crossfitDay = trainingWeek.XFitDay;
+
+        // Act
+        var output = crossfitDay.ToString();
+
+        _output.WriteLine("TrainingDay.ToString() output:");
+        _output.WriteLine(output);
+
+        // Assert - If there are conversion foods, output should contain both ACTUAL and TARGET
+        if (crossfitDay.HasConversionFoods)
+        {
+            Assert.Contains("ACTUAL:", output);
+            Assert.Contains("TARGET:", output);
+            _output.WriteLine("\n✓ Contains ACTUAL and TARGET labels (conversion foods present)");
+        }
+        else
+        {
+            Assert.DoesNotContain("ACTUAL:", output);
+            Assert.DoesNotContain("TARGET:", output);
+            _output.WriteLine("\n✓ No ACTUAL/TARGET labels (no conversion foods)");
+        }
+    }
+
+    [Fact]
+    public void Phase_ToString_ShouldShowActualAndTargetWhenConversionFoodsPresent()
+    {
+        // Arrange
+        var baseTrainingWeek = new MuscleGain2();
+        var trainingWeek = baseTrainingWeek.ForTargetCalories(3400M);
+        var phase = new Phase("Test Phase", trainingWeek);
+
+        // Act
+        var output = phase.ToString();
+
+        _output.WriteLine("Phase.ToString() output (first 1000 chars):");
+        _output.WriteLine(output.Substring(0, Math.Min(1000, output.Length)));
+
+        // Check if any training day has conversion foods
+        var hasAnyConversionFoods = trainingWeek.TrainingDays.Any(td => td.HasConversionFoods);
+
+        _output.WriteLine($"\nAny training day has conversion foods: {hasAnyConversionFoods}");
+
+        // Assert - If there are conversion foods, output should contain both ACTUAL and TARGET
+        if (hasAnyConversionFoods)
+        {
+            Assert.Contains("ACTUAL:", output);
+            Assert.Contains("TARGET:", output);
+            Assert.Contains("Week Average:", output);
+            _output.WriteLine("✓ Contains ACTUAL and TARGET labels (conversion foods present)");
+        }
+        else
+        {
+            Assert.DoesNotContain("ACTUAL:", output);
+            Assert.DoesNotContain("TARGET:", output);
+            Assert.Contains("Ave per day:", output);
+            _output.WriteLine("✓ No ACTUAL/TARGET labels (no conversion foods)");
+        }
+    }
 }
