@@ -1,5 +1,6 @@
 ﻿using SystemOfEquations.Data;
 using SystemOfEquations.Extensions;
+using SystemOfEquations.Todoist;
 
 namespace SystemOfEquations;
 
@@ -26,14 +27,18 @@ internal record WeeklyMealsPrepPlan(IEnumerable<MealPrepPlan> MealPrepPlans)
                 // No conversion foods - show unlabeled macros
                 header = $"{m.Name}:\n  {actualNutrition.ToNutrientsString()}";
             }
-            var servings = string.Join("\n", m.CookingServings.Concat(m.EatingServings)
-                .SelectMany(s => s.ToOutputLines()));
+
+            // Use shared formatting logic from TodoistServiceHelper
+            var servings = string.Join("\n",
+                TodoistServiceHelper.FormatServingsAsStrings(m.CookingServings.Concat(m.EatingServings)));
 
             return $"{header}\n{servings}";
         });
 
         var servingsStr = string.Join("\n\n", mealPlanStrings);
-        var totalStr = string.Join("\n", Total.SelectMany(s => s.ToOutputLines()));
+
+        // Use shared formatting logic for totals
+        var totalStr = string.Join("\n", TodoistServiceHelper.FormatServingsAsStrings(Total));
 
         return $"{servingsStr}\n\nTotals:\n{totalStr}";
     }

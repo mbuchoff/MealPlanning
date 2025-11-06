@@ -148,23 +148,6 @@ public class StaticComponentTests
     }
 
     [Fact]
-    public void StaticFoodServing_ToOutputLines_RemainsConstant()
-    {
-        // Arrange
-        var staticServing = new StaticFoodServing(_salt);
-
-        // Act
-        var lines1x = staticServing.ToOutputLines().ToList();
-        var lines3x = (staticServing * 3).ToOutputLines().ToList();
-
-        // Assert
-        Assert.Single(lines1x);
-        Assert.Single(lines3x);
-        Assert.Equal(lines1x[0], lines3x[0]); // Output should be identical
-        Assert.Contains("1.0 tbsp salt", lines1x[0]);
-    }
-
-    [Fact]
     public void CompositeFoodServing_WithOnlyStaticComponents_NeverScales()
     {
         // Arrange

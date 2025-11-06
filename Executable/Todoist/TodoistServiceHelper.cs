@@ -78,6 +78,24 @@ internal static class TodoistServiceHelper
     public static string GetMealPrepTaskName(string mealName) => mealName;
 
     /// <summary>
+    /// Formats a collection of servings as strings for display.
+    /// This is the canonical formatting method used by both console output and Todoist.
+    /// For composite servings, returns the flattened components.
+    /// </summary>
+    public static IEnumerable<string> FormatServingsAsStrings(IEnumerable<FoodServing> servings, string prefix = "")
+    {
+        foreach (var serving in servings)
+        {
+            // Get display components (flattens composites)
+            var components = serving.GetComponentsForDisplay();
+            foreach (var component in components)
+            {
+                yield return $"{prefix}{component}";
+            }
+        }
+    }
+
+    /// <summary>
     /// Counts how many Todoist task operations a serving will create.
     /// Handles CompositeFoodServing by counting parent + all components recursively.
     /// </summary>

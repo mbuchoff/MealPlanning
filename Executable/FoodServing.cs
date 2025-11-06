@@ -56,12 +56,7 @@ public record FoodServing(
 
     public override string ToString() => ToString(1);
 
-    // Virtual methods for polymorphic display handling
-    public virtual IEnumerable<string> ToOutputLines(string prefix = "")
-    {
-        yield return $"{prefix}{ToString()}";
-    }
-
+    // Virtual method for polymorphic display handling
     public virtual IEnumerable<FoodServing> GetComponentsForDisplay()
     {
         // Base FoodServing returns itself

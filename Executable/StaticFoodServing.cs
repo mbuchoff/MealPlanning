@@ -36,14 +36,6 @@ public record StaticFoodServing : FoodServing
     public override string ToString() => OriginalServing.ToString();
 
     /// <summary>
-    /// Override ToOutputLines to use the original serving's formatting
-    /// </summary>
-    public override IEnumerable<string> ToOutputLines(string prefix = "")
-    {
-        return OriginalServing.ToOutputLines(prefix);
-    }
-
-    /// <summary>
     /// Override GetComponentsForDisplay to return the original serving
     /// </summary>
     public override IEnumerable<FoodServing> GetComponentsForDisplay()
