@@ -66,7 +66,7 @@ public class ForTargetCaloriesTests
         var totalCals = 0.0M;
         foreach (var day in adjustedWeek.TrainingDays)
         {
-            totalCals += day.TotalNutrients.Cals * day.TrainingDayType.DaysTraining.Count;
+            totalCals += day.ActualNutrients.Cals * day.TrainingDayType.DaysTraining.Count;
         }
         var actualAverage = totalCals / 7;
 
@@ -84,7 +84,7 @@ public class ForTargetCaloriesTests
         var baseProtein = 0.0M;
         foreach (var day in baseTrainingWeek.TrainingDays)
         {
-            baseProtein += day.TotalNutrients.Macros.P * day.TrainingDayType.DaysTraining.Count;
+            baseProtein += day.ActualNutrients.Macros.P * day.TrainingDayType.DaysTraining.Count;
         }
         baseProtein /= 7;
 
@@ -96,14 +96,14 @@ public class ForTargetCaloriesTests
         var lowerProtein = 0.0M;
         foreach (var day in lowerCalWeek.TrainingDays)
         {
-            lowerProtein += day.TotalNutrients.Macros.P * day.TrainingDayType.DaysTraining.Count;
+            lowerProtein += day.ActualNutrients.Macros.P * day.TrainingDayType.DaysTraining.Count;
         }
         lowerProtein /= 7;
 
         var higherProtein = 0.0M;
         foreach (var day in higherCalWeek.TrainingDays)
         {
-            higherProtein += day.TotalNutrients.Macros.P * day.TrainingDayType.DaysTraining.Count;
+            higherProtein += day.ActualNutrients.Macros.P * day.TrainingDayType.DaysTraining.Count;
         }
         higherProtein /= 7;
 
@@ -127,14 +127,14 @@ public class ForTargetCaloriesTests
         var manualCals = 0.0M;
         foreach (var day in manualAdjustment.TrainingDays)
         {
-            manualCals += day.TotalNutrients.Cals * day.TrainingDayType.DaysTraining.Count;
+            manualCals += day.ActualNutrients.Cals * day.TrainingDayType.DaysTraining.Count;
         }
         manualCals /= 7;
 
         var autoCals = 0.0M;
         foreach (var day in autoAdjustment.TrainingDays)
         {
-            autoCals += day.TotalNutrients.Cals * day.TrainingDayType.DaysTraining.Count;
+            autoCals += day.ActualNutrients.Cals * day.TrainingDayType.DaysTraining.Count;
         }
         autoCals /= 7;
 
@@ -157,8 +157,8 @@ public class ForTargetCaloriesTests
         var baseCarbs = 0.0M;
         foreach (var day in baseTrainingWeek.TrainingDays)
         {
-            baseFats += day.TotalNutrients.Macros.F * day.TrainingDayType.DaysTraining.Count;
-            baseCarbs += day.TotalNutrients.Macros.C * day.TrainingDayType.DaysTraining.Count;
+            baseFats += day.ActualNutrients.Macros.F * day.TrainingDayType.DaysTraining.Count;
+            baseCarbs += day.ActualNutrients.Macros.C * day.TrainingDayType.DaysTraining.Count;
         }
         var baseRatio = baseFats / baseCarbs;
 
@@ -170,8 +170,8 @@ public class ForTargetCaloriesTests
         var adjustedCarbs = 0.0M;
         foreach (var day in adjustedWeek.TrainingDays)
         {
-            adjustedFats += day.TotalNutrients.Macros.F * day.TrainingDayType.DaysTraining.Count;
-            adjustedCarbs += day.TotalNutrients.Macros.C * day.TrainingDayType.DaysTraining.Count;
+            adjustedFats += day.ActualNutrients.Macros.F * day.TrainingDayType.DaysTraining.Count;
+            adjustedCarbs += day.ActualNutrients.Macros.C * day.TrainingDayType.DaysTraining.Count;
         }
         var adjustedRatio = adjustedFats / adjustedCarbs;
 

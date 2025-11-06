@@ -14,14 +14,14 @@ var trainingWeek = baseTrainingWeek.ForTargetCalories(targetDailyCalories);
 var baseTotalCals = 0.0M;
 foreach (var day in baseTrainingWeek.TrainingDays)
 {
-    baseTotalCals += day.TotalNutrients.Cals * day.TrainingDayType.DaysTraining.Count;
+    baseTotalCals += day.ActualNutrients.Cals * day.TrainingDayType.DaysTraining.Count;
 }
 var baseAverage = baseTotalCals / 7;
 
 var adjustedTotalCals = 0.0M;
 foreach (var day in trainingWeek.TrainingDays)
 {
-    adjustedTotalCals += day.TotalNutrients.Cals * day.TrainingDayType.DaysTraining.Count;
+    adjustedTotalCals += day.ActualNutrients.Cals * day.TrainingDayType.DaysTraining.Count;
 }
 var adjustedAverage = adjustedTotalCals / 7;
 

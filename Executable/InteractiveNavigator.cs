@@ -112,7 +112,7 @@ internal static class InteractiveNavigator
             }
             else
             {
-                var nutrients = trainingDay.TotalNutrients;
+                var nutrients = trainingDay.ActualNutrients;
                 header = $"{trainingDay.TrainingDayType.Name}\n{nutrients.Macros}";
             }
 
@@ -268,9 +268,9 @@ internal static class InteractiveNavigator
         foreach (var trainingDay in trainingWeek.TrainingDays)
         {
             var daysPerWeek = trainingDay.TrainingDayType.DaysTraining.Count;
-            totalCals += trainingDay.TotalNutrients.Cals * daysPerWeek;
-            totalMacros += trainingDay.TotalNutrients.Macros * daysPerWeek;
-            totalFiber += trainingDay.TotalNutrients.Fiber * daysPerWeek;
+            totalCals += trainingDay.ActualNutrients.Cals * daysPerWeek;
+            totalMacros += trainingDay.ActualNutrients.Macros * daysPerWeek;
+            totalFiber += trainingDay.ActualNutrients.Fiber * daysPerWeek;
         }
 
         return (totalCals, totalMacros, totalFiber);

@@ -16,7 +16,7 @@ public class TrainingDayMacrosTests
     }
 
     [Fact]
-    public void TrainingDay_TotalNutrients_ShouldMatchSumOfMealNutrients()
+    public void TrainingDay_ActualNutrients_ShouldMatchSumOfMealNutrients()
     {
         // Arrange
         var trainingWeek = new MuscleGain2();
@@ -27,31 +27,44 @@ public class TrainingDayMacrosTests
         var sumOfMealFat = 0M;
         var sumOfMealCarbs = 0M;
 
-        _output.WriteLine($"CrossFit Day - Individual Meal Macros:");
+        _output.WriteLine($"CrossFit Day - Individual Meal Macros (non-conversion servings only):");
         foreach (var meal in crossfitDay.Meals)
         {
-            var mealNutrition = meal.NutritionalInformation;
-            sumOfMealProtein += mealNutrition.Macros.P;
-            sumOfMealFat += mealNutrition.Macros.F;
-            sumOfMealCarbs += mealNutrition.Macros.C;
+            // Calculate actual nutrition from non-conversion servings only
+            var nonConversionServings = meal.Servings.Where(s => !s.IsConversion).ToList();
 
-            _output.WriteLine($"  {meal.Name}: {mealNutrition.Macros.P}P / {mealNutrition.Macros.F}F / {mealNutrition.Macros.C}C");
+            var mealProtein = 0M;
+            var mealFat = 0M;
+            var mealCarbs = 0M;
+
+            foreach (var serving in nonConversionServings)
+            {
+                mealProtein += serving.NutritionalInformation.Macros.P;
+                mealFat += serving.NutritionalInformation.Macros.F;
+                mealCarbs += serving.NutritionalInformation.Macros.C;
+            }
+
+            sumOfMealProtein += mealProtein;
+            sumOfMealFat += mealFat;
+            sumOfMealCarbs += mealCarbs;
+
+            _output.WriteLine($"  {meal.Name}: {mealProtein}P / {mealFat}F / {mealCarbs}C");
         }
 
         _output.WriteLine($"\nSum of individual meals: {sumOfMealProtein}P / {sumOfMealFat}F / {sumOfMealCarbs}C");
 
-        // Get the total from TrainingDay.TotalNutrients
-        var dayTotal = crossfitDay.TotalNutrients;
-        _output.WriteLine($"TrainingDay.TotalNutrients: {dayTotal.Macros.P}P / {dayTotal.Macros.F}F / {dayTotal.Macros.C}C");
+        // Get the total from TrainingDay.ActualNutrients
+        var dayTotal = crossfitDay.ActualNutrients;
+        _output.WriteLine($"TrainingDay.ActualNutrients: {dayTotal.Macros.P}P / {dayTotal.Macros.F}F / {dayTotal.Macros.C}C");
 
-        // Assert - TotalNutrients should match the sum of individual meals
+        // Assert - ActualNutrients should match the sum of individual meals
         // Allow small rounding differences (within 1g)
         Assert.True(Math.Abs(dayTotal.Macros.P - sumOfMealProtein) <= 1,
-            $"Protein mismatch: TotalNutrients={dayTotal.Macros.P}P, Sum of meals={sumOfMealProtein}P");
+            $"Protein mismatch: ActualNutrients={dayTotal.Macros.P}P, Sum of meals={sumOfMealProtein}P");
         Assert.True(Math.Abs(dayTotal.Macros.F - sumOfMealFat) <= 1,
-            $"Fat mismatch: TotalNutrients={dayTotal.Macros.F}F, Sum of meals={sumOfMealFat}F");
+            $"Fat mismatch: ActualNutrients={dayTotal.Macros.F}F, Sum of meals={sumOfMealFat}F");
         Assert.True(Math.Abs(dayTotal.Macros.C - sumOfMealCarbs) <= 1,
-            $"Carbs mismatch: TotalNutrients={dayTotal.Macros.C}C, Sum of meals={sumOfMealCarbs}C");
+            $"Carbs mismatch: ActualNutrients={dayTotal.Macros.C}C, Sum of meals={sumOfMealCarbs}C");
     }
 
     [Fact]
@@ -79,9 +92,9 @@ public class TrainingDayMacrosTests
 
         _output.WriteLine($"\nSum of target macros: {sumOfTargetProtein}P / {sumOfTargetFat}F / {sumOfTargetCarbs}C");
 
-        // Get actual from TotalNutrients
-        var dayActual = crossfitDay.TotalNutrients;
-        _output.WriteLine($"Actual (TotalNutrients): {dayActual.Macros.P}P / {dayActual.Macros.F}F / {dayActual.Macros.C}C");
+        // Get actual from ActualNutrients
+        var dayActual = crossfitDay.ActualNutrients;
+        _output.WriteLine($"Actual (ActualNutrients): {dayActual.Macros.P}P / {dayActual.Macros.F}F / {dayActual.Macros.C}C");
 
         // Calculate what we show in the UI
         var targetMacros = new Macros(0, 0, 0);
@@ -137,8 +150,8 @@ public class TrainingDayMacrosTests
         }
 
         _output.WriteLine($"\nSum of displayed protein: {displayedProteinSum:F0}P");
-        _output.WriteLine($"TrainingDay.TotalNutrients: {crossfitDay.TotalNutrients.Macros.P:F0}P");
-        _output.WriteLine($"Difference: {displayedProteinSum - crossfitDay.TotalNutrients.Macros.P:F0}P");
+        _output.WriteLine($"TrainingDay.ActualNutrients: {crossfitDay.ActualNutrients.Macros.P:F0}P");
+        _output.WriteLine($"Difference: {displayedProteinSum - crossfitDay.ActualNutrients.Macros.P:F0}P");
 
         // User reports seeing 189P
         _output.WriteLine($"\nUser reported: 189P");

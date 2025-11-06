@@ -33,7 +33,7 @@ internal abstract record TrainingWeekBase : TrainingWeek
         foreach (var trainingDay in TrainingDays)
         {
             var daysPerWeek = trainingDay.TrainingDayType.DaysTraining.Count;
-            baseTotalCals += trainingDay.TotalNutrients.Cals * daysPerWeek;
+            baseTotalCals += trainingDay.ActualNutrients.Cals * daysPerWeek;
         }
         var baseAverage = baseTotalCals / 7;
 
@@ -78,7 +78,7 @@ internal abstract record TrainingWeekBase : TrainingWeek
             foreach (var trainingDay in testWeek.TrainingDays)
             {
                 var daysPerWeek = trainingDay.TrainingDayType.DaysTraining.Count;
-                totalCals += trainingDay.TotalNutrients.Cals * daysPerWeek;
+                totalCals += trainingDay.ActualNutrients.Cals * daysPerWeek;
             }
             var averageDailyCals = totalCals / 7;
 
