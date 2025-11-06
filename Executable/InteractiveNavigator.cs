@@ -257,15 +257,11 @@ internal static class InteractiveNavigator
         if (confirm)
         {
             AnsiConsole.WriteLine();
-            await AnsiConsole.Status()
-                .StartAsync("[yellow]Syncing to Todoist...[/]", async ctx =>
-                {
-                    await TodoistService.SyncAsync(phase);
-                });
-
-            AnsiConsole.MarkupLine("[green]✓ Synced successfully![/]");
-            AnsiConsole.WriteLine();
-            AnsiConsole.MarkupLine("[dim]Press any key to continue...[/]");
+            Console.WriteLine("Syncing to Todoist...");
+            await TodoistService.SyncAsync(phase, showProgress: true);
+            Console.WriteLine("Done");
+            Console.WriteLine();
+            Console.WriteLine("Press any key to continue...");
             Console.ReadKey(true);
         }
     }
