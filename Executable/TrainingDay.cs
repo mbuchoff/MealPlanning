@@ -57,7 +57,4 @@ internal record TrainingDay
             }
         }
     }
-
-    [Obsolete("Use ActualNutrients instead. TotalNutrients includes conversion foods which aren't actually consumed.")]
-    public (decimal Cals, Macros Macros, decimal Fiber) TotalNutrients => ActualNutrients;
 }
