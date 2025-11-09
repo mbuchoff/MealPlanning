@@ -24,19 +24,28 @@ internal static class TodoistServiceHelper
         // - Otherwise, check the servings list (for inline meal comments)
         var hasConversions = hasConversionFoods ?? servingsList.Any(s => s.IsConversion);
 
-        // Build header sections - only show ACTUAL/TARGET labels when there are conversion foods
-        // This matches console output behavior (Meal.ToString and WeeklyMealsPrepPlan.ToString)
-        List<string> headerSections;
-        if (hasConversions)
+        // Build header using shared formatting logic
+        string headerText;
+
+        // Special case: empty servings with targetMacros
+        // This happens for PrepareInAdvance meals with no AtEatingTime servings
+        // Show just the targetMacros without ACTUAL/TARGET split to avoid showing zeros
+        if (nonConversionServings.Count == 0 && targetMacros != null)
+        {
+            headerText = targetMacros.ToString();
+        }
+        else if (hasConversions)
         {
             if (targetMacros != null)
             {
                 // Show ACTUAL and TARGET when conversion foods + target macros
-                headerSections = new List<string>
-                {
-                    $"ACTUAL:\n{actualTotal.ToNutrientsString()}",
-                    $"TARGET:\n{targetMacros}"
-                };
+                // Use "\n" separator to match the format "ACTUAL:\n{actual}\n\nTARGET:\n{target}"
+                headerText = NutritionalFormatting.FormatWithOptionalTarget(
+                    $"\n{actualTotal.ToNutrientsString()}",
+                    $"\n{targetMacros}",
+                    hasConversionFoods: true,
+                    prefix: "",
+                    separator: "\n\n");
             }
             else
             {
@@ -45,21 +54,22 @@ internal static class TodoistServiceHelper
                     .Select(s => s.NutritionalInformation)
                     .Sum(1, ServingUnits.Meal);
 
-                headerSections = new List<string>
-                {
-                    $"ACTUAL:\n{actualTotal.ToNutrientsString()}",
-                    $"INTENDED:\n{intendedTotal.ToNutrientsString()}"
-                };
+                headerText = NutritionalFormatting.FormatWithOptionalTarget(
+                    $"\n{actualTotal.ToNutrientsString()}",
+                    $"\n{intendedTotal.ToNutrientsString()}",
+                    hasConversionFoods: true,
+                    prefix: "",
+                    separator: "\n\n")
+                    .Replace("TARGET:", "INTENDED:");
             }
         }
         else
         {
             // No conversion foods - show unlabeled total (ignore targetMacros)
-            headerSections = new List<string>
-            {
-                actualTotal.ToNutrientsString()
-            };
+            headerText = actualTotal.ToNutrientsString();
         }
+
+        List<string> headerSections = new List<string> { headerText };
 
         // Create comment with header(s), then individual servings
         // Filter out zero-calorie foods (like water, creatine) from individual breakdown

@@ -14,18 +14,23 @@ internal record TrainingDay
     {
         var sb = new StringBuilder();
         var actualNutrients = ActualNutrients;
+        var actualString = $"{actualNutrients.Cals:F0} calories, {actualNutrients.Macros}, {actualNutrients.Fiber:F1}g fiber";
 
         if (HasConversionFoods)
         {
             // Show both ACTUAL and TARGET when conversion foods are present
             sb.AppendLine($"{TrainingDayType}:");
-            sb.AppendLine($"  ACTUAL: {actualNutrients.Cals:F0} calories, {actualNutrients.Macros}, {actualNutrients.Fiber:F1}g fiber");
-            sb.AppendLine($"  TARGET: {TargetMacros}");
+            var nutrientsLine = NutritionalFormatting.FormatWithOptionalTarget(
+                actualString,
+                TargetMacros.ToString(),
+                HasConversionFoods,
+                prefix: "  ");
+            sb.AppendLine(nutrientsLine);
         }
         else
         {
-            // No conversion foods - show unlabeled nutrients
-            sb.AppendLine($"{TrainingDayType}: {actualNutrients.Cals:F0} calories, {actualNutrients.Macros}, {actualNutrients.Fiber:F1}g fiber");
+            // No conversion foods - show unlabeled nutrients on same line as TrainingDayType
+            sb.AppendLine($"{TrainingDayType}: {actualString}");
         }
 
         foreach (var meal in Meals)
