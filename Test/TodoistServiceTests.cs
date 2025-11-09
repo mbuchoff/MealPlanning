@@ -922,4 +922,52 @@ public class TodoistServiceTests
             var ___ = group.TrainingDay.HasConversionFoods;
         }
     }
+
+    [Fact]
+    public void GenerateNutritionalComment_Should_Show_TargetMacros_When_Servings_Empty_NoConversionFoods()
+    {
+        // Arrange - PrepareInAdvance meals with no AtEatingTime servings should show just the target macros
+        var emptyServings = new List<FoodServing>();
+        var targetMacros = new Macros(P: 28.33M, F: 20, C: 65);
+
+        // Act
+        var comment = TodoistServiceHelper.GenerateNutritionalComment(emptyServings, targetMacros, hasConversionFoods: false);
+
+        // Assert - Should NOT show zeros for calories or macros
+        Assert.DoesNotContain("0 cals", comment);
+        Assert.DoesNotContain(", 0g fiber", comment);
+
+        // Should show the target macros
+        Assert.Contains("28 P", comment);
+        Assert.Contains("20 F", comment);
+        Assert.Contains("65 C", comment);
+
+        // Should NOT show ACTUAL/TARGET labels (just the plain macros)
+        Assert.DoesNotContain("ACTUAL", comment);
+        Assert.DoesNotContain("TARGET", comment);
+    }
+
+    [Fact]
+    public void GenerateNutritionalComment_Should_Show_TargetMacros_When_Servings_Empty_WithConversionFoods()
+    {
+        // Arrange - PrepareInAdvance meals with conversion foods but no AtEatingTime servings
+        var emptyServings = new List<FoodServing>();
+        var targetMacros = new Macros(P: 28.33M, F: 20, C: 65);
+
+        // Act
+        var comment = TodoistServiceHelper.GenerateNutritionalComment(emptyServings, targetMacros, hasConversionFoods: true);
+
+        // Assert - Should NOT show zeros for calories or macros
+        Assert.DoesNotContain("0 cals", comment);
+        Assert.DoesNotContain(", 0g fiber", comment);
+
+        // Should show the target macros
+        Assert.Contains("28 P", comment);
+        Assert.Contains("20 F", comment);
+        Assert.Contains("65 C", comment);
+
+        // Should NOT show ACTUAL/TARGET labels
+        Assert.DoesNotContain("ACTUAL", comment);
+        Assert.DoesNotContain("TARGET", comment);
+    }
 }

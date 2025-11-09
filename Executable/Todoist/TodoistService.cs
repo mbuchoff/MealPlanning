@@ -335,15 +335,12 @@ internal class TodoistService
     private static string GenerateDayTypeComment(TrainingDay trainingDay)
     {
         var actualNutrients = trainingDay.ActualNutrients;
+        var actualString = $"{actualNutrients.Cals:F0} cals, {actualNutrients.Macros}, {actualNutrients.Fiber:F1}g fiber";
 
-        if (trainingDay.HasConversionFoods)
-        {
-            return $"ACTUAL: {actualNutrients.Cals:F0} cals, {actualNutrients.Macros}, {actualNutrients.Fiber:F1}g fiber\nTARGET: {trainingDay.TargetMacros}";
-        }
-        else
-        {
-            return $"{actualNutrients.Cals:F0} cals, {actualNutrients.Macros}, {actualNutrients.Fiber:F1}g fiber";
-        }
+        return NutritionalFormatting.FormatWithOptionalTarget(
+            actualString,
+            trainingDay.TargetMacros.ToString(),
+            trainingDay.HasConversionFoods);
     }
 
     private static string GetDueString(TrainingDayType trainingDayType) => $"every {string.Join(",",

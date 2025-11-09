@@ -16,17 +16,13 @@ internal record WeeklyMealsPrepPlan(IEnumerable<MealPrepPlan> MealPrepPlans)
                 .Select(s => s.NutritionalInformation)
                 .Sum(1, ServingUnits.Meal);
 
-            // Build header - show ACTUAL/TARGET labels only if there were conversion foods
-            string header;
-            if (m.HasConversionFoods)
-            {
-                header = $"{m.Name}:\n  ACTUAL: {actualNutrition.ToNutrientsString()}\n  TARGET: {m.TargetMacros}";
-            }
-            else
-            {
-                // No conversion foods - show unlabeled macros
-                header = $"{m.Name}:\n  {actualNutrition.ToNutrientsString()}";
-            }
+            // Build header using shared formatting logic
+            var macroLine = NutritionalFormatting.FormatWithOptionalTarget(
+                actualNutrition.ToNutrientsString(),
+                m.TargetMacros.ToString(),
+                m.HasConversionFoods,
+                prefix: "  ");
+            var header = $"{m.Name}:\n{macroLine}";
 
             // Use shared formatting logic from TodoistServiceHelper
             var servings = string.Join("\n",

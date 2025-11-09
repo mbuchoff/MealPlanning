@@ -42,7 +42,7 @@ internal record MuscleGain2 : TrainingWeekBase
         new[] { Foods.Edamame_1_Scoop, Foods.ProteinToFatConversion }
             .Select(pFood => new FoodGrouping(
             "blueberries and oatmeal",
-            [Foods.Ezekiel_English_Muffin, Foods.BlueBerries_1_Scoop * 4, Foods.Creatine_1_Scoop],
+            [Foods.Ezekiel_English_Muffin, Foods.AlmondButter_1_Tbsp, Foods.BlueBerries_1_Scoop * 4, Foods.Creatine_1_Scoop],
             pFood,
             Foods.ChiaSeeds_2_5_Tbsp,
             Foods.Oats_1_Scoop,

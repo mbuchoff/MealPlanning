@@ -32,18 +32,14 @@ public class Meal
         var sb = new StringBuilder();
         sb.AppendLine($"{Name}: {FoodGrouping.Name}");
 
-        // Add macro information - show ACTUAL/TARGET labels only if there are conversion foods
+        // Add macro information using shared formatting logic
         var actualNutrition = NutritionalInformation;
-        if (HasConversionFoods)
-        {
-            sb.AppendLine($"  ACTUAL: {actualNutrition.ToNutrientsString()}");
-            sb.AppendLine($"  TARGET: {Macros}");
-        }
-        else
-        {
-            // No conversion foods - show unlabeled macros
-            sb.AppendLine($"  {actualNutrition.ToNutrientsString()}");
-        }
+        var macroLine = NutritionalFormatting.FormatWithOptionalTarget(
+            actualNutrition.ToNutrientsString(),
+            Macros.ToString(),
+            HasConversionFoods,
+            prefix: "  ");
+        sb.AppendLine(macroLine);
 
         // Show servings for all meals
         foreach (var serving in Servings.Where(s => !s.IsConversion))
