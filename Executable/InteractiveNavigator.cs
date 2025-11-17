@@ -50,6 +50,7 @@ internal static class InteractiveNavigator
             $"CrossFit Day ({phase.TrainingWeek.XFitDay.TrainingDayType.DaysTraining.Count}x/week)",
             $"Running Day ({phase.TrainingWeek.RunningDay.TrainingDayType.DaysTraining.Count}x/week)",
             $"Rest Day ({phase.TrainingWeek.NonworkoutDay.TrainingDayType.DaysTraining.Count}x/week)",
+            "[blue]Totals[/]",
             "[yellow]Sync to Todoist[/]",
             "[red]Exit[/]"
         };
@@ -73,6 +74,11 @@ internal static class InteractiveNavigator
         else if (selection.Contains("Rest"))
         {
             await ShowTrainingDayDetailsAsync(phase, phase.TrainingWeek.NonworkoutDay);
+            return true;
+        }
+        else if (selection.Contains("Totals"))
+        {
+            await ShowMealPrepTotalsAsync(phase);
             return true;
         }
         else if (selection.Contains("Sync"))
@@ -189,6 +195,38 @@ internal static class InteractiveNavigator
         AnsiConsole.WriteLine();
 
         DisplayMeal(meal);
+
+        AnsiConsole.WriteLine();
+        AnsiConsole.MarkupLine("[dim]Press any key to go back...[/]");
+        Console.ReadKey(true);
+
+        return Task.CompletedTask;
+    }
+
+    private static Task ShowMealPrepTotalsAsync(Phase phase)
+    {
+        AnsiConsole.Clear();
+
+        var panel = new Panel(new Markup("[bold]Totals[/]\n[dim]All cooking + at-eating servings for the week[/]"))
+        {
+            Border = BoxBorder.Rounded
+        };
+        AnsiConsole.Write(panel);
+        AnsiConsole.WriteLine();
+
+        var totals = TodoistServiceHelper.FormatServingsAsStrings(phase.MealPrepPlan.Total).ToList();
+
+        if (!totals.Any())
+        {
+            AnsiConsole.MarkupLine("[dim]No prep servings to display.[/]");
+        }
+        else
+        {
+            foreach (var line in totals)
+            {
+                AnsiConsole.MarkupLine(Markup.Escape(line));
+            }
+        }
 
         AnsiConsole.WriteLine();
         AnsiConsole.MarkupLine("[dim]Press any key to go back...[/]");
