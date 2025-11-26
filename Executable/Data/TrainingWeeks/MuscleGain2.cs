@@ -9,7 +9,7 @@ internal record MuscleGain2 : TrainingWeekBase
         nonworkoutMeals:
         [
             new Meal("Waking", new Macros(P: MUSCLE_GAIN_PROTEIN_PER_MEAL_ON_NONWORKOUT_DAY, F: 10, C: 60),
-                WakingBlueberryOatmealShakeFoodGroupings),
+                NonworkoutWakingOatmealFoodGroupings),
             new Meal("3-5 hours after last meal", new(P: MUSCLE_GAIN_PROTEIN_PER_MEAL_ON_NONWORKOUT_DAY, F: 20, C: 60),
                 FoodGroupings.Ezekiel),
             new("3-5 hours after last meal", new(P: MUSCLE_GAIN_PROTEIN_PER_MEAL_ON_NONWORKOUT_DAY, F: 20, C: 60),
@@ -25,7 +25,7 @@ internal record MuscleGain2 : TrainingWeekBase
                 new Macros(P: MUSCLE_GAIN_PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 20, C: 50),
                 FoodGroupings.BlueberriesOatmealAndEdamame + Foods.Creatine_1_Scoop),
             new("1/2 shake during workout, 1/2 right after",
-                new(P: MUSCLE_GAIN_PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 0, C: 35), FoodGroupings.WorkoutShake),
+                new(P: MUSCLE_GAIN_PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 0, C: 35), FoodGroupings.WorkoutMeal),
             new Meal("40 minutes after workout", new(P: MUSCLE_GAIN_PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 10, C: 100),
                 FoodGroupings.Ezekiel),
             new("2-4 hours after last meal", new(P: MUSCLE_GAIN_PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 20, C: 65),
@@ -40,7 +40,7 @@ internal record MuscleGain2 : TrainingWeekBase
             new Meal("1-3 hours before workout", new(P: MUSCLE_GAIN_PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 20, C: 80),
                 Oatmeal),
             new("1/2 shake during workout, 1/2 right after",
-                new(P: MUSCLE_GAIN_PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 0, C: 35), FoodGroupings.WorkoutShake),
+                new(P: MUSCLE_GAIN_PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 0, C: 35), FoodGroupings.WorkoutMeal),
             new Meal("40 minutes after workout", new(P: MUSCLE_GAIN_PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 10, C: 120),
                 EnglishMuffinsAndRice),
             new Meal("2-4 hours after last meal", new(P: MUSCLE_GAIN_PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 20, C: 100),
@@ -88,24 +88,22 @@ internal record MuscleGain2 : TrainingWeekBase
             FoodGroupings.Tofu
         });
 
-    private static readonly FallbackChain WakingBlueberryOatmealShakeFoodGroupings = new(
+    private static readonly FallbackChain NonworkoutWakingOatmealFoodGroupings = new(
         [.. new[] { Foods.AlmondButter_1_Tbsp, Foods.FatToCarbConversion }.Select(fFood =>
         new FoodGrouping("Blueberry oatmeal shake",
             [
                 Foods.BlueBerries_1_Scoop * 3,
-                Foods.AlmondMilk_2_Cup,
                 Foods.Creatine_1_Scoop,
             ],
-            Foods.PeaProtein_1_Scoop,
+            Foods.Edamame_1_Scoop,
             fFood,
             Foods.Oats_1_Scoop,
             PreparationMethodEnum.PrepareAsNeeded))]);
 
     private static readonly FallbackChain BedtimeProteinShakeFoodGroupings = new(
-        [.. new[] { Foods.BlueBerries_1_Scoop, Foods.FatToCarbConversion }.Select(cFood =>
+        [.. new[] { Foods.Whole_Grain_Pasta_56_Grams, Foods.FatToCarbConversion }.Select(cFood =>
         new FoodGrouping("Protein shake",
-            [Foods.AlmondMilk_2_Cup],
-            Foods.PeaProtein_1_Scoop,
+            Foods.Edamame_1_Scoop,
             Foods.AlmondButter_1_Tbsp,
             cFood,
             PreparationMethodEnum.PrepareAsNeeded))]);

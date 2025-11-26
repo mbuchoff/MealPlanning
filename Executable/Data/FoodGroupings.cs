@@ -147,6 +147,13 @@ internal static class FoodGroupings
         Foods.WheatBerries_45_Grams,
         PreparationMethodEnum.PrepareInAdvance);
 
+    public static FoodGrouping WorkoutMeal { get; } = new(
+        "workout shake",
+        Foods.Edamame_1_Scoop,
+        Foods.FatToCarbConversion,
+        Foods.OrangeJuice_1_Cup,
+        PreparationMethodEnum.PrepareAsNeeded);
+
     public static FoodGrouping WorkoutShake { get; } = new(
         "workout shake",
         Foods.PeaProtein_1_Scoop,
