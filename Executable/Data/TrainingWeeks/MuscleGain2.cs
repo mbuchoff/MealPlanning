@@ -17,7 +17,7 @@ internal record MuscleGain2 : TrainingWeekBase
             new("3-5 hours after last meal", new(P: MUSCLE_GAIN_PROTEIN_PER_MEAL_ON_NONWORKOUT_DAY, F: 20, C: 60),
                 RestDayCookingFoodGrouping),
             new Meal("Bedtime", new Macros(P: MUSCLE_GAIN_PROTEIN_PER_MEAL_ON_NONWORKOUT_DAY, F: 25, C: 0),
-                BedtimeProteinShakeFoodGroupings)
+                NonworkoutBedtimeFoodGroupings)
         ],
         runningMeals:
         [
@@ -100,11 +100,11 @@ internal record MuscleGain2 : TrainingWeekBase
             Foods.Oats_1_Scoop,
             PreparationMethodEnum.PrepareAsNeeded))]);
 
-    private static readonly FallbackChain BedtimeProteinShakeFoodGroupings = new(
+    private static readonly FallbackChain NonworkoutBedtimeFoodGroupings = new(
         [.. new[] { Foods.Whole_Grain_Pasta_56_Grams, Foods.FatToCarbConversion }.Select(cFood =>
         new FoodGrouping("Protein shake",
             Foods.Edamame_1_Scoop,
-            Foods.AlmondButter_1_Tbsp,
+            Foods.Almonds_1_Scoop,
             cFood,
             PreparationMethodEnum.PrepareAsNeeded))]);
 }

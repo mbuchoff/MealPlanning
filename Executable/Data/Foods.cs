@@ -13,6 +13,10 @@ internal static class Foods
         [(2, ServingUnits.Cup), (480, ServingUnits.Gram)],
         new BaseNutrition(Cals: 59, P: 2, F: 5.1M, CTotal: 2, CFiber: 2));
 
+    private static Food AlmondsFood { get; } = new("almonds",
+        [(0.25M, ServingUnits.Cup), (30, ServingUnits.Gram)],
+        new BaseNutrition(Cals: 170, P: 6M, F: 15M, CTotal: 6M, CFiber: 4M));
+
     private static Food AppleFood { get; } = new("apple",
         [(1, ServingUnits.None)],
         new BaseNutrition(Cals: 95, P: 1, F: 0, CTotal: 25, CFiber: 3));
@@ -161,6 +165,12 @@ internal static class Foods
     // Public FoodServing definitions
     public static FoodServing AlmondButter_1_Tbsp =>
         AlmondButterFood.WithServing(1, ServingUnits.Tablespoon) with
+        {
+            AddWhen = FoodServing.AddWhenEnum.AtEatingTime
+        };
+
+    public static FoodServing Almonds_1_Scoop =>
+        AlmondsFood.WithServing(1, ServingUnits.Scoop) with
         {
             AddWhen = FoodServing.AddWhenEnum.AtEatingTime
         };
