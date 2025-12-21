@@ -1,6 +1,6 @@
 ﻿using static SystemOfEquations.FoodGrouping;
 
-namespace SystemOfEquations.Data.TrainingWeeks;
+namespace SystemOfEquations.Data.TrainingWeeks.MuscleGain3;
 
 internal record MuscleGain3TrainingAfter4Meals : TrainingWeekBase
 {
