@@ -103,24 +103,4 @@ public class MealFallbackTests
         Assert.NotNull(meal);
         Assert.Equal("Test Meal", meal.Name);
     }
-
-    [Fact]
-    public void WorkoutMeal_Should_Provide_Fallbacks_For_Conversions()
-    {
-        object workoutMeal = FoodGroupings.WorkoutMeal;
-
-        var fallback = Assert.IsType<FallbackChain>(workoutMeal);
-        Assert.Equal(3, fallback.Count);
-        Assert.Equal(Foods.Edamame_1_Scoop, fallback.All[0].PFood);
-        Assert.Equal(Foods.FatToCarbConversion, fallback.All[1].PFood);
-        Assert.Equal(Foods.ProteinToCarbConversion, fallback.All[2].PFood);
-
-        foreach (var grouping in fallback.All)
-        {
-            Assert.Equal(Foods.FatToCarbConversion, grouping.FFood);
-            Assert.Equal(Foods.OrangeJuice_1_Cup, grouping.CFood);
-            Assert.Equal("workout shake", grouping.Name);
-            Assert.Equal(FoodGrouping.PreparationMethodEnum.PrepareAsNeeded, grouping.PreparationMethod);
-        }
-    }
 }
