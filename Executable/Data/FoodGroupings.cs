@@ -1,4 +1,6 @@
-﻿using static SystemOfEquations.FoodGrouping;
+﻿// ABOUTME: Defines reusable FoodGrouping and FallbackChain configurations for meals and snacks
+// used across training week definitions and meal planning calculations
+using static SystemOfEquations.FoodGrouping;
 
 namespace SystemOfEquations.Data;
 
@@ -147,12 +149,25 @@ internal static class FoodGroupings
         Foods.WheatBerries_45_Grams,
         PreparationMethodEnum.PrepareInAdvance);
 
-    public static FoodGrouping WorkoutMeal { get; } = new(
-        "workout shake",
-        Foods.Edamame_1_Scoop,
-        Foods.FatToCarbConversion,
-        Foods.OrangeJuice_1_Cup,
-        PreparationMethodEnum.PrepareAsNeeded);
+    public static FallbackChain WorkoutMeal { get; } = new(
+        new FoodGrouping(
+            "workout shake",
+            Foods.Edamame_1_Scoop,
+            Foods.FatToCarbConversion,
+            Foods.OrangeJuice_1_Cup,
+            PreparationMethodEnum.PrepareAsNeeded),
+        new FoodGrouping(
+            "workout shake",
+            Foods.FatToCarbConversion,
+            Foods.FatToCarbConversion,
+            Foods.OrangeJuice_1_Cup,
+            PreparationMethodEnum.PrepareAsNeeded),
+        new FoodGrouping(
+            "workout shake",
+            Foods.ProteinToCarbConversion,
+            Foods.FatToCarbConversion,
+            Foods.OrangeJuice_1_Cup,
+            PreparationMethodEnum.PrepareAsNeeded));
 
     public static FoodGrouping WorkoutShake { get; } = new(
         "workout shake",

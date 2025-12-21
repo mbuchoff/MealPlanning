@@ -2,9 +2,9 @@
 
 namespace SystemOfEquations.Data.TrainingWeeks;
 
-internal record MuscleGain3 : TrainingWeekBase
+internal record MuscleGain3TrainingAfter4Meals : TrainingWeekBase
 {
-    internal MuscleGain3() : base(
+    internal MuscleGain3TrainingAfter4Meals() : base(
         "Muscle Gain 3",
         nonworkoutMeals:
         [
