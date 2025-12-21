@@ -1,4 +1,5 @@
 ﻿using SystemOfEquations.Data.TrainingWeeks;
+using SystemOfEquations.Data.TrainingWeeks.MuscleGain3;
 
 namespace SystemOfEquations.Data;
 
@@ -6,7 +7,7 @@ internal class WeeklyMealsPrepPlans
 {
     public static WeeklyMealsPrepPlan Phase2MealPrepPlan => CreateMealPrepPlan(new MuscleGain2());
 
-    public static WeeklyMealsPrepPlan Phase3MealPrepPlan => CreateMealPrepPlan(new MuscleGain3());
+    public static WeeklyMealsPrepPlan Phase3TrainingAfter1MealMealPrepPlan => CreateMealPrepPlan(new MuscleGain3TrainingAfter1Meal());
 
     public static WeeklyMealsPrepPlan CreateMealPrepPlan(TrainingWeek trainingWeek)
     {
