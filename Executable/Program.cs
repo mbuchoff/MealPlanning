@@ -7,7 +7,7 @@ using SystemOfEquations.Todoist;
 const decimal targetDailyCalories = 3600M;
 
 // Automatically calculate the required adjustment
-var baseTrainingWeek = new MuscleGain2();
+var baseTrainingWeek = new MuscleGain3TrainingAfter1Meal();
 var trainingWeek = baseTrainingWeek.ForTargetCalories(targetDailyCalories);
 
 // Calculate the actual percentage for display purposes

@@ -26,19 +26,19 @@ internal record MuscleGain3TrainingAfter1Meal : TrainingWeekBase
         ],
         runningMeals:
         [
-            new Meal("Waking",
+            new Meal("1-3 hours before workout",
                 new(P: MUSCLE_GAIN_PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 20, C: 80),
-                FoodGroupings.BlueberriesOatmealAndEdamame + Foods.Creatine_1_Scoop),
-            new("1/2 shake during working, 1/2 right after",
+                Oatmeal(blueberryScoops: 3)),
+            new("1/2 shake during workout, 1/2 right after",
                 new(P: MUSCLE_GAIN_PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 0, C: 55),
                 FoodGroupings.WorkoutMeal),
-            new Meal("Meal 2",
+            new Meal("40 minutes after workout",
                 new(P: MUSCLE_GAIN_PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 10, C: 120),
-                FoodGroupings.Seitan),
-            new("Meal 3",
+                SeitanAndEnglishMuffin),
+            new("2-4 hours after last meal",
                 new(P: MUSCLE_GAIN_PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 20, C: 100),
-                FoodGroupings.Seitan),
-            new("Meal 4",
+                SeitanAndEnglishMuffin),
+            new("3-5 hours after last meal",
                 new(P: MUSCLE_GAIN_PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 20, C: 50),
                 FoodGroupings.Ezekiel),
             new Meal("Bedtime",
@@ -47,19 +47,19 @@ internal record MuscleGain3TrainingAfter1Meal : TrainingWeekBase
         ],
         xfitMeals:
         [
-            new Meal("Waking",
+            new Meal("1-3 hours before workout",
                 new(P: MUSCLE_GAIN_PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 20, C: 80),
-                Oatmeal),
-            new("1/2 shake during working, 1/2 right after",
+                Oatmeal(blueberryScoops: 3)),
+            new("1/2 shake during workout, 1/2 right after",
                 new(P: MUSCLE_GAIN_PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 0, C: 55),
                 FoodGroupings.WorkoutMeal),
-            new Meal("Meal 2",
+            new Meal("40 minutes after workout",
                 new(P: MUSCLE_GAIN_PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 10, C: 120),
                 FoodGroupings.Ezekiel),
-            new("Meal 3",
+            new("2-4 hours after last meal",
                 new(P: MUSCLE_GAIN_PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 20, C: 100),
                 EnglishMuffinsAndRice),
-            new("Meal 4",
+            new("3-5 hours after last meal",
                 new(P: MUSCLE_GAIN_PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 20, C: 100),
                 EnglishMuffinsAndRice),
             new Meal("Bedtime",
@@ -70,12 +70,13 @@ internal record MuscleGain3TrainingAfter1Meal : TrainingWeekBase
 
     }
 
-    private static readonly FallbackChain Oatmeal = new(
+    private static FallbackChain Oatmeal(int blueberryScoops) => new(
         new[] { Foods.Edamame_1_Scoop, Foods.ProteinToFatConversion }
             .Select(pFood => new FoodGrouping(
                 "blueberries and oatmeal",
                 [
-                    Foods.Ezekiel_English_Muffin, Foods.AlmondButter_1_Tbsp, Foods.BlueBerries_1_Scoop * 4,
+                    Foods.Ezekiel_English_Muffin, Foods.AlmondButter_1_Tbsp,
+                    Foods.BlueBerries_1_Scoop * blueberryScoops,
                     Foods.Creatine_1_Scoop
                 ],
                 pFood,
@@ -86,14 +87,30 @@ internal record MuscleGain3TrainingAfter1Meal : TrainingWeekBase
     private static FallbackChain EnglishMuffinsAndRice { get; } = new(
         new[] { Foods.WheatBerries_45_Grams, Foods.ProteinToCarbConversion }.Select(pFood => new FoodGrouping(
             "rice",
-            [Foods.Ezekiel_English_Muffin * 2],
+            [Foods.Ezekiel_English_Muffin, Foods.AlmondButter_1_Tbsp],
             pFood,
             Foods.PumpkinSeeds_30_Grams,
             Foods.BrownRice_45_Grams,
             PreparationMethodEnum.PrepareInAdvance)).ToArray());
 
+    private static readonly FoodGrouping SeitanAndEnglishMuffin = new(
+        "seitan and english muffin",
+        [Foods.Ezekiel_English_Muffin],
+        Foods.Seitan_Sprouts_Yeast_1_Gram_Gluten_4x,
+        Foods.OliveOil_1_Tbsp,
+        Foods.BrownRice_45_Grams,
+        PreparationMethodEnum.PrepareInAdvance);
+
+    private static readonly FoodGrouping TofuAndEnglishMuffin = new(
+        "tofu and english muffin",
+        [Foods.Ezekiel_English_Muffin],
+        Foods.Tofu_91_Grams,
+        Foods.PumpkinSeeds_30_Grams,
+        Foods.BrownRice_45_Grams,
+        PreparationMethodEnum.PrepareInAdvance);
+
     private static FallbackChain RestDayCookingFoodGrouping { get; } = new(
-        new[]
+        new FoodGrouping[]
         {
             new FoodGrouping("rice",
                 [],
@@ -101,7 +118,7 @@ internal record MuscleGain3TrainingAfter1Meal : TrainingWeekBase
                 Foods.PumpkinSeeds_30_Grams,
                 Foods.BrownRice_45_Grams,
                 PreparationMethodEnum.PrepareInAdvance),
-            FoodGroupings.Tofu
+            TofuAndEnglishMuffin
         });
 
     private static readonly FallbackChain NonworkoutWakingOatmealFoodGroupings = new(
