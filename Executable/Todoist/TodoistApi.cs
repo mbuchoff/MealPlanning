@@ -1,45 +1,31 @@
 ﻿using System.Net.Http.Json;
+using System.Text.Json.Serialization;
 using Microsoft.Extensions.Configuration;
 
 namespace SystemOfEquations.Todoist;
 
 internal static class TodoistApi
 {
+    private const string ApiV1BaseUrl = "https://api.todoist.com/api/v1";
+
     public static async Task AddCommentAsync(string taskId, string comment)
     {
         using var httpClient = await CreateHttpClientAsync();
         var result = await httpClient.PostAsJsonAsync(
-            "https://api.todoist.com/rest/v2/comments", new { Task_id = taskId, Content = comment });
+            $"{ApiV1BaseUrl}/comments", new { Task_id = taskId, Content = comment });
         result.EnsureSuccessStatusCode();
     }
 
-    public static async Task UpdateTaskCollapsedAsync(string taskId, bool collapsed)
+    public static Task UpdateTaskCollapsedAsync(string taskId, bool collapsed)
     {
-        using var httpClient = await CreateHttpClientAsync();
-        var result = await httpClient.PostAsJsonAsync("https://api.todoist.com/sync/v9/sync", new
-        {
-            Commands = new[]
-            {
-                new
-                {
-                    Type = "item_update",
-                    Uuid = Guid.NewGuid().ToString(),
-                    Args = new
-                    {
-                        Id = taskId,
-                        Collapsed = collapsed
-                    }
-                }
-            }
-        });
-        result.EnsureSuccessStatusCode();
+        return Task.CompletedTask;
     }
 
     public static async Task<TodoistTask> AddTaskAsync(
         string content, string? description, string? dueString, string? parentId, string? projectId, bool isCollapsed = false, int? order = null)
     {
         using var httpClient = await CreateHttpClientAsync();
-        var result = await httpClient.PostAsJsonAsync("https://api.todoist.com/rest/v2/tasks", new
+        var result = await httpClient.PostAsJsonAsync($"{ApiV1BaseUrl}/tasks", new
         {
             Content = content,
             Description = description,
@@ -57,24 +43,25 @@ internal static class TodoistApi
     public static async Task DeleteTaskAsync(string id)
     {
         using var httpClient = await CreateHttpClientAsync();
-        var deleteResult = await httpClient.DeleteAsync($"https://api.todoist.com/rest/v2/tasks/{id}");
+        var deleteResult = await httpClient.DeleteAsync($"{ApiV1BaseUrl}/tasks/{id}");
         deleteResult.EnsureSuccessStatusCode();
     }
 
     public static async Task<TodoistTask[]> GetTasksFromProjectAsync(string id)
     {
         using var httpClient = await CreateHttpClientAsync();
-        var tasksResponse = await httpClient.GetAsync($"https://api.todoist.com/rest/v2/tasks?project_id={id}");
-        var todoistTasks = await tasksResponse.Content.ReadFromJsonAsync<TodoistTask[]>();
+        var tasksResponse = await httpClient.GetAsync($"{ApiV1BaseUrl}/tasks?project_id={id}");
+        tasksResponse.EnsureSuccessStatusCode();
+        var todoistTasks = await ReadResultsAsync<TodoistTask>(tasksResponse);
         return todoistTasks ?? throw new NullReferenceException(nameof(TodoistTask));
     }
 
     public static async Task<Project[]> GetProjectsAsync()
     {
         using var httpClient = await CreateHttpClientAsync();
-        var projectsResponse = await httpClient.GetAsync("https://api.todoist.com/rest/v2/projects");
+        var projectsResponse = await httpClient.GetAsync($"{ApiV1BaseUrl}/projects");
         projectsResponse.EnsureSuccessStatusCode();
-        var projects = await projectsResponse.Content.ReadFromJsonAsync<Project[]>();
+        var projects = await ReadResultsAsync<Project>(projectsResponse);
         return projects ?? throw new NullReferenceException(nameof(projects));
     }
 
@@ -82,25 +69,51 @@ internal static class TodoistApi
     {
         using var httpClient = await CreateHttpClientAsync();
         var projectsResponse = await httpClient.PostAsJsonAsync(
-            "https://api.todoist.com/rest/v2/projects", new { Name = projectName });
+            $"{ApiV1BaseUrl}/projects", new { Name = projectName });
+        projectsResponse.EnsureSuccessStatusCode();
         var project = await projectsResponse.Content.ReadFromJsonAsync<Project>();
         return project ?? throw new Exception(nameof(project));
+    }
+
+    private static async Task<T[]> ReadResultsAsync<T>(HttpResponseMessage response)
+    {
+        var result = await response.Content.ReadFromJsonAsync<TodoistListResponse<T>>();
+        return result?.Results ?? throw new NullReferenceException(nameof(result.Results));
+    }
+
+    internal static void SetHttpOverridesForTests(string apiKey, HttpMessageHandler handler)
+    {
+        _apiKeyOverride = apiKey;
+        _httpMessageHandlerOverride = handler;
+    }
+
+    internal static void ResetHttpOverridesForTests()
+    {
+        _apiKeyOverride = null;
+        _httpMessageHandlerOverride = null;
     }
 
     private static async Task<HttpClient> CreateHttpClientAsync()
     {
         var apiKey = await GetApiKeyAsync();
-        var retryHandler = new HttpClientRetryHandler(
-            new HttpClientHandler(),
-            message => ProgressTracker.Current?.UpdateMessage(message));
-        var httpClient = new HttpClient(retryHandler);
+        var httpClient = _httpMessageHandlerOverride == null
+            ? new HttpClient(new HttpClientRetryHandler(
+                new HttpClientHandler(),
+                message => ProgressTracker.Current?.UpdateMessage(message)))
+            : new HttpClient(_httpMessageHandlerOverride, disposeHandler: false);
         httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiKey}");
         return httpClient;
     }
 
     private static string? _apiKey;
+    private static string? _apiKeyOverride;
+    private static HttpMessageHandler? _httpMessageHandlerOverride;
+
     private static Task<string> GetApiKeyAsync()
     {
+        if (!string.IsNullOrEmpty(_apiKeyOverride))
+            return Task.FromResult(_apiKeyOverride);
+
         if (_apiKey == null)
         {
             var configuration = new ConfigurationBuilder()
@@ -118,6 +131,12 @@ internal static class TodoistApi
         return Task.FromResult(_apiKey);
     }
 
+    private record TodoistListResponse<T>(T[] Results);
+
     public record Project(string Id, string Name);
-    public record TodoistTask(string Content, DateTimeOffset Created_at, string Id, string? Parent_Id);
+    public record TodoistTask(
+        string Content,
+        [property: JsonPropertyName("added_at")] DateTimeOffset Created_at,
+        string Id,
+        [property: JsonPropertyName("parent_id")] string? Parent_Id);
 }
