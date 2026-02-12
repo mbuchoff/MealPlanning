@@ -42,7 +42,7 @@ internal record MuscleGain2 : TrainingWeekBase
             new("1/2 shake during workout, 1/2 right after",
                 new(P: MUSCLE_GAIN_PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 0, C: 35), FoodGroupings.WorkoutMeal),
             new Meal("40 minutes after workout", new(P: MUSCLE_GAIN_PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 10, C: 120),
-                FoodGroupings.Ezekiel),
+                EnglishMuffinsAndRice),
             new Meal("2-4 hours after last meal", new(P: MUSCLE_GAIN_PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 20, C: 100),
                 EnglishMuffinsAndRice),
             new Meal("3-5 hours after last meal", new(P: MUSCLE_GAIN_PROTEIN_PER_MEAL_ON_WORKOUT_DAY, F: 20, C: 50),
