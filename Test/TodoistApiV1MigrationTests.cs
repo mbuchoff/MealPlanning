@@ -5,7 +5,8 @@ using SystemOfEquations.Todoist;
 
 namespace SystemOfEquations.Test;
 
-public class TodoistApiV1MigrationTests : IDisposable
+[Collection("TodoistApi")]
+public class TodoistApiV1Tests : IDisposable
 {
     public void Dispose()
     {
@@ -19,6 +20,7 @@ public class TodoistApiV1MigrationTests : IDisposable
         {
             Assert.Equal(HttpMethod.Get, request.Method);
             Assert.Equal("https://api.todoist.com/api/v1/projects", request.RequestUri?.ToString());
+            Assert.Equal("Bearer test-api-key", request.Headers.Authorization?.ToString());
 
             var body = JsonSerializer.Serialize(new
             {
@@ -52,6 +54,7 @@ public class TodoistApiV1MigrationTests : IDisposable
             Assert.Equal(
                 "https://api.todoist.com/api/v1/tasks?project_id=project_123",
                 request.RequestUri?.ToString());
+            Assert.Equal("Bearer test-api-key", request.Headers.Authorization?.ToString());
 
             var body = JsonSerializer.Serialize(new
             {
@@ -82,6 +85,60 @@ public class TodoistApiV1MigrationTests : IDisposable
         Assert.Equal("Task 1", tasks[0].Content);
         Assert.Equal("parent_1", tasks[0].Parent_Id);
         Assert.Equal(DateTimeOffset.Parse("2026-02-11T20:00:00Z"), tasks[0].Created_at);
+    }
+
+    [Fact]
+    public async Task AddTaskAsync_Should_Use_ApiV1_And_Send_SnakeCase_Fields()
+    {
+        var handler = new StubHttpMessageHandler(request =>
+        {
+            Assert.Equal(HttpMethod.Post, request.Method);
+            Assert.Equal("https://api.todoist.com/api/v1/tasks", request.RequestUri?.ToString());
+            Assert.Equal("Bearer test-api-key", request.Headers.Authorization?.ToString());
+
+            var json = request.Content?.ReadAsStringAsync().GetAwaiter().GetResult();
+            Assert.False(string.IsNullOrWhiteSpace(json));
+
+            using var doc = JsonDocument.Parse(json!);
+            var root = doc.RootElement;
+
+            Assert.Equal("My Task", root.GetProperty("content").GetString());
+            Assert.Equal("desc", root.GetProperty("description").GetString());
+            Assert.Equal("every tue", root.GetProperty("due_string").GetString());
+            Assert.Equal("parent_1", root.GetProperty("parent_id").GetString());
+            Assert.Equal("project_1", root.GetProperty("project_id").GetString());
+            Assert.True(root.GetProperty("is_collapsed").GetBoolean());
+            Assert.Equal(7, root.GetProperty("order").GetInt32());
+
+            var responseBody = JsonSerializer.Serialize(new
+            {
+                id = "task_123",
+                content = "My Task",
+                added_at = "2026-02-12T00:00:00Z",
+                parent_id = "parent_1"
+            });
+
+            return new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(responseBody, Encoding.UTF8, "application/json")
+            };
+        });
+
+        TodoistApi.SetHttpOverridesForTests("test-api-key", handler);
+
+        var task = await TodoistApi.AddTaskAsync(
+            "My Task",
+            description: "desc",
+            dueString: "every tue",
+            parentId: "parent_1",
+            projectId: "project_1",
+            isCollapsed: true,
+            order: 7);
+
+        Assert.Equal("task_123", task.Id);
+        Assert.Equal("My Task", task.Content);
+        Assert.Equal("parent_1", task.Parent_Id);
+        Assert.Equal(DateTimeOffset.Parse("2026-02-12T00:00:00Z"), task.Created_at);
     }
 
     private class StubHttpMessageHandler(Func<HttpRequestMessage, HttpResponseMessage> handler)

@@ -106,6 +106,23 @@ internal static class TodoistServiceHelper
     }
 
     /// <summary>
+    /// Generates a compact, human-readable ingredients list suitable for a single Todoist comment.
+    /// Conversion foods are excluded because they are not literal ingredients.
+    /// </summary>
+    public static string GenerateIngredientsComment(IEnumerable<FoodServing> servings)
+    {
+        var lines = FormatServingsAsStrings(
+                servings.Where(s => !s.IsConversion),
+                prefix: "- ")
+            .ToList();
+
+        if (lines.Count == 0)
+            return "Ingredients:\n- (none)";
+
+        return $"Ingredients:\n{string.Join("\n", lines)}";
+    }
+
+    /// <summary>
     /// Counts how many Todoist task operations a serving will create.
     /// Handles CompositeFoodServing by counting parent + all components recursively.
     /// </summary>

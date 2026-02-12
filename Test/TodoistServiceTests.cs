@@ -833,6 +833,31 @@ public class TodoistServiceTests
     }
 
     [Fact]
+    public void GenerateIngredientsComment_Should_Include_Flattened_Component_Amounts()
+    {
+        // Arrange
+        var nutritionalYeast = new FoodServing("nutritional yeast from Sprouts",
+            new(ServingUnits: 2, ServingUnits.Gram, Cals: 10, P: 2, F: 0, CTotal: 1, CFiber: 1));
+        var gluten = new FoodServing("gluten",
+            new(ServingUnits: 20, ServingUnits.Gram, Cals: 80, P: 15, F: 1, CTotal: 4, CFiber: 0));
+        var water = new FoodServing("water",
+            new(ServingUnits: 0.15M, ServingUnits.Cup, Cals: 0, P: 0, F: 0, CTotal: 0, CFiber: 0));
+
+        var composite = CompositeFoodServing.FromComponents("seitan",
+            new[] { nutritionalYeast, gluten, water });
+
+        var comment = TodoistServiceHelper.GenerateIngredientsComment(new[] { composite * 2 });
+
+        // Assert - should include flattened component amounts
+        Assert.Contains("4 grams nutritional yeast from Sprouts", comment);
+        Assert.Contains("40 grams gluten", comment);
+        Assert.Contains("0.3 cups water", comment);
+
+        // Should not contain the composite name.
+        Assert.DoesNotContain("seitan", comment);
+    }
+
+    [Fact]
     public void GenerateDayTypeComment_Should_Show_ACTUAL_And_TARGET_When_Conversion_Foods_Present()
     {
         // Arrange - Use a training week with conversion foods (pea protein)

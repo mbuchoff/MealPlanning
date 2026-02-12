@@ -18,14 +18,14 @@ internal static class FoodGroupings
         new FoodGrouping(
             "Ezekiel",
             [Foods.AlmondMilk_1_Scoop * 2],
-            Foods.Almonds_1_Scoop,
+            Foods.PumpkinSeeds_1_Scoop,
             Foods.Edamame_1_Scoop,
             Foods.Ezeliel_Cereal_Low_Sodium_1_Scoop,
             PreparationMethodEnum.PrepareAsNeeded),
         new FoodGrouping(
             "Ezekiel",
             [Foods.AlmondMilk_1_Scoop * 2],
-            Foods.Almonds_1_Scoop,
+            Foods.PumpkinSeeds_1_Scoop,
             Foods.ProteinToCarbConversion,
             Foods.Ezeliel_Cereal_Low_Sodium_1_Scoop,
             PreparationMethodEnum.PrepareAsNeeded));

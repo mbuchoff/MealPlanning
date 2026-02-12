@@ -137,7 +137,7 @@ internal record MuscleGain3TrainingAfter1Meal : TrainingWeekBase
         [.. new[] { Foods.Whole_Grain_Pasta_56_Grams, Foods.FatToCarbConversion }.Select(cFood =>
         new FoodGrouping("Protein shake",
             Foods.Edamame_1_Scoop,
-            Foods.Almonds_1_Scoop,
+            Foods.PumpkinSeeds_1_Scoop,
             cFood,
             PreparationMethodEnum.PrepareAsNeeded))]);
 
