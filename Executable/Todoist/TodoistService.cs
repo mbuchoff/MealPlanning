@@ -226,6 +226,7 @@ internal class TodoistService
         }
 
         // Compact sync: add a single comment with ingredient amounts + nutrition.
+        // Compact sync: add a single comment with ingredient amounts + nutrition.
         // Use meal's HasConversionFoods property (mealWithIndex.Servings has conversion foods filtered out)
         var nutritionComment = TodoistServiceHelper.GenerateNutritionalComment(
             mealWithIndex.Servings,
