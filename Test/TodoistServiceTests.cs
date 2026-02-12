@@ -858,6 +858,18 @@ public class TodoistServiceTests
     }
 
     [Fact]
+    public void CombineIngredientsAndNutritionComments_Should_Put_Ingredients_First()
+    {
+        var ingredients = "Ingredients:\n- 1 egg";
+        var nutrition = "100 cals, 10 P (40.0%), 4 F (36.0%), 6 C (24.0%), 2g fiber";
+
+        var combined = TodoistServiceHelper.CombineIngredientsAndNutritionComments(ingredients, nutrition);
+
+        Assert.StartsWith("Ingredients:", combined);
+        Assert.Contains(nutrition, combined);
+    }
+
+    [Fact]
     public void GenerateDayTypeComment_Should_Show_ACTUAL_And_TARGET_When_Conversion_Foods_Present()
     {
         // Arrange - Use a training week with conversion foods (pea protein)

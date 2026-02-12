@@ -33,6 +33,10 @@ internal static class Foods
         [(45, ServingUnits.Gram), (0.25M, ServingUnits.Cup)],
         new BaseNutrition(Cals: 170, P: 4, F: 1.5M, CTotal: 35, CFiber: 2));
 
+    private static Food CashewsFood { get; } = new("cashews",
+        [(30, ServingUnits.Gram), (0.25M, ServingUnits.Cup)],
+        new BaseNutrition(Cals: 170, P: 5, F: 14, CTotal: 9, CFiber: 1));
+
     private static Food ChiaSeedsFood { get; } = new("chia seeds",
         [(2.5M, ServingUnits.Tablespoon)],
         new BaseNutrition(Cals: 150, P: 5, F: 9, CTotal: 13, CFiber: 10));
@@ -200,6 +204,9 @@ internal static class Foods
         staticComponents: [
             new StaticFoodServing(WaterFood.WithServing(1.5M, ServingUnits.Cup)) // Base water
         ]);
+
+    public static FoodServing Cashews_1_Scoop =>
+        CashewsFood.WithServing(1, ServingUnits.Scoop);
 
     public static FoodServing Farro_52_Grams => CompositeFoodServing.FromComponents(
         "farro",

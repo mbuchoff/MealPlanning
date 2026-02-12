@@ -16,7 +16,7 @@ internal record MuscleGain3TrainingAfter1Meal : TrainingWeekBase
                 FoodGroupings.Ezekiel),
             new("3-5 hours after last meal",
                 new(P: MUSCLE_GAIN_PROTEIN_PER_MEAL_ON_NONWORKOUT_DAY, F: 20, C: 60),
-                RestDayCookingFoodGrouping),
+                FoodGroupings.EnglishMuffinsAndPasta(0)),
             new Meal("3-5 hours after last meal",
                 new(P: MUSCLE_GAIN_PROTEIN_PER_MEAL_ON_NONWORKOUT_DAY, F: 20, C: 60),
                 RestDayCookingFoodGrouping),

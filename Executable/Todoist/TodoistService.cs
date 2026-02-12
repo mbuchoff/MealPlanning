@@ -186,11 +186,11 @@ internal class TodoistService
         var scaledServings = baseServings.Select(s => s * scaleFactor).ToList();
         var scaledTargetMacros = totalTargetMacros * scaleFactor;
 
-        // Compact sync: add a single comment with nutrition + ingredient amounts.
+        // Compact sync: add a single comment with ingredient amounts + nutrition.
         var comment = TodoistServiceHelper.GenerateNutritionalComment(scaledServings, scaledTargetMacros, hasConversionFoods);
         var ingredientsComment = TodoistServiceHelper.GenerateIngredientsComment(scaledServings);
 
-        await AddCommentAsync(quantityTask.Id, $"{comment}\n\n{ingredientsComment}");
+        await AddCommentAsync(quantityTask.Id, TodoistServiceHelper.CombineIngredientsAndNutritionComments(ingredientsComment, comment));
         progress.IncrementProgress();
     }
 
@@ -225,7 +225,8 @@ internal class TodoistService
             progress.IncrementProgress();
         }
 
-        // Compact sync: add a single comment with nutrition + ingredient amounts.
+        // Compact sync: add a single comment with ingredient amounts + nutrition.
+        // Compact sync: add a single comment with ingredient amounts + nutrition.
         // Use meal's HasConversionFoods property (mealWithIndex.Servings has conversion foods filtered out)
         var nutritionComment = TodoistServiceHelper.GenerateNutritionalComment(
             mealWithIndex.Servings,
@@ -233,7 +234,7 @@ internal class TodoistService
             mealWithIndex.Meal.HasConversionFoods);
         var ingredientsComment = TodoistServiceHelper.GenerateIngredientsComment(mealWithIndex.Servings);
 
-        await AddCommentAsync(mealTask.Id, $"{nutritionComment}\n\n{ingredientsComment}");
+        await AddCommentAsync(mealTask.Id, TodoistServiceHelper.CombineIngredientsAndNutritionComments(ingredientsComment, nutritionComment));
         progress.IncrementProgress();
     }
 
