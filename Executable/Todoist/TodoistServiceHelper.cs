@@ -122,6 +122,9 @@ internal static class TodoistServiceHelper
         return $"Ingredients:\n{string.Join("\n", lines)}";
     }
 
+    public static string CombineIngredientsAndNutritionComments(string ingredientsComment, string nutritionComment)
+        => $"{ingredientsComment}\n\n{nutritionComment}";
+
     /// <summary>
     /// Counts how many Todoist task operations a serving will create.
     /// Handles CompositeFoodServing by counting parent + all components recursively.
