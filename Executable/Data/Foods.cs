@@ -207,7 +207,7 @@ internal static class Foods
 
     public static FoodServing Cashews_1_Scoop =>
         CashewsFood.WithServing(1, ServingUnits.Scoop);
-    
+
     public static FoodServing Farro_52_Grams => CompositeFoodServing.FromComponents(
         "farro",
         [
