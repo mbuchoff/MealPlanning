@@ -59,20 +59,14 @@ internal class TodoistService
                 operations++; // Main task
                 operations++; // Collapse
                 operations += mealPrepPlan.MealCount * 2; // Each quantity subtask + collapse
-                operations += mealPrepPlan.MealCount; // Comments for each quantity
-
-                // Servings for each quantity - use CountTodoistOperations to handle composites
-                foreach (var serving in mealPrepPlan.CookingServings)
-                {
-                    operations += mealPrepPlan.MealCount * TodoistServiceHelper.CountTodoistOperations(serving);
-                }
+                operations += mealPrepPlan.MealCount; // Single combined comment (nutrition + ingredients) per quantity
             }
         }
 
         // Totals
         operations++; // Main task
         operations++; // Collapse
-        operations += phase.MealPrepPlan.Total.Sum(s => TodoistServiceHelper.CountTodoistOperations(s)); // All serving operations
+        operations++; // Ingredients comment
 
         // Day-type parent tasks (3 groups: XFit, Running, NonWorkout)
         operations += 3 * 3; // Each group: parent task + collapse + comment
@@ -93,9 +87,7 @@ internal class TodoistService
             operations++; // Meal task
             operations++; // Collapse
             operations++; // Food grouping name subtask
-            var eatingServings = meal.Servings.Where(s => s.AddWhen == FoodServing.AddWhenEnum.AtEatingTime && !s.IsConversion);
-            operations += eatingServings.Sum(s => TodoistServiceHelper.CountTodoistOperations(s));
-            operations++; // Comment
+            operations++; // Single combined comment (nutrition + ingredients)
         }
 
         // Eating meals (PrepareAsNeeded)
@@ -112,22 +104,10 @@ internal class TodoistService
         {
             operations++; // Meal task
             operations++; // Collapse
-            operations += meal.Servings.Where(s => !s.IsConversion).Sum(s => TodoistServiceHelper.CountTodoistOperations(s));
-            operations++; // Comment
+            operations++; // Single combined comment (nutrition + ingredients)
         }
 
         return operations;
-    }
-
-    private static async Task AddServingAsync(TodoistTask parentTodoistTask, FoodServing s, ProgressTracker progress)
-    {
-        await TodoistServiceHelper.CreateTodoistSubtasksAsync(s, parentTodoistTask.Id,
-            async (content, description, dueString, parentId, projectId) =>
-            {
-                var task = await AddTaskAsync(content, description, dueString, parentId, projectId);
-                progress.IncrementProgress();
-                return (object)task;
-            });
     }
 
     private static async Task AddServingsAsync(
@@ -153,7 +133,10 @@ internal class TodoistService
         await UpdateTaskCollapsedAsync(parentTodoistTask.Id, collapsed: true);
         progress.IncrementProgress();
 
-        await Task.WhenAll(servings.Select(s => AddServingAsync(parentTodoistTask, s, progress)).ToList());
+        // Compact sync: avoid per-ingredient subtasks to stay under Todoist item limits.
+        var ingredientsComment = TodoistServiceHelper.GenerateIngredientsComment(servings);
+        await AddCommentAsync(parentTodoistTask.Id, ingredientsComment);
+        progress.IncrementProgress();
     }
 
     private static async Task AddMealPrepPlan(Task<Project> projectTask, MealPrepPlan m, int order, ProgressTracker progress)
@@ -203,11 +186,12 @@ internal class TodoistService
         var scaledServings = baseServings.Select(s => s * scaleFactor).ToList();
         var scaledTargetMacros = totalTargetMacros * scaleFactor;
 
-        // Generate and add nutritional comment in parallel with servings
+        // Compact sync: add a single comment with nutrition + ingredient amounts.
         var comment = TodoistServiceHelper.GenerateNutritionalComment(scaledServings, scaledTargetMacros, hasConversionFoods);
-        await Task.WhenAll(
-            scaledServings.Select(s => AddServingAsync(quantityTask, s, progress))
-                .Append(AddCommentAsync(quantityTask.Id, comment).ContinueWith(_ => progress.IncrementProgress())));
+        var ingredientsComment = TodoistServiceHelper.GenerateIngredientsComment(scaledServings);
+
+        await AddCommentAsync(quantityTask.Id, $"{comment}\n\n{ingredientsComment}");
+        progress.IncrementProgress();
     }
 
     private static async Task AddMealSubtask(
@@ -241,16 +225,15 @@ internal class TodoistService
             progress.IncrementProgress();
         }
 
-        // Add servings as subtasks
-        await Task.WhenAll(mealWithIndex.Servings.Select(s => AddServingAsync(mealTask, s, progress)));
-
-        // Add nutritional comment with target macros
+        // Compact sync: add a single comment with nutrition + ingredient amounts.
         // Use meal's HasConversionFoods property (mealWithIndex.Servings has conversion foods filtered out)
-        var comment = TodoistServiceHelper.GenerateNutritionalComment(
+        var nutritionComment = TodoistServiceHelper.GenerateNutritionalComment(
             mealWithIndex.Servings,
             mealWithIndex.Meal.Macros,
             mealWithIndex.Meal.HasConversionFoods);
-        await AddCommentAsync(mealTask.Id, comment);
+        var ingredientsComment = TodoistServiceHelper.GenerateIngredientsComment(mealWithIndex.Servings);
+
+        await AddCommentAsync(mealTask.Id, $"{nutritionComment}\n\n{ingredientsComment}");
         progress.IncrementProgress();
     }
 
