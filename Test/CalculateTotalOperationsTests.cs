@@ -11,7 +11,7 @@ public class CalculateTotalOperationsTests
     public void IncludesDayTypeParentOperations()
     {
         // Arrange
-        var trainingWeek = new MuscleGain2().ForTargetCalories(3000);
+        var trainingWeek = new MuscleGain2(175).ForTargetCalories(3000);
         var phase = new Phase("Test Phase", trainingWeek);
 
         // Act

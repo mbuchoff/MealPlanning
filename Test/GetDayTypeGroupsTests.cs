@@ -11,7 +11,7 @@ public class GetDayTypeGroupsTests
     public void ReturnsThreeGroups_OnePerDayType()
     {
         // Arrange
-        var trainingWeek = new MuscleGain2().ForTargetCalories(3000);
+        var trainingWeek = new MuscleGain2(175).ForTargetCalories(3000);
         var phase = new Phase("Test Phase", trainingWeek);
 
         // Act
@@ -28,7 +28,7 @@ public class GetDayTypeGroupsTests
     public void IncludesPrepareAsNeededMeals_WithAllServings()
     {
         // Arrange
-        var trainingWeek = new MuscleGain2().ForTargetCalories(3000);
+        var trainingWeek = new MuscleGain2(175).ForTargetCalories(3000);
         var phase = new Phase("Test Phase", trainingWeek);
 
         // Act
@@ -51,7 +51,7 @@ public class GetDayTypeGroupsTests
     public void MealIndices_ResetPerDayType()
     {
         // Arrange
-        var trainingWeek = new MuscleGain2().ForTargetCalories(3000);
+        var trainingWeek = new MuscleGain2(175).ForTargetCalories(3000);
         var phase = new Phase("Test Phase", trainingWeek);
 
         // Act
