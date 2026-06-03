@@ -5,9 +5,9 @@ namespace SystemOfEquations.Data;
 
 internal class WeeklyMealsPrepPlans
 {
-    public static WeeklyMealsPrepPlan Phase2MealPrepPlan => CreateMealPrepPlan(new MuscleGain2());
+    public static WeeklyMealsPrepPlan Phase2MealPrepPlan => CreateMealPrepPlan(new MuscleGain2(175));
 
-    public static WeeklyMealsPrepPlan Phase3TrainingAfter1MealMealPrepPlan => CreateMealPrepPlan(new MuscleGain3TrainingAfter1Meal());
+    public static WeeklyMealsPrepPlan Phase3TrainingAfter1MealMealPrepPlan => CreateMealPrepPlan(new MuscleGain3TrainingAfter1Meal(212.5M));
 
     public static WeeklyMealsPrepPlan CreateMealPrepPlan(TrainingWeek trainingWeek)
     {

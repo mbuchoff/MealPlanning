@@ -19,7 +19,7 @@ public class TrainingDayMacrosTests
     public void TrainingDay_ActualNutrients_ShouldMatchSumOfMealNutrients()
     {
         // Arrange
-        var trainingWeek = new MuscleGain2();
+        var trainingWeek = new MuscleGain2(175);
         var crossfitDay = trainingWeek.XFitDay;
 
         // Act - Calculate total protein from individual meals
@@ -71,7 +71,7 @@ public class TrainingDayMacrosTests
     public void TrainingDay_Target_ShouldMatchSumOfMealTargets()
     {
         // Arrange - Use scaled version at 3400 calories (what user sees in console)
-        var baseTrainingWeek = new MuscleGain2();
+        var baseTrainingWeek = new MuscleGain2(175);
         var trainingWeek = baseTrainingWeek.ForTargetCalories(3400M);
         var crossfitDay = trainingWeek.XFitDay;
 
@@ -115,7 +115,7 @@ public class TrainingDayMacrosTests
     public void TrainingDay_IndividualMealDisplay_ShouldMatchWhatUserSees()
     {
         // Arrange - Use scaled version at 3400 calories (what user sees in console)
-        var baseTrainingWeek = new MuscleGain2();
+        var baseTrainingWeek = new MuscleGain2(175);
         var trainingWeek = baseTrainingWeek.ForTargetCalories(3400M);
         var crossfitDay = trainingWeek.XFitDay;
 
@@ -179,7 +179,7 @@ public class TrainingDayMacrosTests
     public void TrainingDay_TargetMacros_ShouldEqualSumOfMealMacros()
     {
         // Arrange
-        var baseTrainingWeek = new MuscleGain2();
+        var baseTrainingWeek = new MuscleGain2(175);
         var trainingWeek = baseTrainingWeek.ForTargetCalories(3400M);
         var crossfitDay = trainingWeek.XFitDay;
 
@@ -206,7 +206,7 @@ public class TrainingDayMacrosTests
     public void TrainingDay_HasConversionFoods_ShouldBeTrueWhenAnyMealHasConversionFoods()
     {
         // Arrange
-        var baseTrainingWeek = new MuscleGain2();
+        var baseTrainingWeek = new MuscleGain2(175);
         var trainingWeek = baseTrainingWeek.ForTargetCalories(3400M);
         var crossfitDay = trainingWeek.XFitDay;
 
@@ -233,7 +233,7 @@ public class TrainingDayMacrosTests
     public void TrainingDay_ToString_ShouldShowActualAndTargetWhenConversionFoodsPresent()
     {
         // Arrange
-        var baseTrainingWeek = new MuscleGain2();
+        var baseTrainingWeek = new MuscleGain2(175);
         var trainingWeek = baseTrainingWeek.ForTargetCalories(3400M);
         var crossfitDay = trainingWeek.XFitDay;
 
@@ -262,7 +262,7 @@ public class TrainingDayMacrosTests
     public void Phase_ToString_ShouldShowActualAndTargetWhenConversionFoodsPresent()
     {
         // Arrange
-        var baseTrainingWeek = new MuscleGain2();
+        var baseTrainingWeek = new MuscleGain2(175);
         var trainingWeek = baseTrainingWeek.ForTargetCalories(3400M);
         var phase = new Phase("Test Phase", trainingWeek);
 

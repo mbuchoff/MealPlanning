@@ -873,7 +873,7 @@ public class TodoistServiceTests
     public void GenerateDayTypeComment_Should_Show_ACTUAL_And_TARGET_When_Conversion_Foods_Present()
     {
         // Arrange - Use a training week with conversion foods (pea protein)
-        var baseTrainingWeek = new SystemOfEquations.Data.TrainingWeeks.MuscleGain2();
+        var baseTrainingWeek = new SystemOfEquations.Data.TrainingWeeks.MuscleGain2(175);
         var trainingWeek = baseTrainingWeek.ForTargetCalories(3400M);
         var crossfitDay = trainingWeek.XFitDay;
 
@@ -938,7 +938,7 @@ public class TodoistServiceTests
     public void DayTypeGroup_Should_Include_TrainingDay_Reference()
     {
         // Arrange
-        var baseTrainingWeek = new SystemOfEquations.Data.TrainingWeeks.MuscleGain2();
+        var baseTrainingWeek = new SystemOfEquations.Data.TrainingWeeks.MuscleGain2(175);
         var trainingWeek = baseTrainingWeek.ForTargetCalories(3400M);
         var phase = new Phase("Test Phase", trainingWeek);
 

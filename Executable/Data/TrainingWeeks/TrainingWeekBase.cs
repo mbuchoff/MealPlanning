@@ -11,15 +11,20 @@ internal abstract record TrainingWeekBase : TrainingWeek
     {
     }
 
-    private const decimal TARGET_WEIGHT = 175;
-    private const int MEALS_PER_DAY = 5;
+    protected const int MEALS_PER_DAY = 5;
 
     // +1 to include workout shake
-    protected const decimal MUSCLE_GAIN_PROTEIN_PER_MEAL_ON_WORKOUT_DAY = TARGET_WEIGHT / (MEALS_PER_DAY + 1);
-    protected const decimal FAT_LOSS_PROTEIN_PER_MEAL_ON_WORKOUT_DAY = TARGET_WEIGHT * 1.25M / (MEALS_PER_DAY + 1);
+    protected static decimal MuscleGainProteinPerMealOnWorkoutDay(decimal targetGramsProteinPerDay) =>
+        targetGramsProteinPerDay / (MEALS_PER_DAY + 1);
 
-    protected const decimal MUSCLE_GAIN_PROTEIN_PER_MEAL_ON_NONWORKOUT_DAY = TARGET_WEIGHT / MEALS_PER_DAY;
-    protected const decimal FAT_LOSS_PROTEIN_PER_MEAL_ON_NONWORKOUT_DAY = TARGET_WEIGHT * 1.25M / MEALS_PER_DAY;
+    protected static decimal MuscleGainProteinPerMealOnNonworkoutDay(decimal targetGramsProteinPerDay) =>
+        targetGramsProteinPerDay / MEALS_PER_DAY;
+
+    protected static decimal FatLossProteinPerMealOnWorkoutDay(decimal targetGramsProteinPerDay) =>
+        targetGramsProteinPerDay * 1.25M / (MEALS_PER_DAY + 1);
+
+    protected static decimal FatLossProteinPerMealOnNonworkoutDay(decimal targetGramsProteinPerDay) =>
+        targetGramsProteinPerDay * 1.25M / MEALS_PER_DAY;
 
     internal TrainingWeek PlusPercent(decimal percent) => CloneWithTweakedMacros(
         pMultiplier: 1,

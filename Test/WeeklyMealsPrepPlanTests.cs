@@ -110,7 +110,7 @@ public class WeeklyMealsPrepPlanTests
         // the sum of servings needed for all those days.
 
         // This test uses the actual MuscleGain2 training week
-        var trainingWeek = new MuscleGain2();
+        var trainingWeek = new MuscleGain2(175);
         var mealPrepPlan = WeeklyMealsPrepPlans.CreateMealPrepPlan(trainingWeek);
 
         // Act
