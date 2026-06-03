@@ -89,6 +89,10 @@ internal static class Foods
         [(52, ServingUnits.Gram), (0.25M, ServingUnits.Cup)],
         new BaseNutrition(Cals: 190, P: 6, F: 1, CTotal: 38, CFiber: 5));
 
+    private static Food FiberOneFood { get; } = new("Fiber One",
+        [(2M / 3M, ServingUnits.Cup)],
+        new BaseNutrition(Cals: 90, P: 3, F: 1, CTotal: 33, CFiber: 18));
+
     // Conversion foods
     private static Food FatToCarbConversionFood { get; } = new("fat to carb conversion",
         [(1, ServingUnits.Gram)],
@@ -133,6 +137,10 @@ internal static class Foods
     private static Food RedLentilsFood { get; } = new("red lentils",
         [(0.25M, ServingUnits.Cup)],
         new BaseNutrition(Cals: 170, P: 11, F: 1, CTotal: 30, CFiber: 5));
+
+    private static Food ShreddedWheatCerealFood { get; } = new("Shredded Wheat cereal",
+        [(60, ServingUnits.Gram), (300M / 83M, ServingUnits.Scoop)],
+        new BaseNutrition(Cals: 200, P: 7, F: 1.5M, CTotal: 45, CFiber: 8));
 
     private static Food SunflowerSeedsFood { get; } = new("Sunflower seeds",
         [(30, ServingUnits.Gram), (0.25M, ServingUnits.Cup)],
@@ -214,6 +222,9 @@ internal static class Foods
             FarroBaseFood.WithServing(52, ServingUnits.Gram),
             WaterFood.WithServing(1.333333333332M, ServingUnits.Cup) // Only scalable water
         ]);
+
+    public static FoodServing FiberOne_2_3_Cup =>
+        FiberOneFood.WithServing(2M / 3M, ServingUnits.Cup);
 
     public static FoodServing ChiaSeeds_2_5_Tbsp =>
         ChiaSeedsFood.WithServing(2.5M, ServingUnits.Tablespoon) with
@@ -370,6 +381,9 @@ internal static class Foods
 
     public static FoodServing Ezeliel_Cereal_Low_Sodium_1_Scoop =>
         EzekielCerealLowSodiumFood.WithServing(1, ServingUnits.Scoop);
+
+    public static FoodServing ShreddedWheatCereal_1_Scoop =>
+        ShreddedWheatCerealFood.WithServing(1, ServingUnits.Scoop);
     public static FoodServing Oats_1_Scoop =>
         OatsFood.WithServing(1, ServingUnits.Scoop) with
         {

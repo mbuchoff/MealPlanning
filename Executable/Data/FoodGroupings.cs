@@ -61,21 +61,36 @@ internal static class FoodGroupings
             Foods.Oats_1_Scoop,
             PreparationMethodEnum.PrepareAsNeeded));
 
-    public static FallbackChain EnglishMuffinsAndPasta(int englishMuffins, bool withEdamame = true) => new(
-        new FoodGrouping(
-            "English muffins and pasta",
-            englishMuffins == 0 ? [] : [Foods.Ezekiel_English_Muffin * englishMuffins],
-            withEdamame ? Foods.Edamame_1_Scoop : Foods.ProteinToCarbConversion,
-            Foods.OliveOil_1_Tbsp,
-            Foods.Whole_Grain_Pasta_56_Grams,
-            PreparationMethodEnum.PrepareAsNeeded),
-        new FoodGrouping(
-            "English muffins and pasta",
-            englishMuffins == 0 ? [] : [Foods.Ezekiel_English_Muffin * englishMuffins],
-            withEdamame ? Foods.ProteinToCarbConversion : Foods.Edamame_1_Scoop,
-            Foods.OliveOil_1_Tbsp,
-            Foods.Whole_Grain_Pasta_56_Grams,
-            PreparationMethodEnum.PrepareAsNeeded));
+    public static FallbackChain EnglishMuffinsAndPasta(int englishMuffins, bool withEdamame = true)
+    {
+        const string foodGroupingName = "English muffins and pasta";
+        var englishMuffinFoodServings = englishMuffins == 0
+            ? Array.Empty<FoodServing>()
+            : new[] { Foods.Ezekiel_English_Muffin * englishMuffins, Foods.AlmondButter_1_Tbsp * englishMuffins };
+
+        return new(
+            new FoodGrouping(
+                foodGroupingName,
+                englishMuffinFoodServings,
+                withEdamame ? Foods.Edamame_1_Scoop : Foods.ProteinToCarbConversion,
+                Foods.OliveOil_1_Tbsp,
+                Foods.Whole_Grain_Pasta_56_Grams,
+                PreparationMethodEnum.PrepareAsNeeded),
+            new FoodGrouping(
+                foodGroupingName,
+                englishMuffinFoodServings,
+                withEdamame ? Foods.ProteinToCarbConversion : Foods.Edamame_1_Scoop,
+                Foods.OliveOil_1_Tbsp,
+                Foods.Whole_Grain_Pasta_56_Grams,
+                PreparationMethodEnum.PrepareAsNeeded),
+            new FoodGrouping(
+                foodGroupingName,
+                englishMuffinFoodServings,
+                withEdamame ? Foods.ProteinToCarbConversion : Foods.Edamame_1_Scoop,
+                Foods.FatToCarbConversion,
+                Foods.Whole_Grain_Pasta_56_Grams,
+                PreparationMethodEnum.PrepareAsNeeded));
+    }
 
     public static FoodGrouping ProteinShake { get; } = new(
         "protein shake",
