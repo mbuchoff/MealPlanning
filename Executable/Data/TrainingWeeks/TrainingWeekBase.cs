@@ -46,16 +46,6 @@ internal abstract record TrainingWeekBase : TrainingWeek
         // Start with a good initial guess
         var percentNeeded = targetRatio * 100;
 
-        // Clamp to reasonable bounds (adjusted based on testing to avoid negative servings)
-        if (percentNeeded < 85)
-        {
-            throw new InvalidOperationException($"Target calories ({targetDailyCalories}) too low. Minimum is approximately {baseAverage * 0.85M:F0} calories.");
-        }
-        if (percentNeeded > 120)
-        {
-            throw new InvalidOperationException($"Target calories ({targetDailyCalories}) too high. Maximum is approximately {baseAverage * 1.20M:F0} calories.");
-        }
-
         // Now do a refined binary search around our estimate
         TrainingWeek bestWeek = this;
         var bestDifference = decimal.MaxValue;
