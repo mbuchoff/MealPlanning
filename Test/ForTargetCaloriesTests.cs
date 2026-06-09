@@ -1,6 +1,7 @@
 using SystemOfEquations;
 using SystemOfEquations.Data;
 using SystemOfEquations.Data.TrainingWeeks;
+using SystemOfEquations.Data.TrainingWeeks.MuscleGain3;
 
 namespace Test;
 
@@ -177,5 +178,52 @@ public class ForTargetCaloriesTests
 
         // Assert - ratio should be preserved (within small tolerance for rounding)
         Assert.InRange(adjustedRatio, baseRatio * 0.98M, baseRatio * 1.02M);
+    }
+
+    [Fact]
+    public void ForTargetCalories_Should_Reduce_Crossfit_Bedtime_Pasta_When_Target_Calories_Decrease()
+    {
+        // Arrange
+        var baseTrainingWeek = new MuscleGain3TrainingAfter1Meal(212.5M);
+
+        // Act
+        var higherCalorieWeek = baseTrainingWeek.ForTargetCalories(3000M);
+        var lowerCalorieWeek = baseTrainingWeek.ForTargetCalories(2800M);
+
+        var higherCaloriePastaGrams = GetCrossfitBedtimePastaGrams(higherCalorieWeek);
+        var lowerCaloriePastaGrams = GetCrossfitBedtimePastaGrams(lowerCalorieWeek);
+        var higherCalorieAverage = GetAverageDailyCalories(higherCalorieWeek);
+        var lowerCalorieAverage = GetAverageDailyCalories(lowerCalorieWeek);
+
+        // Assert
+        Assert.True(
+            lowerCalorieAverage < higherCalorieAverage,
+            $"Expected 2800 calories to produce a lower average than 3000 calories. " +
+            $"3000 calories: {higherCalorieAverage:F2}; 2800 calories: {lowerCalorieAverage:F2}.");
+        Assert.True(
+            lowerCaloriePastaGrams < higherCaloriePastaGrams,
+            $"Expected 2800 calories to use less pasta than 3000 calories. " +
+            $"3000 calories: {higherCaloriePastaGrams:F2}g pasta, {higherCalorieAverage:F2} average calories; " +
+            $"2800 calories: {lowerCaloriePastaGrams:F2}g pasta, {lowerCalorieAverage:F2} average calories.");
+    }
+
+    private static decimal GetCrossfitBedtimePastaGrams(TrainingWeek trainingWeek)
+    {
+        var bedtimeMeal = trainingWeek.XFitDay.Meals.Last();
+        var pastaServing = bedtimeMeal.Servings
+            .Single(serving => serving.Name == "Pasta");
+
+        return pastaServing.NutritionalInformation.ServingUnits;
+    }
+
+    private static decimal GetAverageDailyCalories(TrainingWeek trainingWeek)
+    {
+        var totalCals = 0.0M;
+        foreach (var day in trainingWeek.TrainingDays)
+        {
+            totalCals += day.ActualNutrients.Cals * day.TrainingDayType.DaysTraining.Count;
+        }
+
+        return totalCals / 7;
     }
 }

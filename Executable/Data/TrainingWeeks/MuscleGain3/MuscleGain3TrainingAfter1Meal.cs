@@ -16,7 +16,7 @@ internal record MuscleGain3TrainingAfter1Meal : TrainingWeekBase
                 Cereal),
             new("3-5 hours after last meal",
                 new(P: MuscleGainProteinPerMealOnNonworkoutDay(targetGramsProteinPerDay), F: 20, C: 60),
-                TofuAndEnglishMuffin),
+                TofuAndEnglishMuffinFoodGroupings),
             new Meal("3-5 hours after last meal",
                 new(P: MuscleGainProteinPerMealOnNonworkoutDay(targetGramsProteinPerDay), F: 20, C: 60),
                 TofuAndEnglishMuffin),
@@ -136,6 +136,9 @@ internal record MuscleGain3TrainingAfter1Meal : TrainingWeekBase
         Foods.PumpkinSeeds_30_Grams,
         Foods.BrownRice_45_Grams,
         PreparationMethodEnum.PrepareInAdvance);
+
+    private static readonly FallbackChain TofuAndEnglishMuffinFoodGroupings = new(
+        [TofuAndEnglishMuffin, .. FoodGroupings.EnglishMuffinsAndPasta(0).All]);
 
     private static FallbackChain RestDayCookingFoodGrouping { get; } = new(
         new FoodGrouping[]
