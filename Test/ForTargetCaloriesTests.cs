@@ -49,6 +49,7 @@ public class ForTargetCaloriesTests
         }
     }
     [Theory]
+    [InlineData(2200, 5)]   // Requires searching below the old lower bound
     [InlineData(2450, 10)]  // ~90% - near lower bound  
     [InlineData(2500, 5)]   // ~92%
     [InlineData(2650, 5)]   // ~98%
