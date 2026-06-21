@@ -16,6 +16,7 @@ internal record MuscleGain3TrainingAfter1Meal : TrainingWeekBase
                 Cereal),
             new("3-5 hours after last meal",
                 new(P: MuscleGainProteinPerMealOnNonworkoutDay(targetGramsProteinPerDay), F: 20, C: 60),
+                //FoodGroupings.EnglishMuffinsAndPasta(0)),
                 TofuAndEnglishMuffin),
             new Meal("3-5 hours after last meal",
                 new(P: MuscleGainProteinPerMealOnNonworkoutDay(targetGramsProteinPerDay), F: 20, C: 60),
@@ -32,10 +33,10 @@ internal record MuscleGain3TrainingAfter1Meal : TrainingWeekBase
                 Oatmeal(blueberryScoops: 3)),
             new("1/2 shake during workout, 1/2 right after",
                 new(P: MuscleGainProteinPerMealOnWorkoutDay(targetGramsProteinPerDay), F: 0, C: 55),
-                FoodGroupings.WorkoutMeal),
+                WorkoutMeal),
             new Meal("40 minutes after workout",
                 new(P: MuscleGainProteinPerMealOnWorkoutDay(targetGramsProteinPerDay), F: 10, C: 120),
-                SeitanAndEnglishMuffin),
+                ToastAndAlmondButter),
                 //FoodGroupings.EnglishMuffinsAndPasta(0)),
             new("2-4 hours after last meal",
                 new(P: MuscleGainProteinPerMealOnWorkoutDay(targetGramsProteinPerDay), F: 20, C: 100),
@@ -55,10 +56,10 @@ internal record MuscleGain3TrainingAfter1Meal : TrainingWeekBase
                 Oatmeal(blueberryScoops: 3)),
             new("1/2 shake during workout, 1/2 right after",
                 new(P: MuscleGainProteinPerMealOnWorkoutDay(targetGramsProteinPerDay), F: 0, C: 55),
-                FoodGroupings.WorkoutMeal),
+                WorkoutMeal),
             new Meal("40 minutes after workout",
                 new(P: MuscleGainProteinPerMealOnWorkoutDay(targetGramsProteinPerDay), F: 10, C: 120),
-                Cereal),
+                ToastAndAlmondButter),
             new("2-4 hours after last meal",
                 new(P: MuscleGainProteinPerMealOnWorkoutDay(targetGramsProteinPerDay), F: 20, C: 100),
                 EnglishMuffinsAndRice),
@@ -96,6 +97,34 @@ internal record MuscleGain3TrainingAfter1Meal : TrainingWeekBase
             Foods.Edamame_1_Scoop,
             Foods.FatToCarbConversion,
             Foods.FiberOne_2_3_Cup,
+            PreparationMethodEnum.PrepareAsNeeded));
+
+    private static readonly FoodGrouping ToastAndAlmondButter = new(
+        "Fiber One",
+        [Foods.OrangeJuice_1_Cup * 2],
+        Foods.AlmondButter_1_Tbsp,
+        Foods.Edamame_1_Scoop,
+        Foods.Ezekial_Bread_Low_Sodium_1_Slice,
+        PreparationMethodEnum.PrepareAsNeeded);
+
+    private static FallbackChain WorkoutMeal { get; } = new(
+        new FoodGrouping(
+            "workout shake",
+            Foods.Edamame_1_Scoop,
+            Foods.FatToCarbConversion,
+            Foods.Ezekial_Bread_Low_Sodium_1_Slice,
+            PreparationMethodEnum.PrepareAsNeeded),
+        new FoodGrouping(
+            "workout shake",
+            Foods.FatToCarbConversion,
+            Foods.FatToCarbConversion,
+            Foods.OrangeJuice_1_Cup,
+            PreparationMethodEnum.PrepareAsNeeded),
+        new FoodGrouping(
+            "workout shake",
+            Foods.ProteinToCarbConversion,
+            Foods.FatToCarbConversion,
+            Foods.OrangeJuice_1_Cup,
             PreparationMethodEnum.PrepareAsNeeded));
 
     private static FallbackChain Oatmeal(int blueberryScoops) => new(
