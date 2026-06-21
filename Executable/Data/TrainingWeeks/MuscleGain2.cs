@@ -25,7 +25,7 @@ internal record MuscleGain2 : TrainingWeekBase
                 new Macros(P: MuscleGainProteinPerMealOnWorkoutDay(targetGramsProteinPerDay), F: 20, C: 50),
                 FoodGroupings.BlueberriesOatmealAndEdamame + Foods.Creatine_1_Scoop),
             new("1/2 shake during workout, 1/2 right after",
-                new(P: MuscleGainProteinPerMealOnWorkoutDay(targetGramsProteinPerDay), F: 0, C: 35), FoodGroupings.WorkoutMeal),
+                new(P: MuscleGainProteinPerMealOnWorkoutDay(targetGramsProteinPerDay), F: 0, C: 35), WorkoutMeal),
             new Meal("40 minutes after workout", new(P: MuscleGainProteinPerMealOnWorkoutDay(targetGramsProteinPerDay), F: 10, C: 100),
                 FoodGroupings.Ezekiel),
             new("2-4 hours after last meal", new(P: MuscleGainProteinPerMealOnWorkoutDay(targetGramsProteinPerDay), F: 20, C: 65),
@@ -40,7 +40,7 @@ internal record MuscleGain2 : TrainingWeekBase
             new Meal("1-3 hours before workout", new(P: MuscleGainProteinPerMealOnWorkoutDay(targetGramsProteinPerDay), F: 20, C: 80),
                 Oatmeal),
             new("1/2 shake during workout, 1/2 right after",
-                new(P: MuscleGainProteinPerMealOnWorkoutDay(targetGramsProteinPerDay), F: 0, C: 35), FoodGroupings.WorkoutMeal),
+                new(P: MuscleGainProteinPerMealOnWorkoutDay(targetGramsProteinPerDay), F: 0, C: 35), WorkoutMeal),
             new Meal("40 minutes after workout", new(P: MuscleGainProteinPerMealOnWorkoutDay(targetGramsProteinPerDay), F: 10, C: 120),
                 FoodGroupings.Ezekiel),
             new Meal("2-4 hours after last meal", new(P: MuscleGainProteinPerMealOnWorkoutDay(targetGramsProteinPerDay), F: 20, C: 100),
@@ -87,6 +87,26 @@ internal record MuscleGain2 : TrainingWeekBase
                 PreparationMethodEnum.PrepareInAdvance),
             FoodGroupings.Tofu
         });
+
+    private static FallbackChain WorkoutMeal { get; } = new(
+        new FoodGrouping(
+            "workout shake",
+            Foods.Edamame_1_Scoop,
+            Foods.FatToCarbConversion,
+            Foods.OrangeJuice_1_Cup,
+            PreparationMethodEnum.PrepareAsNeeded),
+        new FoodGrouping(
+            "workout shake",
+            Foods.FatToCarbConversion,
+            Foods.FatToCarbConversion,
+            Foods.OrangeJuice_1_Cup,
+            PreparationMethodEnum.PrepareAsNeeded),
+        new FoodGrouping(
+            "workout shake",
+            Foods.ProteinToCarbConversion,
+            Foods.FatToCarbConversion,
+            Foods.OrangeJuice_1_Cup,
+            PreparationMethodEnum.PrepareAsNeeded));
 
     private static readonly FallbackChain NonworkoutWakingOatmealFoodGroupings = new(
         [.. new[] { Foods.AlmondButter_1_Tbsp, Foods.FatToCarbConversion }.Select(fFood =>

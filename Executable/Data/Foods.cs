@@ -57,6 +57,10 @@ internal static class Foods
         [(0.5M, ServingUnits.Cup)],
         new BaseNutrition(Cals: 190, P: 8, F: 1, CTotal: 38, CFiber: 7));
 
+    private static Food EzekialBreadLowSodiumFood { get; } = new("Ezekial Bread Low Sodium",
+        [(1, ServingUnits.Slice), (34, ServingUnits.Gram)],
+        new BaseNutrition(Cals: 80, P: 5, F: 0.5M, CTotal: 15, CFiber: 3));
+
     private static Food EzekielEnglishMuffinFood { get; } = new("Ezekiel english muffin",
         [(0.5M, ServingUnits.None)],
         new BaseNutrition(Cals: 90, P: 6, F: 0.5M, CTotal: 17, CFiber: 3));
@@ -240,6 +244,12 @@ internal static class Foods
 
     public static FoodServing Ezeliel_Cereal_Low_Sodium_1_2_Cup =>
         EzekielCerealLowSodiumFood.WithServing(0.5M, ServingUnits.Cup);
+
+    public static FoodServing Ezekial_Bread_Low_Sodium_1_Slice =>
+        EzekialBreadLowSodiumFood.WithServing(1, ServingUnits.Slice) with
+        {
+            AddWhen = FoodServing.AddWhenEnum.AtEatingTime
+        };
 
     public static FoodServing Ezekiel_English_Muffin =>
         EzekielEnglishMuffinFood.WithServing(1, ServingUnits.None) with
