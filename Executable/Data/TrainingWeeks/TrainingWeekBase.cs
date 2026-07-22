@@ -37,10 +37,11 @@ internal abstract record TrainingWeekBase : TrainingWeek
         var baseAverage = CalculateAverageDailyCalories(this);
         var bestDifference = Math.Abs(baseAverage - targetDailyCalories);
         const decimal epsilon = 0.01M;
-        const decimal acceptableCalorieDifferenceRatio = 0.01M;
-        Exception? limitingException = null;
+        const decimal acceptableCalorieDifference = 0.1M;
+        var bestPercent = 100M;
+        List<(decimal Percent, FoodGroupingCalculationException Exception)> failedCandidates = [];
 
-        if (bestDifference < 0.1M)
+        if (bestDifference <= acceptableCalorieDifference)
         {
             return bestWeek;
         }
@@ -58,7 +59,7 @@ internal abstract record TrainingWeekBase : TrainingWeek
 
             while (TryCalculateCandidate(high, out var highWeek, out var highAverageDailyCals))
             {
-                UpdateBest(highWeek, highAverageDailyCals);
+                UpdateBest(high, highWeek, highAverageDailyCals);
                 if (highAverageDailyCals >= targetDailyCalories)
                 {
                     break;
@@ -76,7 +77,7 @@ internal abstract record TrainingWeekBase : TrainingWeek
 
             while (TryCalculateCandidate(low, out var lowWeek, out var lowAverageDailyCals))
             {
-                UpdateBest(lowWeek, lowAverageDailyCals);
+                UpdateBest(low, lowWeek, lowAverageDailyCals);
                 if (lowAverageDailyCals <= targetDailyCalories || low == 0M)
                 {
                     break;
@@ -104,10 +105,10 @@ internal abstract record TrainingWeekBase : TrainingWeek
                 continue;
             }
 
-            UpdateBest(testWeek, averageDailyCals);
+            UpdateBest(mid, testWeek, averageDailyCals);
 
             // Stop if we're close enough
-            if (bestDifference < 0.1M)
+            if (bestDifference <= acceptableCalorieDifference)
             {
                 break;
             }
@@ -123,14 +124,22 @@ internal abstract record TrainingWeekBase : TrainingWeek
             }
         }
 
-        var acceptableCalorieDifference = targetDailyCalories * acceptableCalorieDifferenceRatio;
         if (bestDifference > acceptableCalorieDifference)
         {
             var bestAverageDailyCalories = CalculateAverageDailyCalories(bestWeek);
             var message =
-                $"Unable to get within 1% of the target average of {targetDailyCalories:F0} calories/day with the configured " +
+                $"Unable to get within {acceptableCalorieDifference:F1} calories/day of the target average of " +
+                $"{targetDailyCalories:F0} calories/day with the configured " +
                 $"food groupings. The closest achievable average is {bestAverageDailyCalories:F0} calories/day. " +
                 "Add or adjust meal fallback food groupings to support this target.";
+            FoodGroupingCalculationException? limitingException = null;
+            if (failedCandidates.Count > 0)
+            {
+                limitingException = failedCandidates
+                    .MinBy(failure => Math.Abs(failure.Percent - bestPercent))
+                    .Exception;
+            }
+
             if (limitingException != null)
             {
                 message += $" Limiting calculation: {limitingException.Message}";
@@ -141,12 +150,13 @@ internal abstract record TrainingWeekBase : TrainingWeek
 
         return bestWeek;
 
-        void UpdateBest(TrainingWeek week, decimal averageDailyCals)
+        void UpdateBest(decimal percent, TrainingWeek week, decimal averageDailyCals)
         {
             var difference = Math.Abs(averageDailyCals - targetDailyCalories);
             if (difference < bestDifference)
             {
                 bestDifference = difference;
+                bestPercent = percent;
                 bestWeek = week;
             }
         }
@@ -161,9 +171,9 @@ internal abstract record TrainingWeekBase : TrainingWeek
                 out trainingWeek,
                 out averageDailyCals,
                 out var calculationException);
-            if (!success && limitingException == null)
+            if (!success && calculationException != null)
             {
-                limitingException = calculationException;
+                failedCandidates.Add((percent, calculationException));
             }
 
             return success;
@@ -174,7 +184,7 @@ internal abstract record TrainingWeekBase : TrainingWeek
         decimal percent,
         out TrainingWeek trainingWeek,
         out decimal averageDailyCals,
-        out Exception? calculationException)
+        out FoodGroupingCalculationException? calculationException)
     {
         trainingWeek = PlusPercent(percent);
         calculationException = null;
@@ -183,7 +193,7 @@ internal abstract record TrainingWeekBase : TrainingWeek
             averageDailyCals = CalculateAverageDailyCalories(trainingWeek);
             return true;
         }
-        catch (Exception exception)
+        catch (FoodGroupingCalculationException exception)
         {
             // Some percentages cannot be solved because every fallback produces invalid servings.
             averageDailyCals = 0M;

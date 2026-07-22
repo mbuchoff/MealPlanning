@@ -69,9 +69,13 @@ internal record TrainingDay
 
                 return _actualNutrients.Value;
             }
+            catch (FoodGroupingCalculationException ex)
+            {
+                throw new FoodGroupingCalculationException($"{TrainingDayType} > {ex.Message}", ex);
+            }
             catch (Exception ex)
             {
-                throw new Exception($"{TrainingDayType} > {ex.Message}");
+                throw new Exception($"{TrainingDayType} > {ex.Message}", ex);
             }
         }
     }

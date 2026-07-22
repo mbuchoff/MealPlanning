@@ -48,6 +48,56 @@ public class ForTargetCaloriesTests
             return meals;
         }
     }
+
+    private record BoundaryLimitedTrainingWeek : TrainingWeekBase
+    {
+        public BoundaryLimitedTrainingWeek() : base(
+            "Boundary-limited training week",
+            nonworkoutMeals: CreateBoundaryMeals(),
+            runningMeals: CreateBoundaryMeals(),
+            xfitMeals: CreateBoundaryMeals())
+        {
+        }
+
+        private static IEnumerable<Meal> CreateBoundaryMeals()
+        {
+            var proteinFood = new FoodServing("Test Protein",
+                new NutritionalInformation(1, ServingUnits.Gram, Cals: 4, P: 1, F: 0, CTotal: 0, CFiber: 0));
+            var fatFood = new FoodServing("Test Fat",
+                new NutritionalInformation(1, ServingUnits.Gram, Cals: 9, P: 0, F: 1, CTotal: 0, CFiber: 0));
+            var carbFood = new FoodServing("Test Carb",
+                new NutritionalInformation(1, ServingUnits.Gram, Cals: 4, P: 0, F: 0, CTotal: 1, CFiber: 0));
+
+            return
+            [
+                CreateMeal("Lower-limit meal", staticFat: 8M),
+                CreateMeal("Boundary-limit meal", staticFat: 15M),
+            ];
+
+            Meal CreateMeal(string name, decimal staticFat)
+            {
+                var staticFatServing = new FoodServing($"{name} fixed fat",
+                    new NutritionalInformation(
+                        1,
+                        ServingUnits.Gram,
+                        Cals: staticFat * 9M,
+                        P: 0,
+                        F: staticFat,
+                        CTotal: 0,
+                        CFiber: 0));
+                var foodGrouping = new FoodGrouping(
+                    $"{name} grouping",
+                    [staticFatServing],
+                    proteinFood,
+                    fatFood,
+                    carbFood,
+                    FoodGrouping.PreparationMethodEnum.PrepareAsNeeded);
+
+                return new Meal(name, new Macros(P: 10, F: 20, C: 10), foodGrouping);
+            }
+        }
+    }
+
     [Theory]
     [InlineData(2200, 5)]   // Requires searching below the old lower bound
     [InlineData(2450, 10)]  // ~90% - near lower bound  
@@ -178,5 +228,14 @@ public class ForTargetCaloriesTests
 
         // Assert - ratio should be preserved (within small tolerance for rounding)
         Assert.InRange(adjustedRatio, baseRatio * 0.98M, baseRatio * 1.02M);
+    }
+
+    [Fact]
+    public void ForTargetCalories_ReportsFoodGroupingAtReachableBoundary()
+    {
+        var exception = Assert.Throws<InvalidOperationException>(() =>
+            new BoundaryLimitedTrainingWeek().ForTargetCalories(targetDailyCalories: 200M));
+
+        Assert.Contains("Boundary-limit meal", exception.Message);
     }
 }

@@ -101,7 +101,31 @@ public class UnitTest1
         var meal = new Meal("test meal", targetMacros, new FallbackChain(impossibleFoodGrouping1, impossibleFoodGrouping2));
 
         // Should throw when trying to calculate servings since all FoodGroupings fail
-        Assert.Throws<Exception>(() => meal.Servings.ToList());
+        Assert.Throws<FoodGroupingCalculationException>(() => meal.Servings.ToList());
+    }
+
+    [Fact]
+    public void Meal_Should_Not_Try_Fallback_For_Unexpected_Calculation_Error()
+    {
+        var invalidFoodGrouping = new FoodGrouping(
+            "invalid",
+            staticServings: null!,
+            pFood,
+            fFood,
+            cFood,
+            FoodGrouping.PreparationMethodEnum.PrepareAsNeeded);
+        var workingFoodGrouping = new FoodGrouping(
+            "working",
+            pFood,
+            fFood,
+            cFood,
+            FoodGrouping.PreparationMethodEnum.PrepareAsNeeded);
+        var meal = new Meal(
+            "test meal",
+            new Macros(P: 1, F: 2, C: 3),
+            new FallbackChain(invalidFoodGrouping, workingFoodGrouping));
+
+        Assert.Throws<NullReferenceException>(() => meal.Servings.ToList());
     }
 
     [Fact]

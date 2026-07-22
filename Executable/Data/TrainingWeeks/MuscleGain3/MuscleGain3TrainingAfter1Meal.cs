@@ -92,13 +92,6 @@ internal record MuscleGain3TrainingAfter1Meal : TrainingWeekBase
             Foods.Edamame_1_Scoop,
             Foods.FatToCarbConversion,
             Foods.FiberOne_2_3_Cup,
-            PreparationMethodEnum.PrepareAsNeeded),
-        new FoodGrouping(
-            "Fiber One",
-            [Foods.AlmondMilk_1_Scoop * 2],
-            Foods.Edamame_1_Scoop,
-            Foods.FatToCarbConversion,
-            Foods.FiberOne_2_3_Cup,
             PreparationMethodEnum.PrepareAsNeeded));
 
     private static FallbackChain ToastAndAlmondButter(bool withOrangeJuice)

@@ -76,7 +76,7 @@ public class Meal
                 return _servings;
             }
 
-            Exception? lastException = null;
+            FoodGroupingCalculationException? lastException = null;
 
             foreach (var foodGrouping in _foodGroupings)
             {
@@ -87,14 +87,13 @@ public class Meal
                     ActualFoodGrouping = foodGrouping;
                     return _servings;
                 }
-                catch (Exception ex)
+                catch (FoodGroupingCalculationException ex)
                 {
                     lastException = ex;
-                    continue;
                 }
             }
 
-            throw lastException ?? new Exception("No FoodGroupings provided");
+            throw lastException ?? new FoodGroupingCalculationException("No FoodGroupings provided");
         }
     }
 
@@ -112,7 +111,7 @@ public class Meal
 
         if (solution == null)
         {
-            throw new Exception($"{Name} > {foodGrouping.Name} > No solution.");
+            throw new FoodGroupingCalculationException($"{Name} > {foodGrouping.Name} > No solution.");
         }
 
         (var pFoodServings, var fFoodServings, var cFoodServings) = solution.Value;
@@ -128,7 +127,7 @@ public class Meal
         {
             if (serving.NutritionalInformation.ServingUnits < 0 && !serving.IsConversion)
             {
-                throw new Exception(
+                throw new FoodGroupingCalculationException(
                     $"{Name} > {foodGrouping.Name} > " +
                     $"{serving.NutritionalInformation.ServingUnits:F2} servings in {serving.Name}.");
             }
