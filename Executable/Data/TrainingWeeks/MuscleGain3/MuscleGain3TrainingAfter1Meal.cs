@@ -17,10 +17,10 @@ internal record MuscleGain3TrainingAfter1Meal : TrainingWeekBase
             new("3-5 hours after last meal",
                 new(P: MuscleGainProteinPerMealOnNonworkoutDay(targetGramsProteinPerDay), F: 20, C: 60),
                 //FoodGroupings.EnglishMuffinsAndPasta(0)),
-                TofuAndEnglishMuffin),
+                SeitanAndEnglishMuffin),
             new Meal("3-5 hours after last meal",
                 new(P: MuscleGainProteinPerMealOnNonworkoutDay(targetGramsProteinPerDay), F: 20, C: 60),
-                TofuAndEnglishMuffin),
+                SeitanAndEnglishMuffin),
                 //FoodGroupings.EnglishMuffinsAndPasta(0)),
             new Meal("Bedtime",
                 new Macros(P: MuscleGainProteinPerMealOnNonworkoutDay(targetGramsProteinPerDay), F: 25, C: 0),
@@ -36,18 +36,20 @@ internal record MuscleGain3TrainingAfter1Meal : TrainingWeekBase
                 WorkoutMeal),
             new Meal("40 minutes after workout",
                 new(P: MuscleGainProteinPerMealOnWorkoutDay(targetGramsProteinPerDay), F: 10, C: 120),
-                ToastAndAlmondButter),
-                //FoodGroupings.EnglishMuffinsAndPasta(0)),
+                //SeitanAndEnglishMuffin),
+                //Cereal),
+                FoodGroupings.EnglishMuffinsAndPasta(0)),
             new("2-4 hours after last meal",
                 new(P: MuscleGainProteinPerMealOnWorkoutDay(targetGramsProteinPerDay), F: 20, C: 100),
-                //FoodGroupings.EnglishMuffinsAndPasta(0)),
-                SeitanAndEnglishMuffin),
+                FoodGroupings.EnglishMuffinsAndPasta(0)),
+                //SeitanAndEnglishMuffin),
             new("3-5 hours after last meal",
                 new(P: MuscleGainProteinPerMealOnWorkoutDay(targetGramsProteinPerDay), F: 20, C: 50),
-                Cereal),
+                ToastAndAlmondButter(withOrangeJuice: false)),
             new Meal("Bedtime",
                 new(P: MuscleGainProteinPerMealOnWorkoutDay(targetGramsProteinPerDay), F: 25, C: 35),
-                FoodGroupings.EnglishMuffinsAndPasta(englishMuffins: 0)),
+                //FoodGroupings.EnglishMuffinsAndPasta(englishMuffins: 0)),
+                Cereal),
         ],
         xfitMeals:
         [
@@ -59,7 +61,7 @@ internal record MuscleGain3TrainingAfter1Meal : TrainingWeekBase
                 WorkoutMeal),
             new Meal("40 minutes after workout",
                 new(P: MuscleGainProteinPerMealOnWorkoutDay(targetGramsProteinPerDay), F: 10, C: 120),
-                ToastAndAlmondButter),
+                ToastAndAlmondButter(withOrangeJuice: true)),
             new("2-4 hours after last meal",
                 new(P: MuscleGainProteinPerMealOnWorkoutDay(targetGramsProteinPerDay), F: 20, C: 100),
                 EnglishMuffinsAndRice),
@@ -87,8 +89,8 @@ internal record MuscleGain3TrainingAfter1Meal : TrainingWeekBase
         new FoodGrouping(
             "Fiber One",
             [Foods.AlmondMilk_1_Scoop * 2],
-            Foods.PumpkinSeeds_1_Scoop,
-            Foods.ProteinToCarbConversion,
+            Foods.Edamame_1_Scoop,
+            Foods.FatToCarbConversion,
             Foods.FiberOne_2_3_Cup,
             PreparationMethodEnum.PrepareAsNeeded),
         new FoodGrouping(
@@ -99,13 +101,25 @@ internal record MuscleGain3TrainingAfter1Meal : TrainingWeekBase
             Foods.FiberOne_2_3_Cup,
             PreparationMethodEnum.PrepareAsNeeded));
 
-    private static readonly FoodGrouping ToastAndAlmondButter = new(
-        "Fiber One",
-        [Foods.OrangeJuice_1_Cup * 2],
-        Foods.AlmondButter_1_Tbsp,
-        Foods.Edamame_1_Scoop,
-        Foods.Ezekial_Bread_Low_Sodium_1_Slice,
-        PreparationMethodEnum.PrepareAsNeeded);
+    private static FallbackChain ToastAndAlmondButter(bool withOrangeJuice)
+    {
+        FoodServing[] staticServings = withOrangeJuice ? [Foods.OrangeJuice_1_Cup * 2] : [];
+        return new(
+            new FoodGrouping(
+                "toast and almond butter",
+                staticServings,
+                Foods.Edamame_1_Scoop,
+                Foods.AlmondButter_1_Tbsp,
+                Foods.Ezekial_Bread_Low_Sodium_1_Slice,
+                PreparationMethodEnum.PrepareAsNeeded),
+            new FoodGrouping(
+                "toast and almond butter",
+                staticServings,
+                Foods.Edamame_1_Scoop,
+                Foods.FatToCarbConversion,
+                Foods.Ezekial_Bread_Low_Sodium_1_Slice,
+                PreparationMethodEnum.PrepareAsNeeded));
+    }
 
     private static FallbackChain WorkoutMeal { get; } = new(
         new FoodGrouping(
@@ -148,7 +162,15 @@ internal record MuscleGain3TrainingAfter1Meal : TrainingWeekBase
             pFood,
             Foods.PumpkinSeeds_30_Grams,
             Foods.BrownRice_45_Grams,
-            PreparationMethodEnum.PrepareInAdvance)).ToArray());
+            PreparationMethodEnum.PrepareInAdvance))
+        .Append(new FoodGrouping(
+            "rice",
+            [Foods.Ezekiel_English_Muffin, Foods.AlmondButter_1_Tbsp],
+            Foods.ProteinToCarbConversion,
+            Foods.FatToCarbConversion,
+            Foods.BrownRice_45_Grams,
+            PreparationMethodEnum.PrepareInAdvance))
+        .ToArray());
 
     private static readonly FoodGrouping SeitanAndEnglishMuffin = new(
         "seitan and english muffin",
@@ -191,11 +213,12 @@ internal record MuscleGain3TrainingAfter1Meal : TrainingWeekBase
             PreparationMethodEnum.PrepareAsNeeded))]);
 
     private static readonly FallbackChain NonworkoutBedtimeFoodGroupings = new(
-        [.. new[] { Foods.Whole_Grain_Pasta_56_Grams, Foods.FatToCarbConversion }.Select(cFood =>
-        new FoodGrouping("Protein shake",
+        [.. new[] { Foods.Whole_Grain_Pasta_56_Grams, Foods.FatToCarbConversion }.SelectMany(cFood =>
+            new[] { Foods.PumpkinSeeds_1_Scoop, Foods.FatToProteinConversion }.Select(fFood =>
+        new FoodGrouping("Edamame",
             Foods.Edamame_1_Scoop,
-            Foods.PumpkinSeeds_1_Scoop,
+            fFood,
             cFood,
-            PreparationMethodEnum.PrepareAsNeeded))]);
+            PreparationMethodEnum.PrepareAsNeeded)))]);
 
 }

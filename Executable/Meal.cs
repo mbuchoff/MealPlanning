@@ -112,7 +112,7 @@ public class Meal
 
         if (solution == null)
         {
-            throw new Exception("No solution");
+            throw new Exception($"{Name} > {foodGrouping.Name} > No solution.");
         }
 
         (var pFoodServings, var fFoodServings, var cFoodServings) = solution.Value;
@@ -128,7 +128,9 @@ public class Meal
         {
             if (serving.NutritionalInformation.ServingUnits < 0 && !serving.IsConversion)
             {
-                throw new Exception($"{Name} > {serving.NutritionalInformation.ServingUnits:F2} servings in {serving.Name}.");
+                throw new Exception(
+                    $"{Name} > {foodGrouping.Name} > " +
+                    $"{serving.NutritionalInformation.ServingUnits:F2} servings in {serving.Name}.");
             }
         }
 
