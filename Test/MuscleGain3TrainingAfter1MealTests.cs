@@ -15,7 +15,7 @@ public class MuscleGain3TrainingAfter1MealTests
             day => day.ActualNutrients.Cals * day.TrainingDayType.DaysTraining.Count);
         var averageDailyCalories = weeklyCalories / 7;
 
-        Assert.InRange(averageDailyCalories, targetDailyCalories - 1M, targetDailyCalories + 1M);
+        Assert.InRange(averageDailyCalories, targetDailyCalories - 0.1M, targetDailyCalories + 0.1M);
     }
 
     [Fact]
@@ -44,5 +44,19 @@ public class MuscleGain3TrainingAfter1MealTests
         });
 
         Assert.Null(exception);
+    }
+
+    [Fact]
+    public void ForTargetCalories_ExplainsLimitingFoodGroupingWhenFallbackSwitchSkipsTarget()
+    {
+        var exception = Assert.Throws<InvalidOperationException>(() =>
+            new MuscleGain3TrainingAfter1Meal(targetGramsProteinPerDay: 212.5M)
+                .ForTargetCalories(3216M));
+
+        Assert.Contains("Limiting calculation:", exception.Message);
+        Assert.Contains("Running day", exception.Message);
+        Assert.Contains("40 minutes after workout", exception.Message);
+        Assert.Contains("English muffins and pasta", exception.Message);
+        Assert.NotNull(exception.InnerException);
     }
 }

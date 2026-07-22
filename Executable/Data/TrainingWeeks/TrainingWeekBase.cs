@@ -36,10 +36,15 @@ internal abstract record TrainingWeekBase : TrainingWeek
         TrainingWeek bestWeek = this;
         var baseAverage = CalculateAverageDailyCalories(this);
         var bestDifference = Math.Abs(baseAverage - targetDailyCalories);
-        const decimal epsilon = 0.01M;
         const decimal acceptableCalorieDifference = 0.1M;
         var bestPercent = 100M;
         List<(decimal Percent, FoodGroupingCalculationException Exception)> failedCandidates = [];
+        TrainingWeek? closestWeekBelowTarget = null;
+        TrainingWeek? closestWeekAboveTarget = null;
+        var closestDifferenceBelowTarget = decimal.MaxValue;
+        var closestDifferenceAboveTarget = decimal.MaxValue;
+
+        RecordCandidate(100M, this, baseAverage);
 
         if (bestDifference <= acceptableCalorieDifference)
         {
@@ -59,7 +64,7 @@ internal abstract record TrainingWeekBase : TrainingWeek
 
             while (TryCalculateCandidate(high, out var highWeek, out var highAverageDailyCals))
             {
-                UpdateBest(high, highWeek, highAverageDailyCals);
+                RecordCandidate(high, highWeek, highAverageDailyCals);
                 if (highAverageDailyCals >= targetDailyCalories)
                 {
                     break;
@@ -77,7 +82,7 @@ internal abstract record TrainingWeekBase : TrainingWeek
 
             while (TryCalculateCandidate(low, out var lowWeek, out var lowAverageDailyCals))
             {
-                UpdateBest(low, lowWeek, lowAverageDailyCals);
+                RecordCandidate(low, lowWeek, lowAverageDailyCals);
                 if (lowAverageDailyCals <= targetDailyCalories || low == 0M)
                 {
                     break;
@@ -89,9 +94,14 @@ internal abstract record TrainingWeekBase : TrainingWeek
             }
         }
 
-        while (high - low > epsilon)
+        while (bestDifference > acceptableCalorieDifference)
         {
             var mid = (low + high) / 2;
+            if (mid == low || mid == high)
+            {
+                break;
+            }
+
             if (!TryCalculateCandidate(mid, out var testWeek, out var averageDailyCals))
             {
                 if (mid > 100M)
@@ -105,13 +115,7 @@ internal abstract record TrainingWeekBase : TrainingWeek
                 continue;
             }
 
-            UpdateBest(mid, testWeek, averageDailyCals);
-
-            // Stop if we're close enough
-            if (bestDifference <= acceptableCalorieDifference)
-            {
-                break;
-            }
+            RecordCandidate(mid, testWeek, averageDailyCals);
 
             // Adjust search range
             if (averageDailyCals < targetDailyCalories)
@@ -132,8 +136,10 @@ internal abstract record TrainingWeekBase : TrainingWeek
                 $"{targetDailyCalories:F0} calories/day with the configured " +
                 $"food groupings. The closest achievable average is {bestAverageDailyCalories:F0} calories/day. " +
                 "Add or adjust meal fallback food groupings to support this target.";
-            FoodGroupingCalculationException? limitingException = null;
-            if (failedCandidates.Count > 0)
+            var limitingException = closestWeekBelowTarget != null && closestWeekAboveTarget != null
+                ? FindFallbackTransition(closestWeekBelowTarget, closestWeekAboveTarget)
+                : null;
+            if (limitingException == null && failedCandidates.Count > 0)
             {
                 limitingException = failedCandidates
                     .MinBy(failure => Math.Abs(failure.Percent - bestPercent))
@@ -150,9 +156,20 @@ internal abstract record TrainingWeekBase : TrainingWeek
 
         return bestWeek;
 
-        void UpdateBest(decimal percent, TrainingWeek week, decimal averageDailyCals)
+        void RecordCandidate(decimal percent, TrainingWeek week, decimal averageDailyCals)
         {
             var difference = Math.Abs(averageDailyCals - targetDailyCalories);
+            if (averageDailyCals < targetDailyCalories && difference < closestDifferenceBelowTarget)
+            {
+                closestDifferenceBelowTarget = difference;
+                closestWeekBelowTarget = week;
+            }
+            else if (averageDailyCals > targetDailyCalories && difference < closestDifferenceAboveTarget)
+            {
+                closestDifferenceAboveTarget = difference;
+                closestWeekAboveTarget = week;
+            }
+
             if (difference < bestDifference)
             {
                 bestDifference = difference;
@@ -212,5 +229,53 @@ internal abstract record TrainingWeekBase : TrainingWeek
         }
 
         return totalCals / 7;
+    }
+
+    private static FoodGroupingCalculationException? FindFallbackTransition(
+        TrainingWeek weekBelowTarget,
+        TrainingWeek weekAboveTarget)
+    {
+        var daysBelowTarget = weekBelowTarget.TrainingDays.ToArray();
+        var daysAboveTarget = weekAboveTarget.TrainingDays.ToArray();
+
+        for (var dayIndex = 0; dayIndex < daysBelowTarget.Length; dayIndex++)
+        {
+            var mealsBelowTarget = daysBelowTarget[dayIndex].Meals.ToArray();
+            var mealsAboveTarget = daysAboveTarget[dayIndex].Meals.ToArray();
+
+            for (var mealIndex = 0; mealIndex < mealsBelowTarget.Length; mealIndex++)
+            {
+                var mealBelowTarget = mealsBelowTarget[mealIndex];
+                var mealAboveTarget = mealsAboveTarget[mealIndex];
+                if (ReferenceEquals(mealBelowTarget.FoodGrouping, mealAboveTarget.FoodGrouping))
+                {
+                    continue;
+                }
+
+                var groupingIndexBelowTarget = Array.IndexOf(
+                    mealBelowTarget.FoodGroupings,
+                    mealBelowTarget.FoodGrouping);
+                var groupingIndexAboveTarget = Array.IndexOf(
+                    mealAboveTarget.FoodGroupings,
+                    mealAboveTarget.FoodGrouping);
+                var mealUsingLaterFallback = groupingIndexBelowTarget > groupingIndexAboveTarget
+                    ? mealBelowTarget
+                    : mealAboveTarget;
+                var failedGroupingIndex = Math.Min(groupingIndexBelowTarget, groupingIndexAboveTarget);
+                if (failedGroupingIndex < 0 ||
+                    failedGroupingIndex >= mealUsingLaterFallback.FailedFoodGroupingCalculations.Count)
+                {
+                    continue;
+                }
+
+                var calculationException =
+                    mealUsingLaterFallback.FailedFoodGroupingCalculations[failedGroupingIndex];
+                return new FoodGroupingCalculationException(
+                    $"{daysBelowTarget[dayIndex].TrainingDayType} > {calculationException.Message}",
+                    calculationException);
+            }
+        }
+
+        return null;
     }
 }

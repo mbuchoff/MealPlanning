@@ -65,6 +65,7 @@ public class Meal
         }
     }
     public FoodGrouping? ActualFoodGrouping { get; private set; }
+    internal IReadOnlyList<FoodGroupingCalculationException> FailedFoodGroupingCalculations { get; private set; } = [];
 
     private IEnumerable<FoodServing>? _servings = null;
     public IEnumerable<FoodServing> Servings
@@ -76,7 +77,7 @@ public class Meal
                 return _servings;
             }
 
-            FoodGroupingCalculationException? lastException = null;
+            List<FoodGroupingCalculationException> calculationExceptions = [];
 
             foreach (var foodGrouping in _foodGroupings)
             {
@@ -85,15 +86,17 @@ public class Meal
                     var calculatedServings = TryCalculateServings(foodGrouping);
                     _servings = calculatedServings;
                     ActualFoodGrouping = foodGrouping;
+                    FailedFoodGroupingCalculations = [.. calculationExceptions];
                     return _servings;
                 }
                 catch (FoodGroupingCalculationException ex)
                 {
-                    lastException = ex;
+                    calculationExceptions.Add(ex);
                 }
             }
 
-            throw lastException ?? new FoodGroupingCalculationException("No FoodGroupings provided");
+            throw calculationExceptions.LastOrDefault() ??
+                new FoodGroupingCalculationException("No FoodGroupings provided");
         }
     }
 
