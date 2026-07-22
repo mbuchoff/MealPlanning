@@ -65,6 +65,7 @@ public class Meal
         }
     }
     public FoodGrouping? ActualFoodGrouping { get; private set; }
+    internal IReadOnlyList<FoodGroupingCalculationException> FailedFoodGroupingCalculations { get; private set; } = [];
 
     private IEnumerable<FoodServing>? _servings = null;
     public IEnumerable<FoodServing> Servings
@@ -76,7 +77,7 @@ public class Meal
                 return _servings;
             }
 
-            Exception? lastException = null;
+            List<FoodGroupingCalculationException> calculationExceptions = [];
 
             foreach (var foodGrouping in _foodGroupings)
             {
@@ -85,16 +86,17 @@ public class Meal
                     var calculatedServings = TryCalculateServings(foodGrouping);
                     _servings = calculatedServings;
                     ActualFoodGrouping = foodGrouping;
+                    FailedFoodGroupingCalculations = [.. calculationExceptions];
                     return _servings;
                 }
-                catch (Exception ex)
+                catch (FoodGroupingCalculationException ex)
                 {
-                    lastException = ex;
-                    continue;
+                    calculationExceptions.Add(ex);
                 }
             }
 
-            throw lastException ?? new Exception("No FoodGroupings provided");
+            throw calculationExceptions.LastOrDefault() ??
+                new FoodGroupingCalculationException("No FoodGroupings provided");
         }
     }
 
@@ -112,7 +114,7 @@ public class Meal
 
         if (solution == null)
         {
-            throw new Exception("No solution");
+            throw new FoodGroupingCalculationException($"{Name} > {foodGrouping.Name} > No solution.");
         }
 
         (var pFoodServings, var fFoodServings, var cFoodServings) = solution.Value;
@@ -128,7 +130,9 @@ public class Meal
         {
             if (serving.NutritionalInformation.ServingUnits < 0 && !serving.IsConversion)
             {
-                throw new Exception($"{Name} > {serving.NutritionalInformation.ServingUnits:F2} servings in {serving.Name}.");
+                throw new FoodGroupingCalculationException(
+                    $"{Name} > {foodGrouping.Name} > " +
+                    $"{serving.NutritionalInformation.ServingUnits:F2} servings in {serving.Name}.");
             }
         }
 
