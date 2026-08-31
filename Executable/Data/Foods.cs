@@ -178,6 +178,10 @@ internal static class Foods
         [(1M / 3, ServingUnits.Cup)],
         new BaseNutrition(Cals: 130, P: 14, F: 5, CTotal: 9, CFiber: 6));
 
+    private static Food TempehFood { get; } = new("tempeh",
+        [(16M / 5M, ServingUnits.EighthPackage)],
+        new BaseNutrition(Cals: 150, P: 18, F: 6, CTotal: 8, CFiber: 6));
+
     // Public FoodServing definitions
     public static FoodServing AlmondButter_1_Tbsp =>
         AlmondButterFood.WithServing(1, ServingUnits.Tablespoon) with
@@ -386,6 +390,10 @@ internal static class Foods
 
     public static FoodServing Edamame_1_Scoop =>
         EdamameFood.WithServing(1, ServingUnits.Scoop);
+
+    public static FoodServing Tempeh_1_8_Package =>
+        TempehFood.WithServing(1, ServingUnits.EighthPackage);
+
     public static FoodServing AlmondMilk_1_Scoop =>
         AlmondMilkFood.WithServing(1, ServingUnits.Scoop);
 

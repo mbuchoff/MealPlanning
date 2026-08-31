@@ -5,6 +5,7 @@ public static class ServingUnits
     public static readonly ServingUnit None = new(null, decimalsToDisplay: 1);
     public static readonly ServingUnit BlockTofu = new("block", decimalsToDisplay: 2);
     public static readonly ServingUnit Cup = new("cup", decimalsToDisplay: 1);
+    public static readonly ServingUnit EighthPackage = new("1/8 package", decimalsToDisplay: 1);
     public static readonly ServingUnit Gram = new("gram", decimalsToDisplay: 0);
     public static readonly ServingUnit Meal = new("meal", decimalsToDisplay: 0);
     public static readonly ServingUnit Slice = new("slice", decimalsToDisplay: 1);

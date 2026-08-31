@@ -26,10 +26,10 @@ public class MuscleGain3TrainingAfter1MealTests
                 .ForTargetCalories(2000M));
 
         Assert.Contains("Limiting calculation:", exception.Message);
-        Assert.Contains("Non-weight training day", exception.Message);
-        Assert.Contains("Waking", exception.Message);
-        Assert.Contains("Blueberry oatmeal shake", exception.Message);
-        Assert.Contains("oats", exception.Message);
+        Assert.Contains("Crossfit day", exception.Message);
+        Assert.Contains("40 minutes after workout", exception.Message);
+        Assert.Contains("toast and almond butter", exception.Message);
+        Assert.Contains("Ezekial Bread Low Sodium", exception.Message);
         Assert.NotNull(exception.InnerException);
     }
 
@@ -47,16 +47,16 @@ public class MuscleGain3TrainingAfter1MealTests
     }
 
     [Fact]
-    public void ForTargetCalories_ExplainsLimitingFoodGroupingWhenFallbackSwitchSkipsTarget()
+    public void ForTargetCalories_ExplainsLimitingFoodGroupingWhenTargetIsAboveSupportedRange()
     {
         var exception = Assert.Throws<InvalidOperationException>(() =>
             new MuscleGain3TrainingAfter1Meal(targetGramsProteinPerDay: 212.5M)
-                .ForTargetCalories(3216M));
+                .ForTargetCalories(4000M));
 
         Assert.Contains("Limiting calculation:", exception.Message);
-        Assert.Contains("Running day", exception.Message);
+        Assert.Contains("Crossfit day", exception.Message);
         Assert.Contains("40 minutes after workout", exception.Message);
-        Assert.Contains("English muffins and pasta", exception.Message);
+        Assert.Contains("toast and almond butter", exception.Message);
         Assert.NotNull(exception.InnerException);
     }
 }

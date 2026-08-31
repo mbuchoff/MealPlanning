@@ -53,7 +53,7 @@ internal record BaseWorkingOutInMorning : TrainingWeekBase
                 FoodGroupings.Seitan),
             new Meal("Bedtime",
                 new(P: FatLossProteinPerMealOnWorkoutDay(targetGramsProteinPerDay), F: 25, C: 20),
-                FoodGroupings.EnglishMuffinsAndPasta(englishMuffins: 0, withEdamame: true)),
+                FoodGroupings.EnglishMuffinsAndPasta(englishMuffins: 0)),
         ],
         xfitMeals:
         [
@@ -74,7 +74,7 @@ internal record BaseWorkingOutInMorning : TrainingWeekBase
                 FoodGroupings.Seitan),
             new Meal("Bedtime",
                 new(P: FatLossProteinPerMealOnWorkoutDay(targetGramsProteinPerDay), F: 25, C: 25),
-                FoodGroupings.EnglishMuffinsAndPasta(englishMuffins: 0, withEdamame: true)),
+                FoodGroupings.EnglishMuffinsAndPasta(englishMuffins: 0)),
         ])
     {
 

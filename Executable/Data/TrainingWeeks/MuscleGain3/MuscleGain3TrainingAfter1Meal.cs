@@ -1,4 +1,5 @@
-﻿using static SystemOfEquations.FoodGrouping;
+﻿using System.Runtime.ConstrainedExecution;
+using static SystemOfEquations.FoodGrouping;
 
 namespace SystemOfEquations.Data.TrainingWeeks.MuscleGain3;
 
@@ -10,7 +11,7 @@ internal record MuscleGain3TrainingAfter1Meal : TrainingWeekBase
         [
             new Meal("Waking",
                 new(P: MuscleGainProteinPerMealOnNonworkoutDay(targetGramsProteinPerDay), F: 10, C: 60),
-                NonworkoutWakingOatmealFoodGroupings),
+                Cereal),
             new("3-5 hours after last meal",
                 new(P: MuscleGainProteinPerMealOnNonworkoutDay(targetGramsProteinPerDay), F: 20, C: 60),
                 Cereal),
@@ -20,8 +21,8 @@ internal record MuscleGain3TrainingAfter1Meal : TrainingWeekBase
                 SeitanAndEnglishMuffin),
             new Meal("3-5 hours after last meal",
                 new(P: MuscleGainProteinPerMealOnNonworkoutDay(targetGramsProteinPerDay), F: 20, C: 60),
-                SeitanAndEnglishMuffin),
-                //FoodGroupings.EnglishMuffinsAndPasta(0)),
+                //SeitanAndEnglishMuffin),
+                FoodGroupings.EnglishMuffinsAndPasta(0)),
             new Meal("Bedtime",
                 new Macros(P: MuscleGainProteinPerMealOnNonworkoutDay(targetGramsProteinPerDay), F: 25, C: 0),
                 NonworkoutBedtimeFoodGroupings),
@@ -42,7 +43,7 @@ internal record MuscleGain3TrainingAfter1Meal : TrainingWeekBase
             new("2-4 hours after last meal",
                 new(P: MuscleGainProteinPerMealOnWorkoutDay(targetGramsProteinPerDay), F: 20, C: 100),
                 FoodGroupings.EnglishMuffinsAndPasta(0)),
-                //SeitanAndEnglishMuffin),
+                //EnglishMuffin),
             new("3-5 hours after last meal",
                 new(P: MuscleGainProteinPerMealOnWorkoutDay(targetGramsProteinPerDay), F: 20, C: 50),
                 ToastAndAlmondButter(withOrangeJuice: false)),
@@ -64,15 +65,15 @@ internal record MuscleGain3TrainingAfter1Meal : TrainingWeekBase
                 ToastAndAlmondButter(withOrangeJuice: true)),
             new("2-4 hours after last meal",
                 new(P: MuscleGainProteinPerMealOnWorkoutDay(targetGramsProteinPerDay), F: 20, C: 100),
-                EnglishMuffinsAndRice),
-                //FoodGroupings.EnglishMuffinsAndPasta(0)),
+                //EnglishMuffinsAndRice),
+                FoodGroupings.EnglishMuffinsAndPasta(0)),
             new("3-5 hours after last meal",
                 new(P: MuscleGainProteinPerMealOnWorkoutDay(targetGramsProteinPerDay), F: 20, C: 100),
-                EnglishMuffinsAndRice),
-                //FoodGroupings.EnglishMuffinsAndPasta(0)),
+                //EnglishMuffinsAndRice),
+                FoodGroupings.EnglishMuffinsAndPasta(0)),
             new Meal("Bedtime",
                 new(P: MuscleGainProteinPerMealOnWorkoutDay(targetGramsProteinPerDay), F: 25, C: 65),
-                FoodGroupings.EnglishMuffinsAndPasta(englishMuffins: 0)),
+                Cereal),
         ])
     {
 
@@ -149,21 +150,27 @@ internal record MuscleGain3TrainingAfter1Meal : TrainingWeekBase
                 PreparationMethodEnum.PrepareAsNeeded)).ToArray());
 
     private static FallbackChain EnglishMuffinsAndRice { get; } = new(
-        new[] { Foods.WheatBerries_45_Grams, Foods.ProteinToCarbConversion }.Select(pFood => new FoodGrouping(
+        new FoodGrouping(
             "rice",
             [Foods.Ezekiel_English_Muffin, Foods.AlmondButter_1_Tbsp],
-            pFood,
+            Foods.WheatBerries_45_Grams,
             Foods.PumpkinSeeds_30_Grams,
             Foods.BrownRice_45_Grams,
-            PreparationMethodEnum.PrepareInAdvance))
-        .Append(new FoodGrouping(
+            PreparationMethodEnum.PrepareInAdvance),
+        new FoodGrouping(
             "rice",
             [Foods.Ezekiel_English_Muffin, Foods.AlmondButter_1_Tbsp],
-            Foods.ProteinToCarbConversion,
+            Foods.WheatBerries_45_Grams,
             Foods.FatToCarbConversion,
             Foods.BrownRice_45_Grams,
-            PreparationMethodEnum.PrepareInAdvance))
-        .ToArray());
+            PreparationMethodEnum.PrepareInAdvance),
+        new FoodGrouping(
+            "rice",
+            [Foods.Ezekiel_English_Muffin, Foods.AlmondButter_1_Tbsp],
+            Foods.WheatBerries_45_Grams,
+            Foods.FatToCarbConversion,
+            Foods.ProteinToCarbConversion,
+            PreparationMethodEnum.PrepareInAdvance));
 
     private static readonly FoodGrouping SeitanAndEnglishMuffin = new(
         "seitan and english muffin",
