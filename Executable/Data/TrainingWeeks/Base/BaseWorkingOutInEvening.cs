@@ -58,7 +58,7 @@ internal record BaseWorkingOutInEvening : TrainingWeekBase
             FoodGroupings.WorkoutShake),
         new Meal("Bedtime",
             new(P: FatLossProteinPerMealOnWorkoutDay(targetGramsProteinPerDay), F: 20, C: 55),
-            FoodGroupings.EnglishMuffinsAndPasta(englishMuffins: 2, withEdamame: true)),
+            FoodGroupings.EnglishMuffinsAndPasta(englishMuffins: 2, withTempeh: true)),
         ],
         xfitMeals:
         [
@@ -84,7 +84,7 @@ internal record BaseWorkingOutInEvening : TrainingWeekBase
             FoodGroupings.WorkoutShake),
         new Meal("Bedtime",
             new(P: FatLossProteinPerMealOnWorkoutDay(targetGramsProteinPerDay), F: 20, C: 80),
-            FoodGroupings.EnglishMuffinsAndPasta(englishMuffins: 3, withEdamame: false)),
+            FoodGroupings.EnglishMuffinsAndPasta(englishMuffins: 3, withTempeh: false)),
         ])
     {
 

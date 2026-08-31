@@ -61,7 +61,7 @@ internal static class FoodGroupings
             Foods.Oats_1_Scoop,
             PreparationMethodEnum.PrepareAsNeeded));
 
-    public static FallbackChain EnglishMuffinsAndPasta(int englishMuffins, bool withEdamame = true)
+    public static FallbackChain EnglishMuffinsAndPasta(int englishMuffins, bool withTempeh = true)
     {
         const string foodGroupingName = "English muffins and pasta";
         var englishMuffinFoodServings = englishMuffins == 0
@@ -72,21 +72,21 @@ internal static class FoodGroupings
             new FoodGrouping(
                 foodGroupingName,
                 englishMuffinFoodServings,
-                withEdamame ? Foods.Edamame_1_Scoop : Foods.ProteinToCarbConversion,
+                withTempeh ? Foods.Tempeh_1_8_Package : Foods.ProteinToCarbConversion,
                 Foods.OliveOil_1_Tbsp,
                 Foods.Whole_Grain_Pasta_56_Grams,
                 PreparationMethodEnum.PrepareAsNeeded),
             new FoodGrouping(
                 foodGroupingName,
                 englishMuffinFoodServings,
-                withEdamame ? Foods.ProteinToCarbConversion : Foods.Edamame_1_Scoop,
+                withTempeh ? Foods.ProteinToCarbConversion : Foods.Tempeh_1_8_Package,
                 Foods.OliveOil_1_Tbsp,
                 Foods.Whole_Grain_Pasta_56_Grams,
                 PreparationMethodEnum.PrepareAsNeeded),
             new FoodGrouping(
                 foodGroupingName,
                 englishMuffinFoodServings,
-                withEdamame ? Foods.ProteinToCarbConversion : Foods.Edamame_1_Scoop,
+                withTempeh ? Foods.ProteinToCarbConversion : Foods.Tempeh_1_8_Package,
                 Foods.FatToCarbConversion,
                 Foods.Whole_Grain_Pasta_56_Grams,
                 PreparationMethodEnum.PrepareAsNeeded));
