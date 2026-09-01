@@ -5,6 +5,18 @@ namespace Test;
 public class MuscleGain3TrainingAfter1MealTests
 {
     [Fact]
+    public void NonworkoutMeals_DoNotContainEnglishMuffins()
+    {
+        var trainingWeek = new MuscleGain3TrainingAfter1Meal(targetGramsProteinPerDay: 212.5M)
+            .ForTargetCalories(3000M);
+
+        var nonworkoutServings = trainingWeek.NonworkoutDay.Meals.SelectMany(meal => meal.Servings);
+
+        Assert.DoesNotContain(nonworkoutServings,
+            serving => serving.Name.Contains("english muffin", StringComparison.OrdinalIgnoreCase));
+    }
+
+    [Fact]
     public void ForTargetCalories_ReachesRequestedWeeklyAverage()
     {
         const decimal targetDailyCalories = 2800M;
