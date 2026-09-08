@@ -73,14 +73,14 @@ internal static class FoodGroupings
                 foodGroupingName,
                 englishMuffinFoodServings,
                 Foods.Tempeh_1_8_Package,
-                Foods.OliveOil_1_Tbsp,
+                Foods.PumpkinSeeds_30_Grams,
                 Foods.Whole_Grain_Pasta_56_Grams,
                 PreparationMethodEnum.PrepareAsNeeded),
             new FoodGrouping(
                 foodGroupingName,
                 englishMuffinFoodServings,
                 Foods.ProteinToCarbConversion,
-                Foods.OliveOil_1_Tbsp,
+                Foods.PumpkinSeeds_30_Grams,
                 Foods.Whole_Grain_Pasta_56_Grams,
                 PreparationMethodEnum.PrepareAsNeeded),
             new FoodGrouping(
