@@ -4,8 +4,8 @@ using SystemOfEquations.Data.TrainingWeeks.MuscleGain3;
 using SystemOfEquations.Todoist;
 
 // Set your target average daily calories here
-const decimal targetDailyCalories = 3000M;
-const decimal targetGramsProteinPerDay = 212.5M;
+const decimal targetDailyCalories = 3200M;
+const decimal targetGramsProteinPerDay = 175M;
 
 // Automatically calculate the required adjustment
 var baseTrainingWeek = new MuscleGain3TrainingAfter1Meal(targetGramsProteinPerDay);

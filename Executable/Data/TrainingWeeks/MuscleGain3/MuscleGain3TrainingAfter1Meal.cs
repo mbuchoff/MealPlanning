@@ -17,12 +17,12 @@ internal record MuscleGain3TrainingAfter1Meal : TrainingWeekBase
                 Cereal),
             new("3-5 hours after last meal",
                 new(P: MuscleGainProteinPerMealOnNonworkoutDay(targetGramsProteinPerDay), F: 20, C: 60),
-                //FoodGroupings.EnglishMuffinsAndPasta(0)),
-                FoodGroupings.Seitan),
+                FoodGroupings.EnglishMuffinsAndPasta(0)),
+                //FoodGroupings.Seitan),
             new Meal("3-5 hours after last meal",
                 new(P: MuscleGainProteinPerMealOnNonworkoutDay(targetGramsProteinPerDay), F: 20, C: 60),
-                FoodGroupings.Seitan),
-                //FoodGroupings.EnglishMuffinsAndPasta(0)),
+                //FoodGroupings.Seitan),
+                FoodGroupings.EnglishMuffinsAndPasta(0)),
             new Meal("Bedtime",
                 new Macros(P: MuscleGainProteinPerMealOnNonworkoutDay(targetGramsProteinPerDay), F: 25, C: 0),
                 NonworkoutBedtimeFoodGroupings),
@@ -38,7 +38,6 @@ internal record MuscleGain3TrainingAfter1Meal : TrainingWeekBase
             new Meal("40 minutes after workout",
                 new(P: MuscleGainProteinPerMealOnWorkoutDay(targetGramsProteinPerDay), F: 10, C: 120),
                 //SeitanAndEnglishMuffin),
-                //Cereal),
                 FoodGroupings.EnglishMuffinsAndPasta(0)),
             new("2-4 hours after last meal",
                 new(P: MuscleGainProteinPerMealOnWorkoutDay(targetGramsProteinPerDay), F: 20, C: 100),
@@ -106,10 +105,35 @@ internal record MuscleGain3TrainingAfter1Meal : TrainingWeekBase
                 Foods.AlmondButter_1_Tbsp,
                 Foods.Ezekial_Bread_Low_Sodium_1_Slice,
                 PreparationMethodEnum.PrepareAsNeeded),
+            // Edamame solves negative at some calorie targets. Pin toast at 4 slices and let the
+            // conversion foods absorb the rest, so the meal stays toast and almond butter.
+            new FoodGrouping(
+                "toast and almond butter",
+                [.. staticServings, Foods.Ezekial_Bread_Low_Sodium_1_Slice * 4],
+                Foods.ProteinToFatConversion,
+                Foods.AlmondButter_1_Tbsp,
+                Foods.FatToCarbConversion,
+                PreparationMethodEnum.PrepareAsNeeded),
             new FoodGrouping(
                 "toast and almond butter",
                 staticServings,
                 Foods.Edamame_1_Scoop,
+                Foods.FatToCarbConversion,
+                Foods.Ezekial_Bread_Low_Sodium_1_Slice,
+                PreparationMethodEnum.PrepareAsNeeded),
+            // Last resorts: let the solver pick the number of slices. Pinning 4 slices drives
+            // almond butter negative at lower calorie targets, so these have to stay available.
+            new FoodGrouping(
+                "toast and almond butter",
+                staticServings,
+                Foods.ProteinToFatConversion,
+                Foods.AlmondButter_1_Tbsp,
+                Foods.Ezekial_Bread_Low_Sodium_1_Slice,
+                PreparationMethodEnum.PrepareAsNeeded),
+            new FoodGrouping(
+                "toast and almond butter",
+                staticServings,
+                Foods.ProteinToFatConversion,
                 Foods.FatToCarbConversion,
                 Foods.Ezekial_Bread_Low_Sodium_1_Slice,
                 PreparationMethodEnum.PrepareAsNeeded));
