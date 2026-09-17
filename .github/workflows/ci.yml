@@ -73,10 +73,13 @@ jobs:
         # Run the program with 'n' input to skip Todoist sync
         echo "n" | timeout 10s dotnet run --no-build --configuration Release > output.txt 2>&1 || true
         
-        # Verify expected output
+        # Verify expected output. Assert the plan's structure rather than specific foods, which
+        # change whenever the active meal plan is retuned.
         # Check for either "Ave per day:" (no conversion foods) or "Week Average:" (with conversion foods)
-        if grep -q "grams brown rice" output.txt && \
-           grep -q "cups water" output.txt && \
+        if grep -q "Non-weight training day:" output.txt && \
+           grep -q "Running day:" output.txt && \
+           grep -q "Crossfit day:" output.txt && \
+           grep -q "Totals:" output.txt && \
            (grep -q "Ave per day:" output.txt || grep -q "Week Average:" output.txt); then
           echo "✅ Smoke test passed - program produces expected output"
         else
