@@ -1,3 +1,4 @@
+using SystemOfEquations;
 using SystemOfEquations.Data.TrainingWeeks.MuscleGain3;
 
 namespace Test;
@@ -31,18 +32,13 @@ public class MuscleGain3TrainingAfter1MealTests
     }
 
     [Fact]
-    public void ForTargetCalories_ExplainsTheLimitingFoodGroupingWhenTargetCannotBeReached()
+    public void ForTargetCalories_ExplainsTheLimitingFoodGroupingWhenTargetIsBelowSupportedRange()
     {
         var exception = Assert.Throws<InvalidOperationException>(() =>
             new MuscleGain3TrainingAfter1Meal(targetGramsProteinPerDay: 212.5M)
                 .ForTargetCalories(2000M));
 
-        Assert.Contains("Limiting calculation:", exception.Message);
-        Assert.Contains("Crossfit day", exception.Message);
-        Assert.Contains("40 minutes after workout", exception.Message);
-        Assert.Contains("toast and almond butter", exception.Message);
-        Assert.Contains("Ezekial Bread Low Sodium", exception.Message);
-        Assert.NotNull(exception.InnerException);
+        AssertExplainsLimitingCalculation(exception);
     }
 
     [Fact]
@@ -63,12 +59,45 @@ public class MuscleGain3TrainingAfter1MealTests
     {
         var exception = Assert.Throws<InvalidOperationException>(() =>
             new MuscleGain3TrainingAfter1Meal(targetGramsProteinPerDay: 212.5M)
-                .ForTargetCalories(4000M));
+                .ForTargetCalories(6000M));
 
+        AssertExplainsLimitingCalculation(exception);
+    }
+
+    [Fact]
+    public void ToastAndAlmondButter_FallsBackToFourPinnedSlicesWhenEdamameWouldGoNegative()
+    {
+        // These targets solve "toast and almond butter" to a negative amount of edamame, which
+        // used to fail the whole week because every fallback in the chain still used edamame.
+        var trainingWeek = new MuscleGain3TrainingAfter1Meal(targetGramsProteinPerDay: 175M)
+            .ForTargetCalories(3200M);
+
+        var meal = Assert.Single(
+            trainingWeek.XFitDay.Meals,
+            m => m.FoodGrouping.Name == "toast and almond butter");
+
+        var toast = Assert.Single(
+            meal.Servings,
+            serving => serving.Name.Contains("Ezekial Bread", StringComparison.OrdinalIgnoreCase));
+        Assert.Equal(4M, toast.NutritionalInformation.ServingUnits);
+        Assert.Contains(meal.Servings,
+            serving => serving.Name.Contains("almond butter", StringComparison.OrdinalIgnoreCase));
+        Assert.DoesNotContain(meal.Servings,
+            serving => serving.Name.Contains("edamame", StringComparison.OrdinalIgnoreCase));
+    }
+
+    // The explanation has to name a specific day, meal and food grouping so the configuration can
+    // be fixed. Which grouping is limiting changes as fallbacks are added, so assert the shape of
+    // the explanation rather than whichever foods happen to be the bottleneck today.
+    private static void AssertExplainsLimitingCalculation(InvalidOperationException exception)
+    {
         Assert.Contains("Limiting calculation:", exception.Message);
-        Assert.Contains("Crossfit day", exception.Message);
-        Assert.Contains("40 minutes after workout", exception.Message);
-        Assert.Contains("toast and almond butter", exception.Message);
-        Assert.NotNull(exception.InnerException);
+
+        var limitingCalculation =
+            Assert.IsType<FoodGroupingCalculationException>(exception.InnerException);
+        Assert.Contains(limitingCalculation.Message, exception.Message);
+        Assert.True(
+            limitingCalculation.Message.Split(" > ").Length >= 3,
+            $"Expected 'day > meal > food grouping > reason', but got '{limitingCalculation.Message}'.");
     }
 }
