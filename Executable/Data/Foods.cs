@@ -143,8 +143,8 @@ internal static class Foods
         new BaseNutrition(Cals: 170, P: 11, F: 1, CTotal: 30, CFiber: 5));
 
     private static Food ShreddedWheatCerealFood { get; } = new("Shredded Wheat cereal",
-        [(60, ServingUnits.Gram), (300M / 83M, ServingUnits.Scoop)],
-        new BaseNutrition(Cals: 200, P: 7, F: 1.5M, CTotal: 45, CFiber: 8));
+        [(4M / 3M, ServingUnits.Cup), (60, ServingUnits.Gram)],
+        new BaseNutrition(Cals: 200, P: 7, F: 1.5M, CTotal: 48, CFiber: 8));
 
     private static Food SunflowerSeedsFood { get; } = new("Sunflower seeds",
         [(30, ServingUnits.Gram), (0.25M, ServingUnits.Cup)],
@@ -400,8 +400,8 @@ internal static class Foods
     public static FoodServing Ezeliel_Cereal_Low_Sodium_1_Scoop =>
         EzekielCerealLowSodiumFood.WithServing(1, ServingUnits.Scoop);
 
-    public static FoodServing ShreddedWheatCereal_1_Scoop =>
-        ShreddedWheatCerealFood.WithServing(1, ServingUnits.Scoop);
+    public static FoodServing ShreddedWheatCereal_1_1_3_Cup =>
+        ShreddedWheatCerealFood.WithServing(4M / 3M, ServingUnits.Cup);
     public static FoodServing Oats_1_Scoop =>
         OatsFood.WithServing(1, ServingUnits.Scoop) with
         {

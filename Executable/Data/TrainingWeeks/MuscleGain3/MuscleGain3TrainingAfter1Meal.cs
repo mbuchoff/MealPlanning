@@ -80,18 +80,18 @@ internal record MuscleGain3TrainingAfter1Meal : TrainingWeekBase
 
     private static readonly FallbackChain Cereal = new(
         new FoodGrouping(
-            "Fiber One",
+            "Shredded Wheat",
             [Foods.AlmondMilk_1_Scoop * 2],
             Foods.PumpkinSeeds_1_Scoop,
             Foods.Edamame_1_Scoop,
-            Foods.FiberOne_2_3_Cup,
+            Foods.ShreddedWheatCereal_1_1_3_Cup,
             PreparationMethodEnum.PrepareAsNeeded),
         new FoodGrouping(
-            "Fiber One",
+            "Shredded Wheat",
             [Foods.AlmondMilk_1_Scoop * 2],
             Foods.Edamame_1_Scoop,
             Foods.FatToCarbConversion,
-            Foods.FiberOne_2_3_Cup,
+            Foods.ShreddedWheatCereal_1_1_3_Cup,
             PreparationMethodEnum.PrepareAsNeeded));
 
     private static FallbackChain ToastAndAlmondButter(bool withOrangeJuice)
