@@ -38,18 +38,18 @@ internal record MuscleGain3TrainingAfter1Meal : TrainingWeekBase
             new Meal("40 minutes after workout",
                 new(P: MuscleGainProteinPerMealOnWorkoutDay(targetGramsProteinPerDay), F: 10, C: 120),
                 //SeitanAndEnglishMuffin),
-                FoodGroupings.EnglishMuffinsAndPasta(0)),
+                CerealWithOrangeJuice),
             new("2-4 hours after last meal",
                 new(P: MuscleGainProteinPerMealOnWorkoutDay(targetGramsProteinPerDay), F: 20, C: 100),
                 FoodGroupings.EnglishMuffinsAndPasta(0)),
                 //EnglishMuffin),
             new("3-5 hours after last meal",
                 new(P: MuscleGainProteinPerMealOnWorkoutDay(targetGramsProteinPerDay), F: 20, C: 50),
-                ToastAndAlmondButter(withOrangeJuice: false)),
+                FoodGroupings.EnglishMuffinsAndPasta(0)),
             new Meal("Bedtime",
                 new(P: MuscleGainProteinPerMealOnWorkoutDay(targetGramsProteinPerDay), F: 25, C: 35),
                 //FoodGroupings.EnglishMuffinsAndPasta(englishMuffins: 0)),
-                Cereal),
+                ToastAndAlmondButter(withOrangeJuice: false)),
         ],
         xfitMeals:
         [
@@ -61,7 +61,7 @@ internal record MuscleGain3TrainingAfter1Meal : TrainingWeekBase
                 WorkoutMeal),
             new Meal("40 minutes after workout",
                 new(P: MuscleGainProteinPerMealOnWorkoutDay(targetGramsProteinPerDay), F: 10, C: 120),
-                ToastAndAlmondButter(withOrangeJuice: true)),
+                CerealWithOrangeJuice),
             new("2-4 hours after last meal",
                 new(P: MuscleGainProteinPerMealOnWorkoutDay(targetGramsProteinPerDay), F: 20, C: 100),
                 //EnglishMuffinsAndRice),
@@ -72,27 +72,37 @@ internal record MuscleGain3TrainingAfter1Meal : TrainingWeekBase
                 FoodGroupings.EnglishMuffinsAndPasta(0)),
             new Meal("Bedtime",
                 new(P: MuscleGainProteinPerMealOnWorkoutDay(targetGramsProteinPerDay), F: 25, C: 65),
-                Cereal),
+                ToastAndAlmondButter(withOrangeJuice: false)),
         ])
     {
 
     }
 
-    private static readonly FallbackChain Cereal = new(
-        new FoodGrouping(
-            "Shredded Wheat",
-            [Foods.AlmondMilk_1_Scoop * 2],
-            Foods.PumpkinSeeds_1_Scoop,
-            Foods.Edamame_1_Scoop,
-            Foods.ShreddedWheatCereal_1_1_3_Cup,
-            PreparationMethodEnum.PrepareAsNeeded),
-        new FoodGrouping(
-            "Shredded Wheat",
-            [Foods.AlmondMilk_1_Scoop * 2],
-            Foods.Edamame_1_Scoop,
-            Foods.FatToCarbConversion,
-            Foods.ShreddedWheatCereal_1_1_3_Cup,
-            PreparationMethodEnum.PrepareAsNeeded));
+    // Meals are combined in the prep plan when they share the same FoodGrouping instances, so each
+    // variant is built once rather than per meal.
+    private static readonly FallbackChain Cereal = CreateCereal(withOrangeJuice: false);
+    private static readonly FallbackChain CerealWithOrangeJuice = CreateCereal(withOrangeJuice: true);
+
+    private static FallbackChain CreateCereal(bool withOrangeJuice)
+    {
+        FoodServing[] orangeJuice = withOrangeJuice ? [Foods.OrangeJuice_1_Cup * 2] : [];
+        FoodServing[] staticServings = [Foods.AlmondMilk_1_Scoop * 2, .. orangeJuice];
+        return new(
+            new FoodGrouping(
+                "Shredded Wheat",
+                staticServings,
+                Foods.PumpkinSeeds_1_Scoop,
+                Foods.Edamame_1_Scoop,
+                Foods.ShreddedWheatCereal_1_1_3_Cup,
+                PreparationMethodEnum.PrepareAsNeeded),
+            new FoodGrouping(
+                "Shredded Wheat",
+                staticServings,
+                Foods.Edamame_1_Scoop,
+                Foods.FatToCarbConversion,
+                Foods.ShreddedWheatCereal_1_1_3_Cup,
+                PreparationMethodEnum.PrepareAsNeeded));
+    }
 
     private static FallbackChain ToastAndAlmondButter(bool withOrangeJuice)
     {
